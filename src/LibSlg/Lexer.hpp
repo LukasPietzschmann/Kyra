@@ -29,6 +29,7 @@ private:
 	int m_line {};
 
 	void scanToken();
+	void comment();
 	void number();
 	void string();
 	void nameOrKeyword();

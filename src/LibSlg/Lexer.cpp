@@ -18,6 +18,8 @@ void Lexer::scanToken() {
 		case '\r': break;
 		case '\n': ++m_line;
 			break;
+		case '#': comment();
+			break;
 		case '(': addToken(TokenType::LEFT_PAREN);
 			break;
 		case ')': addToken(TokenType::RIGHT_PAREN);
@@ -58,6 +60,11 @@ void Lexer::scanToken() {
 			else
 				std::cerr << "Unexpected Character \"" << current << "\" at Line " << m_line << std::endl;
 	}
+}
+
+void Lexer::comment() {
+	while(!match('\n') && !isAtEnd())
+		advance();
 }
 
 void Lexer::number() {

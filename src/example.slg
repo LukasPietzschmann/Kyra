@@ -1,3 +1,5 @@
+# This is a Comment :^)
+
 var number = 5;
 var string = "five";
 var empty = Nothing;
