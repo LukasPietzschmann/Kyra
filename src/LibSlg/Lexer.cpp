@@ -74,8 +74,11 @@ void Lexer::number() {
 }
 
 void Lexer::string() {
-	while(!match('"') && !isAtEnd())
+	while(!match('"') && !isAtEnd()) {
+		if(match('\n'))
+			++m_line;
 		advance();
+	}
 
 	if(isAtEnd()) {
 		std::cerr << "Unterminated String" << std::endl;
