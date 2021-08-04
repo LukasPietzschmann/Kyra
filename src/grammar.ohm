@@ -1,0 +1,34 @@
+// This File uses the Ohm Language (https://github.com/harc/ohm)
+// and can be imported in the Ohm-Editor (https://ohmlang.github.io/editor/)
+
+Slanguage{
+    Program = TerminatedExpression*
+
+    //Expressions
+    TerminatedExpression = Expression ";"
+    Expression = PropertyAccess | BracketExpression | Declaration | SlanguageObject
+    BracketExpression = "(" Expression ")"
+    Block = "{" TerminatedExpression+ "}"
+    PropertyAccess = Call | identifier
+
+    //Declarations
+    Declaration = "var" identifier "=" Expression
+    SlanguageObject = Object | Function | nothing | number | string
+
+    Function = "fun" IdentifierList Block
+    Object = "object" Block
+
+    //Utilities
+    IdentifierList = "(" (identifier ("," identifier)*)? ")"
+    ExpressionList = "(" (Expression ("," Expression)*)? ")"
+    MethodCall = PropertyAccess ExpressionList
+    DotIdentifier = "." identifier
+    Call = Expression (ExpressionList | DotIdentifier)
+
+    //Lexical Grammar
+    string = "\""(~"\"" any)*"\""
+    number = digit+
+    identifier = ~keyword letter+
+    nothing = "Nothing"
+    keyword = nothing | "var" | "fun" | "object"
+}
