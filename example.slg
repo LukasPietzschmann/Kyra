@@ -4,18 +4,20 @@ var number = 5;
 var string = "five";
 var empty = Nothing;
 
+var number_two;
+number_two = 2;
+
 var method = fun (a){
-	a;
+	return a;
 };
 
 var class = object {
 	var attribute = 6;
 	var method = fun (a, b, c){
-		fun (){
-			a;
+		return fun (){
+			return a;
 		};
 	};
 };
 
-class.attribute;
-class.method(1, 2, 3)();
+print class;

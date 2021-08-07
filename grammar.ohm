@@ -2,33 +2,47 @@
 // and can be imported in the Ohm-Editor (https://ohmlang.github.io/editor/)
 
 Slanguage{
-    Program = TerminatedExpression*
-
-    //Expressions
-    TerminatedExpression = Expression ";"
-    Expression = PropertyAccess | BracketExpression | Declaration | SlanguageObject
-    BracketExpression = "(" Expression ")"
-    Block = "{" TerminatedExpression+ "}"
-    PropertyAccess = Call | identifier
-
+	Program = Declaration*
+    
+    //Expressions: This Rule matches any expr. at any precedence.
+    //			   As `Assignment` has the lowest precedence it will
+    //			   cover everything.
+    Expression = Assignment
+    Assignment = identifier "=" Assignment -- Assignment
+    		   | Equality
+	Equality = Comparison (("!=" | "==") Comparison)*
+	Comparison = Term (( ">" | ">=" | "<" | "<=") Term)*
+	Term = Factor (( "-" | "+") Factor)*
+	Factor = Unary (("/" | "*") Unary)*
+	Unary = ("!" | "-") Unary -- Unary
+    		| Primary
+	Primary = number | string | true | false | nothing | Group | identifier | Function | Object
+    
+    //Statements
+    Statement = Block | ExpressionStatement | PrintStatement | ReturnStatement
+    ExpressionStatement = Expression ";"
+    PrintStatement = "print" Expression ";"
+    ReturnStatement = "return" Expression ";"
+    
     //Declarations
-    Declaration = "var" identifier "=" Expression
-    SlanguageObject = Object | Function | nothing | number | string
-
+    Declaration = "var" identifier ("=" Expression)? ";" -- varDecl
+    			| Statement
+                
+    //Slanguage Object
     Function = "fun" IdentifierList Block
     Object = "object" Block
-
+    
     //Utilities
+    Group = "(" Expression ")"
+    Block = "{" Declaration+ "}"
     IdentifierList = "(" (identifier ("," identifier)*)? ")"
-    ExpressionList = "(" (Expression ("," Expression)*)? ")"
-    MethodCall = PropertyAccess ExpressionList
-    DotIdentifier = "." identifier
-    Call = Expression (ExpressionList | DotIdentifier)
-
-    //Lexical Grammar
+    
+	//Lexical Grammar
     string = "\""(~"\"" any)*"\""
     number = digit+
     identifier = ~keyword letter+
     nothing = "Nothing"
-    keyword = nothing | "var" | "fun" | "object"
+    true = "true"
+    false = "false"
+    keyword = nothing | "var" | "fun" | "object" | "return" | "print" | "true" | "false"
 }
