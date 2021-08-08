@@ -15,7 +15,8 @@ Slanguage{
 	Term = Factor (( "-" | "+") Factor)*
 	Factor = Unary (("/" | "*") Unary)*
 	Unary = ("!" | "-") Unary -- Unary
-    		| Primary
+    		| Call
+    Call = Primary (ExpressionList | DotIdentifier)* 
 	Primary = number | string | true | false | nothing | Group | identifier | Function | Object
     
     //Statements
@@ -36,6 +37,8 @@ Slanguage{
     Group = "(" Expression ")"
     Block = "{" Declaration+ "}"
     IdentifierList = "(" (identifier ("," identifier)*)? ")"
+    ExpressionList = "(" (Expression ("," Expression)*)? ")"
+    DotIdentifier = "." identifier
     
 	//Lexical Grammar
     string = "\""(~"\"" any)*"\""

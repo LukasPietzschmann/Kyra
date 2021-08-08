@@ -20,4 +20,5 @@ var class = object {
 	};
 };
 
-print class;
+print class.attribute;
+print class.method(1,2,3)();
