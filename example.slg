@@ -4,8 +4,8 @@ var number = 5;
 var string = "five";
 var empty = Nothing;
 
-var number_two;
-number_two = 2;
+var numberTwo;
+numberTwo = 2;
 
 var method = fun (a){
 	return a;
