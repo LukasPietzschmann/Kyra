@@ -37,7 +37,7 @@ private:
 	char peek() const;
 	bool match(char expected) const;
 	bool matchAndAdvance(char expected);
-	void addToken(TokenType type, const std::string &literal = "");
+	void addToken(TokenType type, const std::string& literal = "");
 	bool isDigit(char character);
 	bool isAlpha(char character);
 	bool isAtEnd() const;

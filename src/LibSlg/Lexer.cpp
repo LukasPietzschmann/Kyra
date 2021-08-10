@@ -87,7 +87,7 @@ void Lexer::string() {
 
 	advance();
 
-	const std::string &string = m_source.substr(m_start + 1, m_current - m_start - 2);
+	const std::string& string = m_source.substr(m_start + 1, m_current - m_start - 2);
 	addToken(TokenType::STRING, string);
 }
 
@@ -124,8 +124,8 @@ bool Lexer::matchAndAdvance(char expected) {
 	return true;
 }
 
-void Lexer::addToken(TokenType type, const std::string &literal) {
-	const std::string &lexeme = m_source.substr(m_start, m_current - m_start);
+void Lexer::addToken(TokenType type, const std::string& literal) {
+	const std::string& lexeme = m_source.substr(m_start, m_current - m_start);
 	m_tokens.emplace_back(type, m_line, lexeme, literal);
 }
 
