@@ -20,7 +20,8 @@ private:
 			{"print", TokenType::PRINT},
 			{"nothing", TokenType::NOTHING},
 			{"true", TokenType::TRUE},
-			{"false", TokenType::FALSE}
+			{"false", TokenType::FALSE},
+			{"return", TokenType::RETURN},
 	};
 	const std::string m_source;
 	std::vector<Token> m_tokens;
