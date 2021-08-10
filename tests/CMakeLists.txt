@@ -12,3 +12,8 @@ target_link_libraries(Tests gtest_main LibSlg)
 
 include(googletest)
 gtest_discover_tests(Tests)
+
+option(RUN_TESTS_AFTER_BUILD "Run all tests automatically after a successful build" ON)
+if (RUN_TESTS_AFTER_BUILD)
+	add_custom_command(TARGET Tests COMMAND ../bin/Tests POST_BUILD)
+endif ()

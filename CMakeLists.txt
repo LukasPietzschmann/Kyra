@@ -8,5 +8,8 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/bin)
 
 add_subdirectory(src)
 
-enable_testing()
-add_subdirectory(tests)
+option(COMPILE_TESTS "Compile the project with tests" OFF)
+if (COMPILE_TESTS)
+	enable_testing()
+	add_subdirectory(tests)
+endif ()
