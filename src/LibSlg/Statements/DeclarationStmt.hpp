@@ -5,9 +5,9 @@
 
 class DeclarationStmt : public Statement {
 public:
-	DeclarationStmt(std::string identifier, Expression* initializer) :
-		m_identifier(std::move(identifier)), m_initializer(initializer) {}
+	DeclarationStmt(std::string identifier, Expression::Ptr initializer) :
+			m_identifier(std::move(identifier)), m_initializer(std::move(initializer)) {}
 private:
 	std::string m_identifier;
-	Expression* m_initializer;
+	Expression::Ptr m_initializer;
 };

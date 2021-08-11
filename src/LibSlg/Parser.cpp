@@ -17,8 +17,8 @@ Statement::Ptr Parser::declaration() {
 	if(matchAndAdvance(TokenType::EQUAL))
 		init = assignment();
 	consume(TokenType::SEMICOLON);
-	//FIXME init.get() should be changed
-	return std::make_shared<DeclarationStmt>(identifier, init.get());
+
+	return std::make_shared<DeclarationStmt>(identifier, init);
 }
 
 Statement::Ptr Parser::statement() {
