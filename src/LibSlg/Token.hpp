@@ -16,10 +16,7 @@ public:
 	std::string getValue() const { return m_value; }
 
 	friend std::ostream& operator<<(std::ostream& os, const Token& token) {
-		auto asInteger = [](TokenType type) {
-			return static_cast<std::underlying_type<TokenType>::type>(type);
-		};
-		os << "Type " << asInteger(token.m_type) << " at line " << token.m_line;
+		os << "Type " << TokenTypeName::getFor(token.m_type) << " at line " << token.m_line;
 		if(!token.m_lexeme.empty())
 			os << " with lexeme " << token.m_lexeme;
 		if(!token.m_value.empty())
