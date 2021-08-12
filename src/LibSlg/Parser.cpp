@@ -18,12 +18,12 @@ Statement::Ptr Parser::declaration() {
 		init = assignment();
 	consume(TokenType::SEMICOLON);
 
-	return std::make_shared<DeclarationStmt>(identifier, init);
+	return Statement::makePtr<DeclarationStmt>(identifier, init);
 }
 
 Statement::Ptr Parser::statement() {
 	if(match(TokenType::LEFT_CURLY))
-		return std::make_shared<BlockStmt>(block());
+		return Statement::makePtr<BlockStmt>(block());
 	if(match(TokenType::PRINT))
 		return print();
 	if(match(TokenType::RETURN))
@@ -48,7 +48,7 @@ Statement::Ptr Parser::print() {
 	Expression::Ptr expr = assignment();
 	consume(TokenType::SEMICOLON);
 
-	return std::make_shared<PrintStmt>(expr);
+	return Statement::makePtr<PrintStmt>(expr);
 }
 
 Statement::Ptr Parser::ret() {
@@ -56,14 +56,14 @@ Statement::Ptr Parser::ret() {
 	Expression::Ptr expr = assignment();
 	consume(TokenType::SEMICOLON);
 
-	return std::make_shared<ReturnStmt>(expr);
+	return Statement::makePtr<ReturnStmt>(expr);
 }
 
 Statement::Ptr Parser::expression() {
 	Expression::Ptr expr = assignment();
 	consume(TokenType::SEMICOLON);
 
-	return std::make_shared<ExpressionStmt>(expr);
+	return Statement::makePtr<ExpressionStmt>(expr);
 }
 
 Token Parser::advance() {
