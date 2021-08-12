@@ -1,5 +1,6 @@
 #pragma once
 
+namespace LibSlg {
 class Statement {
 public:
 	typedef std::shared_ptr<Statement> Ptr;
@@ -9,3 +10,4 @@ public:
 		return std::make_shared<T>(args...);
 	}
 };
+}

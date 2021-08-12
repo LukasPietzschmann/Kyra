@@ -2,4 +2,7 @@
 
 #include "Expression.hpp"
 
-class UnaryExpr : Expression {};
+namespace LibSlg{
+class UnaryExpr : Expression {
+public:
+}

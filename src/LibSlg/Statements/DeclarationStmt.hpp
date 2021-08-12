@@ -3,6 +3,7 @@
 #include <string>
 #include "Statement.hpp"
 
+namespace LibSlg {
 class DeclarationStmt : public Statement {
 public:
 	DeclarationStmt(std::string identifier, Expression::Ptr initializer) :
@@ -11,3 +12,4 @@ private:
 	std::string m_identifier;
 	Expression::Ptr m_initializer;
 };
+}
