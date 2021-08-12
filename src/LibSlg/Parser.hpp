@@ -45,6 +45,8 @@ private:
 	Token peek() const;
 	bool match(TokenType expected) const;
 	bool matchAndAdvance(TokenType expected);
+	bool match(std::initializer_list<TokenType> expected) const;
+	bool matchAndAdvance(std::initializer_list<TokenType> expected);
 	Token previous() const;
 	bool isAtEnd() const;
 };

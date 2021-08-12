@@ -81,13 +81,21 @@ Token Parser::peek() const {
 	return m_tokens[m_current];
 }
 
-bool Parser::match(TokenType expected) const {
+bool Parser::match(TokenType expected) const { return match({expected}); }
+bool Parser::matchAndAdvance(TokenType expected) { return matchAndAdvance({expected}); }
+
+bool Parser::match(std::initializer_list<TokenType> expected) const {
 	if(isAtEnd())
 		return false;
-	return peek().getType() == expected;
+	for(const auto& type : expected) {
+		if(type == peek().getType())
+			return true;
+	}
+
+	return false;
 }
 
-bool Parser::matchAndAdvance(TokenType expected) {
+bool Parser::matchAndAdvance(std::initializer_list<TokenType> expected) {
 	bool res = match(expected);
 	if(res)
 		advance();
