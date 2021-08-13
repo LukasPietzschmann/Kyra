@@ -18,10 +18,10 @@ public:
 		m_statements.reserve(m_tokens.size());
 	}
 
-	std::vector<Statement> parse();
+	std::vector<Statement::Ptr> parse();
 private:
 	const std::vector<Token> m_tokens;
-	std::vector<Statement> m_statements;
+	std::vector<Statement::Ptr> m_statements;
 	int m_current {};
 
 	Statement::Ptr declaration();
