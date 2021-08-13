@@ -96,11 +96,14 @@ void Lexer::nameOrKeyword() {
 		advance();
 
 	std::string string = m_source.substr(m_start, m_current - m_start);
+	std::string literal = "";
 	TokenType type = TokenType::NAME;
 	if(keywords.find(string) != keywords.end())
 		type = keywords.at(string);
+	else
+		literal = m_source.substr(m_start, m_current - m_start);
 
-	addToken(type);
+	addToken(type, literal);
 }
 
 char Lexer::advance() {
