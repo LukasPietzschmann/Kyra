@@ -45,6 +45,8 @@ private:
 	Expression::Ptr unary();
 	Expression::Ptr call();
 	Expression::Ptr primary();
+	Expression::Ptr function();
+	Expression::Ptr object();
 
 	Token advance();
 	Token consume(TokenType expected);

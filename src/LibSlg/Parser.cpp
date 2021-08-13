@@ -65,6 +65,116 @@ Statement::Ptr Parser::expression() {
 	return Statement::makePtr<ExpressionStmt>(expr);
 }
 
+Expression::Ptr Parser::equality() {
+	Expression::Ptr expr = comparison();
+
+	while(true) {
+		if(!matchAndAdvance({TokenType::BANG_EQUAL, TokenType::EQUAL_EQUAL}))
+			break;
+		Token oper = previous();
+		Expression::Ptr rhs = comparison();
+		expr = Expression::makePtr<BinaryExpr>(expr, oper, rhs);
+	}
+
+	return expr;
+}
+
+Expression::Ptr Parser::comparison() {
+	Expression::Ptr expr = term();
+
+	while(true) {
+		if(!(matchAndAdvance({TokenType::GREATER, TokenType::GREATER_EQUAL, TokenType::LESS, TokenType::LESS_EQUAL})))
+			break;
+		Token oper = previous();
+		Expression::Ptr rhs = term();
+		expr = Expression::makePtr<BinaryExpr>(expr, oper, rhs);
+	}
+
+	return expr;
+}
+
+Expression::Ptr Parser::term() {
+	Expression::Ptr expr = factor();
+
+	while(true) {
+		if(!(matchAndAdvance({TokenType::MINUS, TokenType::PLUS})))
+			break;
+		Token oper = previous();
+		Expression::Ptr rhs = factor();
+		expr = Expression::makePtr<BinaryExpr>(expr, oper, rhs);
+	}
+
+	return expr;
+}
+
+Expression::Ptr Parser::factor() {
+	Expression::Ptr expr = unary();
+
+	while(true) {
+		if(!(matchAndAdvance({TokenType::SLASH, TokenType::STAR})))
+			break;
+		Token oper = previous();
+		Expression::Ptr rhs = unary();
+		expr = Expression::makePtr<BinaryExpr>(expr, oper, rhs);
+	}
+
+	return expr;
+}
+
+Expression::Ptr Parser::unary() {
+	if(!(matchAndAdvance({TokenType::BANG, TokenType::MINUS})))
+		return call();
+
+	Token oper = previous();
+	Expression::Ptr rhs = unary();
+	return Expression::makePtr<UnaryExpr>(oper, rhs);
+}
+Expression::Ptr Parser::primary() {
+	if(matchAndAdvance(TokenType::LEFT_PAREN)) {
+		Expression::Ptr expr = assignment();
+		consume(TokenType::RIGHT_PAREN);
+	}
+	if(matchAndAdvance(TokenType::NOTHING))
+		return Expression::makePtr<Literal<int>>(0, true);
+	if(matchAndAdvance(TokenType::NUMBER))
+		return Expression::makePtr<Literal<int>>(previous().getValue().asInt());
+	if(matchAndAdvance(TokenType::STRING))
+		return Expression::makePtr<Literal<std::string>>(previous().getValue().asString());
+	if(matchAndAdvance(TokenType::TRUE))
+		return Expression::makePtr<Literal<bool>>(true);
+	if(matchAndAdvance(TokenType::FALSE))
+		return Expression::makePtr<Literal<bool>>(false);
+	if(matchAndAdvance(TokenType::NAME))
+		return Expression::makePtr<Variable>(previous());
+	if(match(TokenType::FUN))
+		return function();
+	if(match(TokenType::OBJECT))
+		return object();
+
+	std::cerr << "Expected Expression - Should not reach this code" << std::endl;
+	return {};
+}
+
+Expression::Ptr Parser::function() {
+	consume(TokenType::FUN);
+
+	std::vector<Variable> parameters;
+	consume(TokenType::LEFT_PAREN);
+	while(!matchAndAdvance(TokenType::RIGHT_PAREN)) {
+		Variable parameter(consume(TokenType::NAME));
+		parameters.push_back(parameter);
+	}
+
+	Statement::Ptr implementation = block();
+
+	return Expression::makePtr<Function>(parameters, implementation);
+}
+
+Expression::Ptr Parser::object() {
+	consume(TokenType::OBJECT);
+	return Expression::makePtr<Object>(block());
+}
+
 Token Parser::advance() {
 	return m_tokens[m_current++];
 }
