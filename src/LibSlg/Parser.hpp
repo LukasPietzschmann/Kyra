@@ -2,7 +2,13 @@
 
 #include <vector>
 #include <iostream>
+#include "Expressions/BinaryExpr.hpp"
 #include "Expressions/Expression.hpp"
+#include "Expressions/Function.hpp"
+#include "Expressions/Literal.hpp"
+#include "Expressions/Object.hpp"
+#include "Expressions/UnaryExpr.hpp"
+#include "Expressions/Variable.hpp"
 #include "Statements/BlockStmt.hpp"
 #include "Statements/DeclarationStmt.hpp"
 #include "Statements/ExpressionStmt.hpp"
