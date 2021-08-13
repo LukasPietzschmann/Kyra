@@ -23,7 +23,7 @@ Statement::Ptr Parser::declaration() {
 
 Statement::Ptr Parser::statement() {
 	if(match(TokenType::LEFT_CURLY))
-		return Statement::makePtr<BlockStmt>(block());
+		return block();
 	if(match(TokenType::PRINT))
 		return print();
 	if(match(TokenType::RETURN))
@@ -31,7 +31,7 @@ Statement::Ptr Parser::statement() {
 	return expression();
 }
 
-std::vector<Statement::Ptr> Parser::block() {
+Statement::Ptr Parser::block() {
 	consume(TokenType::LEFT_CURLY);
 
 	std::vector<Statement::Ptr> statements;
@@ -40,7 +40,7 @@ std::vector<Statement::Ptr> Parser::block() {
 
 	consume(TokenType::RIGHT_CURLY);
 
-	return statements;
+	return Statement::makePtr<BlockStmt>(statements);
 }
 
 Statement::Ptr Parser::print() {

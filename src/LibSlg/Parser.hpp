@@ -27,7 +27,7 @@ private:
 	Statement::Ptr declaration();
 	Statement::Ptr statement();
 	Statement::Ptr expression();
-	std::vector<Statement::Ptr> block();
+	Statement::Ptr block();
 	Statement::Ptr print();
 	Statement::Ptr ret();
 
