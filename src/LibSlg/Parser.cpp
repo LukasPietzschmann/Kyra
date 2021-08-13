@@ -87,12 +87,9 @@ bool Parser::matchAndAdvance(TokenType expected) { return matchAndAdvance({expec
 bool Parser::match(std::initializer_list<TokenType> expected) const {
 	if(isAtEnd())
 		return false;
-	for(const auto& type : expected) {
-		if(type == peek().getType())
-			return true;
-	}
-
-	return false;
+	return std::any_of(expected.begin(), expected.end(), [this](TokenType type) {
+		return type == peek().getType();
+	});
 }
 
 bool Parser::matchAndAdvance(std::initializer_list<TokenType> expected) {
