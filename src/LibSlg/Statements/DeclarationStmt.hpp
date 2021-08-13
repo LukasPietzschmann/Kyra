@@ -9,6 +9,9 @@ public:
 	DeclarationStmt(std::string identifier, Expression::Ptr initializer) :
 			m_identifier(std::move(identifier)), m_initializer(std::move(initializer)) {}
 	void accept(StatementVisitor& visitor) override { visitor.visitDeclarationStmt(*this); }
+
+	const std::string& getIdentifier() const { return m_identifier; }
+	const Expression::Ptr& getInitializer() const { return m_initializer; }
 private:
 	std::string m_identifier;
 	Expression::Ptr m_initializer;
