@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Forward.hpp"
+
 namespace LibSlg {
 class Statement {
 public:
