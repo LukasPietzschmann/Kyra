@@ -4,9 +4,10 @@ namespace LibSlg {
 class AssignmentExpr;
 class BinaryExpr;
 class CallExpr;
-class FunctionExpr;
-class LiteralExpr;
-class ObjectExpr;
+class Function;
+template <typename T>
+class Literal;
+class Object;
 class UnaryExpr;
-class VariableExpr;
+class Variable;
 }
