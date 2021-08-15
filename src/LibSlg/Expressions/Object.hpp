@@ -7,6 +7,7 @@ namespace LibSlg {
 class Object : public Expression {
 public:
 	explicit Object(Statement::Ptr impl) : m_implementation(std::move(impl)) {}
+	const Statement::Ptr& getImplementation() const { return m_implementation; }
 private:
 	Statement::Ptr m_implementation;
 };
