@@ -26,9 +26,13 @@ public:
 	}
 
 	void visitDeclarationStmt(DeclarationStmt& declarationStmt) override {
-		COUT << "Declaration of variable " << declarationStmt.getIdentifier() << " to " << std::endl;
-		++m_indent;
-		declarationStmt.getInitializer()->accept(*this);
+		COUT << "Declaration of variable " << declarationStmt.getIdentifier();
+		if(declarationStmt.getInitializer()) {
+			std::cout << " to " << std::endl;
+			++m_indent;
+			declarationStmt.getInitializer()->accept(*this);
+		}else
+			std::cout << std::endl;
 	}
 
 	void visitExpressionStmt(ExpressionStmt& expressionStmt) override {
