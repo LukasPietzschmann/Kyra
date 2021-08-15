@@ -135,15 +135,15 @@ Expression::Ptr Parser::primary() {
 		consume(TokenType::RIGHT_PAREN);
 	}
 	if(matchAndAdvance(TokenType::NOTHING))
-		return Expression::makePtr<Literal<int>>(0, true);
+		return Expression::makePtr<Literal>(Value());
 	if(matchAndAdvance(TokenType::NUMBER))
-		return Expression::makePtr<Literal<int>>(previous().getValue().asInt());
+		return Expression::makePtr<Literal>(Value(previous().getValue().asInt()));
 	if(matchAndAdvance(TokenType::STRING))
-		return Expression::makePtr<Literal<std::string>>(previous().getValue().asString());
+		return Expression::makePtr<Literal>(Value(previous().getValue().asString()));
 	if(matchAndAdvance(TokenType::TRUE))
-		return Expression::makePtr<Literal<bool>>(true);
+		return Expression::makePtr<Literal>(Value(true));
 	if(matchAndAdvance(TokenType::FALSE))
-		return Expression::makePtr<Literal<bool>>(false);
+		return Expression::makePtr<Literal>(Value(false));
 	if(matchAndAdvance(TokenType::NAME))
 		return Expression::makePtr<Variable>(previous());
 	if(match(TokenType::FUN))
