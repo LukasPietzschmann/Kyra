@@ -160,10 +160,12 @@ Expression::Ptr Parser::function() {
 
 	std::vector<Variable> parameters;
 	consume(TokenType::LEFT_PAREN);
-	while(!matchAndAdvance(TokenType::RIGHT_PAREN)) {
-		Variable parameter(consume(TokenType::NAME));
-		parameters.push_back(parameter);
+	if(!match(TokenType::RIGHT_PAREN)) {
+		do {
+			parameters.emplace_back(consume(TokenType::NAME));
+		}while(matchAndAdvance(TokenType::COMMA));
 	}
+	consume(TokenType::RIGHT_PAREN);
 
 	Statement::Ptr implementation = block();
 
