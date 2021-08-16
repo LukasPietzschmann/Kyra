@@ -65,6 +65,19 @@ Statement::Ptr Parser::expression() {
 	return Statement::makePtr<ExpressionStmt>(expr);
 }
 
+Expression::Ptr Parser::assignment() {
+	Expression::Ptr expr = equality();
+
+	if(match(TokenType::EQUAL)) {
+		Token name = previous();
+		advance();
+		Expression::Ptr newValue = assignment();
+		expr = Expression::makePtr<AssignmentExpr>(name, newValue);
+	}
+
+	return expr;
+}
+
 Expression::Ptr Parser::equality() {
 	Expression::Ptr expr = comparison();
 

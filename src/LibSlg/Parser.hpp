@@ -2,6 +2,7 @@
 
 #include <vector>
 #include <iostream>
+#include "Expressions/AssignmentExpr.hpp"
 #include "Expressions/BinaryExpr.hpp"
 #include "Expressions/Expression.hpp"
 #include "Expressions/Function.hpp"
