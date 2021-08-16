@@ -1,8 +1,7 @@
 #include <iostream>
 #include <fstream>
-#include "LibSlg/Lexer.hpp"
-#include "LibSlg/Parser.hpp"
 #include "LibSlg/AstLogger.hpp"
+#include "LibSlg/Interpreter.hpp"
 
 #ifdef HAS_READLINE
 #include <readline/history.h>
@@ -36,16 +35,7 @@ int main(int argc, char** argv) {
 			fileContent << line << "\n";
 		fileStream.close();
 
-		LibSlg::Lexer lexer(fileContent.str());
-		auto tokens = lexer.scanTokens();
-		for(const auto& token : tokens)
-			std::cout << token << std::endl;
-
-		LibSlg::Parser parser(tokens);
-		for(const auto& statement : parser.parse()) {
-			LibSlg::AstLogger logger;
-			logger.logStatement(statement);
-		}
+		LibSlg::Interpreter::getInstance().execute(fileContent.str());
 	}
 
 	return 0;
@@ -58,17 +48,7 @@ void simpleRepl() {
 		if(line == "exit")
 			break;
 
-		LibSlg::Lexer lexer(line);
-
-		auto tokens = lexer.scanTokens();
-		for(const auto& token : tokens)
-			std::cout << token << std::endl;
-
-		LibSlg::Parser parser(tokens);
-		for(const auto& statement : parser.parse()) {
-			LibSlg::AstLogger logger;
-			logger.logStatement(statement);
-		}
+		LibSlg::Interpreter::getInstance().execute(inputLine);
 
 		std::cout << PROMPT;
 	}
@@ -86,20 +66,7 @@ void niceRepl() {
 		if(*inputLine)
 			add_history(inputLine);
 
-		LibSlg::Lexer lexer(inputLine);
-		auto tokens = lexer.scanTokens();
-		for(const auto& token : tokens)
-			std::cout << token << std::endl;
-
-		try {
-			LibSlg::Parser parser(tokens);
-			for(const auto& statement : parser.parse()) {
-				LibSlg::AstLogger logger;
-				logger.logStatement(statement);
-			}
-		}catch(LibSlg::ParserException& exception) {
-			std::cout << "[ERROR] " << exception.what() << std::endl;
-		}
+		LibSlg::Interpreter::getInstance().execute(inputLine);
 
 		free(inputLine);
 	}

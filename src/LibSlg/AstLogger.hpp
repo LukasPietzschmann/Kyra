@@ -2,11 +2,23 @@
 
 #include <sstream>
 #include <iostream>
-#include "TokenType.hpp"
-#include "Statements/Statement.hpp"
+#include "Expressions/AccessExpr.hpp"
+#include "Expressions/AssignmentExpr.hpp"
+#include "Expressions/BinaryExpr.hpp"
+#include "Expressions/CallExpr.hpp"
 #include "Expressions/Expression.hpp"
-#include "Expressions/AccessExpr.hpp"   // FIXME There should be no need to include this explicitly.
-										// Works for all other Expressions, but AccessExpr
+#include "Expressions/Function.hpp"
+#include "Expressions/Literal.hpp"
+#include "Expressions/Object.hpp"
+#include "Expressions/UnaryExpr.hpp"
+#include "Expressions/Variable.hpp"
+#include "Statements/BlockStmt.hpp"
+#include "Statements/DeclarationStmt.hpp"
+#include "Statements/ExpressionStmt.hpp"
+#include "Statements/PrintStmt.hpp"
+#include "Statements/ReturnStmt.hpp"
+#include "Statements/Statement.hpp"
+#include "TokenType.hpp"
 
 #define COUT std::cout << std::string(m_indent * 4, ' ')
 
