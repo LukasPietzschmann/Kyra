@@ -2,7 +2,7 @@
 
 var number = 5;
 var string = "five";
-var empty = Nothing;
+var empty = nothing;
 
 var numberTwo;
 numberTwo = 2;
