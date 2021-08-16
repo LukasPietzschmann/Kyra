@@ -4,26 +4,27 @@
 #include "LibSlg/Parser.hpp"
 #include "LibSlg/AstLogger.hpp"
 
+#ifdef HAS_READLINE
+#include <readline/history.h>
+#include <readline/readline.h>
+#endif
+
+#define PROMPT "SLG > "
+
+void simpleRepl();
+void niceRepl();
+
 int main(int argc, char** argv) {
 	if(argc < 2) {
-		const std::string prompt = "SLG > ";
-		// REPL
-		std::cout << prompt;
-		for(std::string line; std::getline(std::cin, line);) {
-			LibSlg::Lexer lexer(line);
-
-			auto tokens = lexer.scanTokens();
-			for(const auto& token : tokens)
-				std::cout << token << std::endl;
-
-			LibSlg::Parser parser(tokens);
-			for(const auto& statement : parser.parse()) {
-				LibSlg::AstLogger logger;
-				logger.logStatement(statement);
-			}
-
-			std::cout << prompt;
-		}
+		std::cout << "Slanguage 0.9 by Lukas Pietzschmann" << "\n";
+		std::cout << R"(Type "exit" or "CTRL-C" to exit the REPL)" << std::endl;
+#ifdef HAS_READLINE
+		if(argc > 1 && std::string(argv[1]) == "-d")
+			rl_bind_key('\t', rl_insert);
+		niceRepl();
+#else
+		simpleRepl();
+#endif
 	}else {
 		// File
 		std::stringstream fileContent;
@@ -46,4 +47,51 @@ int main(int argc, char** argv) {
 	}
 
 	return 0;
+}
+
+void simpleRepl() {
+	std::cout << PROMPT;
+	for(std::string line; std::getline(std::cin, line);) {
+		if(line == "exit")
+			break;
+
+		LibSlg::Lexer lexer(line);
+
+		auto tokens = lexer.scanTokens();
+		for(const auto& token : tokens)
+			std::cout << token << std::endl;
+
+		LibSlg::Parser parser(tokens);
+		for(const auto& statement : parser.parse()) {
+			LibSlg::AstLogger logger;
+			logger.logStatement(statement);
+		}
+
+		std::cout << PROMPT;
+	}
+}
+
+void niceRepl() {
+	while(true) {
+		char* inputLine = readline(PROMPT);
+		if(!inputLine || std::strcmp(inputLine, "exit") == 0) {
+			free(inputLine);
+			break;
+		}
+		if(*inputLine)
+			add_history(inputLine);
+
+		LibSlg::Lexer lexer(inputLine);
+		auto tokens = lexer.scanTokens();
+		for(const auto& token : tokens)
+			std::cout << token << std::endl;
+
+		LibSlg::Parser parser(tokens);
+		for(const auto& statement : parser.parse()) {
+			LibSlg::AstLogger logger;
+			logger.logStatement(statement);
+		}
+
+		free(inputLine);
+	}
 }
