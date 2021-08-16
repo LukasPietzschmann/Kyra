@@ -1,6 +1,7 @@
 #pragma once
 
 namespace LibSlg {
+class AccessExpr;
 class AssignmentExpr;
 class BinaryExpr;
 class CallExpr;

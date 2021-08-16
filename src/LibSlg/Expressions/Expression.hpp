@@ -6,6 +6,7 @@ namespace LibSlg {
 
 class ExpressionVisitor {
 public:
+	virtual void visitAccessExpr(AccessExpr& accessExpr) = 0;
 	virtual void visitAssignmentExpr(AssignmentExpr& assignmentExpr) = 0;
 	virtual void visitBinaryExpr(BinaryExpr& binaryExpr) = 0;
 	virtual void visitCallExpr(CallExpr& callExpr) = 0;

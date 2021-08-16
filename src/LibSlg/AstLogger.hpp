@@ -5,8 +5,8 @@
 #include "TokenType.hpp"
 #include "Statements/Statement.hpp"
 #include "Expressions/Expression.hpp"
-#include "Expressions/AssignmentExpr.hpp"   // FIXME There should be no need to include this explicitly.
-											// Works for all other Expressions, but AssignmentExpr
+#include "Expressions/AccessExpr.hpp"   // FIXME There should be no need to include this explicitly.
+										// Works for all other Expressions, but AccessExpr
 
 #define COUT std::cout << std::string(m_indent * 4, ' ')
 
@@ -58,6 +58,13 @@ public:
 		--m_indent;
 	}
 
+	void visitAccessExpr(AccessExpr& accessExpr) override {
+		COUT << "Get Variable " << accessExpr.getName().getValue().asString() << " from " << std::endl;
+		++m_indent;
+		accessExpr.getOwner()->accept(*this);
+		--m_indent;
+	}
+
 	void visitAssignmentExpr(AssignmentExpr& assignmentExpr) override {
 		COUT << "Assignment of variable " << assignmentExpr.getName().getValue().asString() << " to " << std::endl;
 		++m_indent;
@@ -78,7 +85,15 @@ public:
 	}
 
 	void visitCallExpr(CallExpr& callExpr) override {
-		COUT << "call" << std::endl; //TODO
+		COUT << "Call to" << std::endl;
+		++m_indent;
+		callExpr.getFunction()->accept(*this);
+		--m_indent;
+		COUT << "With arguments" << std::endl;
+		++m_indent;
+		for(const auto& argument : callExpr.getArguments())
+			argument->accept(*this);
+		--m_indent;
 	}
 
 	void visitFunction(Function& functionExpr) override {

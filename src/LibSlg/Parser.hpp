@@ -2,8 +2,10 @@
 
 #include <vector>
 #include <iostream>
+#include "Expressions/AccessExpr.hpp"
 #include "Expressions/AssignmentExpr.hpp"
 #include "Expressions/BinaryExpr.hpp"
+#include "Expressions/CallExpr.hpp"
 #include "Expressions/Expression.hpp"
 #include "Expressions/Function.hpp"
 #include "Expressions/Literal.hpp"

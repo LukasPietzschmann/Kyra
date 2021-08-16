@@ -142,6 +142,31 @@ Expression::Ptr Parser::unary() {
 	Expression::Ptr rhs = unary();
 	return Expression::makePtr<UnaryExpr>(oper, rhs);
 }
+
+Expression::Ptr Parser::call() {
+	Expression::Ptr expr = primary();
+
+	while(true) {
+		if(matchAndAdvance(TokenType::DOT)) {
+			Token name = consume(TokenType::NAME);
+			expr = Expression::makePtr<AccessExpr>(expr, name);
+		}else if(matchAndAdvance(TokenType::LEFT_PAREN)) {
+			bool needsComma = false;
+			std::vector<Expression::Ptr> arguments;
+			while(!matchAndAdvance(TokenType::RIGHT_PAREN)) {
+				if(needsComma)
+					consume(TokenType::COMMA);
+				arguments.push_back(assignment());
+				needsComma = true;
+			}
+			expr = Expression::makePtr<CallExpr>(expr, arguments);
+		}else
+			break;
+	}
+
+	return expr;
+}
+
 Expression::Ptr Parser::primary() {
 	if(matchAndAdvance(TokenType::LEFT_PAREN)) {
 		Expression::Ptr expr = assignment();
