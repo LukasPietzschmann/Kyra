@@ -185,7 +185,7 @@ Token Parser::consume(TokenType expected) {
 	if(match(expected))
 		return advance();
 	std::cerr << "[Error] expected " << TokenTypeName::getFor(expected) << " but got "
-			<< TokenTypeName::getFor(peek().getType()) << std::endl;
+			<< TokenTypeName::getFor(peek().getType()) << " at line " << peek().getLine() << std::endl;
 }
 
 Token Parser::peek() const {
