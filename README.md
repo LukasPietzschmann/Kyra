@@ -1,5 +1,13 @@
 # The Slanguage programming language
 
+## What is Slanguage?
+### For me:
+Slanguage is just a Hobby Project of mine. Don't expect to come across any new industry-disrupting features. I'm trying to implement a basic language to become more familiar with C++ and the magic behind compilers and interpreters.
+
+### For others:
+Well, I think I'll describe this when I have convinced the interpreter to function :)
+Until then, many concepts of the language might change.
+
 ## Compile the Project
 To compile the Code yourself, execute the following steps:
 1. Navigate to the projects root
