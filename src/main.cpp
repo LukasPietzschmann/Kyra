@@ -49,6 +49,7 @@ int main(int argc, char** argv) {
 	return 0;
 }
 
+#ifndef HAS_READLINE
 void simpleRepl() {
 	std::cout << PROMPT;
 	for(std::string line; std::getline(std::cin, line);) {
@@ -70,7 +71,9 @@ void simpleRepl() {
 		std::cout << PROMPT;
 	}
 }
+#endif
 
+#ifdef HAS_READLINE
 void niceRepl() {
 	while(true) {
 		char* inputLine = readline(PROMPT);
@@ -95,3 +98,4 @@ void niceRepl() {
 		free(inputLine);
 	}
 }
+#endif
