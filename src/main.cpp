@@ -15,6 +15,8 @@ void simpleRepl();
 void niceRepl();
 
 int main(int argc, char** argv) {
+	std::ostream::sync_with_stdio(false);
+
 	if(argc < 2) {
 		std::cout << "Slanguage 0.9 by Lukas Pietzschmann" << "\n";
 		std::cout << R"(Type "exit" or "CTRL-C" to exit the REPL)" << std::endl;
@@ -89,10 +91,14 @@ void niceRepl() {
 		for(const auto& token : tokens)
 			std::cout << token << std::endl;
 
-		LibSlg::Parser parser(tokens);
-		for(const auto& statement : parser.parse()) {
-			LibSlg::AstLogger logger;
-			logger.logStatement(statement);
+		try {
+			LibSlg::Parser parser(tokens);
+			for(const auto& statement : parser.parse()) {
+				LibSlg::AstLogger logger;
+				logger.logStatement(statement);
+			}
+		}catch(LibSlg::ParserException& exception) {
+			std::cout << "[ERROR] " << exception.what() << std::endl;
 		}
 
 		free(inputLine);
