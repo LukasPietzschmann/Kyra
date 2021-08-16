@@ -23,6 +23,7 @@ public:
 		++m_indent;
 		for(const auto& stmt : blockStmt.getStatements())
 			stmt->accept(*this);
+		--m_indent;
 	}
 
 	void visitDeclarationStmt(DeclarationStmt& declarationStmt) override {
@@ -31,6 +32,7 @@ public:
 			std::cout << " to " << std::endl;
 			++m_indent;
 			declarationStmt.getInitializer()->accept(*this);
+			--m_indent;
 		}else
 			std::cout << std::endl;
 	}
@@ -39,24 +41,28 @@ public:
 		COUT << "Expression" << std::endl;
 		++m_indent;
 		expressionStmt.getExpr()->accept(*this);
+		--m_indent;
 	}
 
 	void visitPrintStmt(PrintStmt& printStmt) override {
 		COUT << "Print" << std::endl;
 		++m_indent;
 		printStmt.getExpr()->accept(*this);
+		--m_indent;
 	}
 
 	void visitReturnStmt(ReturnStmt& returnStmt) override {
 		COUT << "Return" << std::endl;
 		++m_indent;
 		returnStmt.getExpr()->accept(*this);
+		--m_indent;
 	}
 
 	void visitAssignmentExpr(AssignmentExpr& assignmentExpr) override {
-		COUT << "Assignment of variable " << assignmentExpr.getName() << " to ";
+		COUT << "Assignment of variable " << assignmentExpr.getName().getValue().asString() << " to " << std::endl;
 		++m_indent;
 		assignmentExpr.getNewValue()->accept(*this);
+		--m_indent;
 	}
 
 	void visitBinaryExpr(BinaryExpr& binaryExpr) override {
@@ -68,6 +74,7 @@ public:
 		COUT << "Rhs: " << std::endl;
 		++m_indent;
 		binaryExpr.getRhs()->accept(*this);
+		--m_indent;
 	}
 
 	void visitCallExpr(CallExpr& callExpr) override {
@@ -83,6 +90,7 @@ public:
 		COUT << "Implementation" << std::endl;
 		++m_indent;
 		functionExpr.getImplementation()->accept(*this);
+		--m_indent;
 	}
 
 	void visitLiteral(Literal& literal) override {
@@ -94,6 +102,7 @@ public:
 		COUT << "Implementation" << std::endl;
 		++m_indent;
 		objectExpr.getImplementation()->accept(*this);
+		--m_indent;
 	}
 
 	void visitUnaryExpr(UnaryExpr& unaryExpr) override {
@@ -101,6 +110,7 @@ public:
 		COUT << "Rhs: " << std::endl;
 		++m_indent;
 		unaryExpr.getRhs()->accept(*this);
+		--m_indent;
 	}
 
 	void visitVariable(Variable& variableExpr) override {
