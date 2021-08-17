@@ -1,4 +1,4 @@
-add_library(LibSlg AstLogger.hpp TokenType.hpp Token.hpp Lexer.cpp Lexer.hpp Parser.cpp Parser.hpp
+add_library(LibSlg AstLogger.hpp AstJsonPrinter.hpp AstJsonPrinter.cpp TokenType.hpp Token.hpp Lexer.cpp Lexer.hpp Parser.cpp Parser.hpp
 				Value.hpp Interpreter.hpp Interpreter.cpp
 				Expressions/AssignmentExpr.hpp Expressions/CallExpr.hpp Expressions/Expression.hpp
 				Expressions/UnaryExpr.hpp Expressions/BinaryExpr.hpp Expressions/Literal.hpp Expressions/Variable.hpp
