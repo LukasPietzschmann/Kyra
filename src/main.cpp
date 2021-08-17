@@ -13,11 +13,13 @@
 void simpleRepl();
 void niceRepl();
 
+bool verbose = false;
+
 int main(int argc, char** argv) {
 	std::ostream::sync_with_stdio(false);
 	cxxopts::Options options(argv[0], "The Slanguage programming language");
 	options.add_options()
-			("verbose", "Prints as much information as available")
+			("verbose", "Prints as much information as available", cxxopts::value<bool>(verbose))
 			("f,file", "The file to execute", cxxopts::value<std::string>())
 			("h,help", "Prints this message");
 	options.parse_positional({"file"});
@@ -48,7 +50,7 @@ int main(int argc, char** argv) {
 				fileContent << line << "\n";
 			fileStream.close();
 
-			LibSlg::Interpreter::getInstance().execute(fileContent.str());
+			LibSlg::Interpreter::getInstance().execute(fileContent.str(), verbose);
 		}
 	}catch(cxxopts::OptionException& exception) {
 		std::cout << exception.what() << "\n" << options.help() << std::endl;
@@ -65,7 +67,7 @@ void simpleRepl() {
 		if(line == "exit")
 			break;
 
-		LibSlg::Interpreter::getInstance().execute(inputLine);
+		LibSlg::Interpreter::getInstance().execute(inputLine, verbose);
 
 		std::cout << PROMPT;
 	}
@@ -83,7 +85,7 @@ void niceRepl() {
 		if(*inputLine)
 			add_history(inputLine);
 
-		LibSlg::Interpreter::getInstance().execute(inputLine);
+		LibSlg::Interpreter::getInstance().execute(inputLine, verbose);
 
 		free(inputLine);
 	}

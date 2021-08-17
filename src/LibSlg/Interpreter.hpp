@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include "AstLogger.hpp"
 #include "Expressions/Expression.hpp"
 #include "Lexer.hpp"
 #include "Parser.hpp"
@@ -13,7 +14,7 @@ public:
 	Interpreter(Interpreter const&) = delete;
 	void operator=(Interpreter const&) = delete;
 
-	void execute(const std::string& code);
+	void execute(const std::string& code, bool verboseLogging=false);
 
 	void visitAccessExpr(AccessExpr& accessExpr) override;
 	void visitAssignmentExpr(AssignmentExpr& assignmentExpr) override;

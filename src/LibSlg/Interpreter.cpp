@@ -6,13 +6,20 @@ Interpreter& Interpreter::getInstance() {
 	return instance;
 }
 
-void Interpreter::execute(const std::string& code) {
+void Interpreter::execute(const std::string& code, bool verboseLogging) {
 	Lexer lexer(code);
 	auto tokens = lexer.scanTokens();
 
 	Parser parser(tokens);
 	try {
 		auto statements = parser.parse();
+		if(verboseLogging) {
+			AstLogger logger;
+			for(const auto& token : tokens)
+				std::cout << token << std::endl;
+			for(const auto& statement : statements)
+				logger.logStatement(statement);
+		}
 	}catch(ParserException& exception) {
 		std::cout << "[ERROR] " << exception.what() << std::endl;
 	}
