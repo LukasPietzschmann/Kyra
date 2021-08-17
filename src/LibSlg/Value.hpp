@@ -3,6 +3,7 @@
 #include <memory>
 #include <ostream>
 
+namespace LibSlg {
 class Value {
 public:
 	class BadEntryException : std::exception {};
@@ -77,4 +78,4 @@ private:
 		std::string m_stringVal;
 	};
 	Type m_type;
-};
+
