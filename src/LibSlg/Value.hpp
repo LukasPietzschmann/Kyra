@@ -78,4 +78,13 @@ private:
 		std::string m_stringVal;
 	};
 	Type m_type;
+};
 
+class ValueTypeName {
+public:
+	static std::string getFor(Value::Type type) {
+		const std::string names[] = {"NOTHING", "NUMBER", "BOOL", "STRING"};
+		return names[static_cast<std::underlying_type<Value::Type>::type>(type)];
+	}
+};
+}
