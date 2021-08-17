@@ -196,11 +196,11 @@ Expression::Ptr Parser::primary() {
 Expression::Ptr Parser::function() {
 	consume(TokenType::FUN);
 
-	std::vector<Variable> parameters;
+	std::vector<Token> parameters;
 	consume(TokenType::LEFT_PAREN);
 	if(!match(TokenType::RIGHT_PAREN)) {
 		do {
-			parameters.emplace_back(consume(TokenType::NAME));
+			parameters.push_back(consume(TokenType::NAME));
 		}while(matchAndAdvance(TokenType::COMMA));
 	}
 	consume(TokenType::RIGHT_PAREN);

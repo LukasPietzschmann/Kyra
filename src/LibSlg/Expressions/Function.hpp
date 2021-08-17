@@ -2,18 +2,18 @@
 
 #include "Expression.hpp"
 #include "../Statements/Statement.hpp"
-#include "Variable.hpp"
+#include "../Token.hpp"
 
 namespace LibSlg {
 class Function : public Expression {
 public:
-	Function(std::vector<Variable> parameters, Statement::Ptr impl) :
+	Function(std::vector<Token> parameters, Statement::Ptr impl) :
 			m_parameters(std::move(parameters)), m_implementation(std::move(impl)) {}
 	void accept(ExpressionVisitor& visitor) override { visitor.visitFunction(*this); }
-	const std::vector<Variable>& getParameters() const { return m_parameters; }
+	const std::vector<Token>& getParameters() const { return m_parameters; }
 	const Statement::Ptr& getImplementation() const { return m_implementation; }
 private:
-	std::vector<Variable> m_parameters;
+	std::vector<Token> m_parameters;
 	Statement::Ptr m_implementation;
 };
 }
