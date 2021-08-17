@@ -1,6 +1,6 @@
 #include <iostream>
 #include <fstream>
-#include "LibSlg/AstLogger.hpp"
+#include <cxxopts.hpp>
 #include "LibSlg/Interpreter.hpp"
 
 #ifdef HAS_READLINE
@@ -15,27 +15,44 @@ void niceRepl();
 
 int main(int argc, char** argv) {
 	std::ostream::sync_with_stdio(false);
+	cxxopts::Options options(argv[0], "The Slanguage programming language");
+	options.add_options()
+			("verbose", "Prints as much information as available")
+			("f,file", "The file to execute", cxxopts::value<std::string>())
+			("h,help", "Prints this message");
+	options.parse_positional({"file"});
+	options.positional_help("[FILE]").show_positional_help();
 
-	if(argc < 2) {
-		std::cout << "Slanguage 0.9 by Lukas Pietzschmann" << "\n";
-		std::cout << R"(Type "exit" or "CTRL-C" to exit the REPL)" << std::endl;
+	try {
+		cxxopts::ParseResult result = options.parse(argc, argv);
+
+		if(result.count("help")) {
+			std::cout << options.help() << std::endl;
+			return 0;
+		}
+
+		if(!result.count("file")) {
+			std::cout << "Slanguage 0.9 by Lukas Pietzschmann" << "\n";
+			std::cout << R"(Type "exit" or "CTRL-C" to exit the REPL)" << std::endl;
 #ifdef HAS_READLINE
-		if(argc > 1 && std::string(argv[1]) == "-d")
-			rl_bind_key('\t', rl_insert);
-		niceRepl();
+			niceRepl();
 #else
-		simpleRepl();
+			simpleRepl();
 #endif
-	}else {
-		// File
-		std::stringstream fileContent;
-		std::string line;
-		std::ifstream fileStream(*(argv + 1));
-		while(std::getline(fileStream, line))
-			fileContent << line << "\n";
-		fileStream.close();
+		}else {
+			// File
+			std::stringstream fileContent;
+			std::string line;
+			std::ifstream fileStream(result["file"].as<std::string>());
+			while(std::getline(fileStream, line))
+				fileContent << line << "\n";
+			fileStream.close();
 
-		LibSlg::Interpreter::getInstance().execute(fileContent.str());
+			LibSlg::Interpreter::getInstance().execute(fileContent.str());
+		}
+	}catch(cxxopts::OptionException& exception) {
+		std::cout << exception.what() << "\n" << options.help() << std::endl;
+		return 1;
 	}
 
 	return 0;
