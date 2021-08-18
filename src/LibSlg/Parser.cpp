@@ -190,8 +190,12 @@ Expression::Ptr Parser::primary() {
 	if(match(TokenType::OBJECT))
 		return object();
 
-	throw ParserException("Expected primary after " + TokenTypeName::getFor(previous().getType()) +
-			" in line " + std::to_string(previous().getLine()));
+	if(previous().getType() == TokenType::END_OF_FILE)
+		throw ParserException(
+				"Expected expression before " + peek().getLexeme() + " in line " + std::to_string(peek().getLine()));
+	else
+		throw ParserException("Expected expression after " + previous().getLexeme() +
+				" in line " + std::to_string(previous().getLine()));
 }
 
 Expression::Ptr Parser::function() {
