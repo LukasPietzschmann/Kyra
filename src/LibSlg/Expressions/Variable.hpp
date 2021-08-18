@@ -7,7 +7,7 @@ namespace LibSlg {
 class Variable : public Expression {
 public:
 	explicit Variable(const Token& name) : m_name(name) {}
-	void accept(ExpressionVisitor& visitor) override { visitor.visitVariable(*this); }
+	Value::Ptr accept(ExpressionVisitor& visitor) override { return visitor.visitVariable(*this); }
 	const Token& getName() const { return m_name; }
 private:
 	Token m_name;

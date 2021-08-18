@@ -25,44 +25,44 @@ void Interpreter::execute(const std::string& code, bool verboseLogging) {
 	}
 }
 
-void Interpreter::visitAccessExpr(AccessExpr& accessExpr) {
-
+Value::Ptr Interpreter::visitAccessExpr(AccessExpr& accessExpr) {
+	return {};
 }
 
-void Interpreter::visitAssignmentExpr(AssignmentExpr& assignmentExpr) {
-
+Value::Ptr Interpreter::visitAssignmentExpr(AssignmentExpr& assignmentExpr) {
+	return {};
 }
 
-void Interpreter::visitBinaryExpr(BinaryExpr& binaryExpr) {
-
+Value::Ptr Interpreter::visitBinaryExpr(BinaryExpr& binaryExpr) {
+	return {};
 }
 
-void Interpreter::visitCallExpr(CallExpr& callExpr) {
-
+Value::Ptr Interpreter::visitCallExpr(CallExpr& callExpr) {
+	return {};
 }
 
-void Interpreter::visitFunction(Function& functionExpr) {
-
+Value::Ptr Interpreter::visitFunction(Function& functionExpr) {
+	return {};
 }
 
-void Interpreter::visitGroupExpr(GroupExpr& groupExpr) {
-
+Value::Ptr Interpreter::visitGroupExpr(GroupExpr& groupExpr) {
+	return {};
 }
 
-void Interpreter::visitLiteral(Literal& literal) {
-
+Value::Ptr Interpreter::visitLiteral(Literal& literal) {
+	return {};
 }
 
-void Interpreter::visitObject(Object& objectExpr) {
-
+Value::Ptr Interpreter::visitObject(Object& objectExpr) {
+	return {};
 }
 
-void Interpreter::visitUnaryExpr(UnaryExpr& unaryExpr) {
-
+Value::Ptr Interpreter::visitUnaryExpr(UnaryExpr& unaryExpr) {
+	return {};
 }
 
-void Interpreter::visitVariable(Variable& variableExpr) {
-
+Value::Ptr Interpreter::visitVariable(Variable& variableExpr) {
+	return {};
 }
 
 void Interpreter::visitBlockStmt(BlockStmt& blockStmt) {

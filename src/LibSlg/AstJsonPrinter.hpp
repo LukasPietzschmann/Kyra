@@ -30,16 +30,16 @@ public:
 
 	std::string dump();
 
-	void visitAccessExpr(AccessExpr& accessExpr) override;
-	void visitAssignmentExpr(AssignmentExpr& assignmentExpr) override;
-	void visitBinaryExpr(BinaryExpr& binaryExpr) override;
-	void visitCallExpr(CallExpr& callExpr) override;
-	void visitFunction(Function& functionExpr) override;
-	void visitGroupExpr(GroupExpr& groupExpr) override;
-	void visitLiteral(Literal& literal) override;
-	void visitObject(Object& objectExpr) override;
-	void visitUnaryExpr(UnaryExpr& unaryExpr) override;
-	void visitVariable(Variable& variableExpr) override;
+	Value::Ptr visitAccessExpr(AccessExpr& accessExpr) override;
+	Value::Ptr visitAssignmentExpr(AssignmentExpr& assignmentExpr) override;
+	Value::Ptr visitBinaryExpr(BinaryExpr& binaryExpr) override;
+	Value::Ptr visitCallExpr(CallExpr& callExpr) override;
+	Value::Ptr visitFunction(Function& functionExpr) override;
+	Value::Ptr visitGroupExpr(GroupExpr& groupExpr) override;
+	Value::Ptr visitLiteral(Literal& literal) override;
+	Value::Ptr visitObject(Object& objectExpr) override;
+	Value::Ptr visitUnaryExpr(UnaryExpr& unaryExpr) override;
+	Value::Ptr visitVariable(Variable& variableExpr) override;
 	void visitBlockStmt(BlockStmt& blockStmt) override;
 	void visitDeclarationStmt(DeclarationStmt& declarationStmt) override;
 	void visitExpressionStmt(ExpressionStmt& expressionStmt) override;

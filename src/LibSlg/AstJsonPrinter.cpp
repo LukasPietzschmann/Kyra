@@ -16,30 +16,33 @@ std::string AstJsonPrinter::dump() {
 	return m_output.str();
 }
 
-void AstJsonPrinter::visitAccessExpr(AccessExpr& accessExpr) {
+Value::Ptr AstJsonPrinter::visitAccessExpr(AccessExpr& accessExpr) {
 	m_output << R"({"type":"Access","value":{"name":")" << accessExpr.getName().getValue().asString()
 			<< R"(","owner":)";
 	accessExpr.getOwner()->accept(*this);
 	m_output << "}}";
+	return nullptr;
 }
 
-void AstJsonPrinter::visitAssignmentExpr(AssignmentExpr& assignmentExpr) {
+Value::Ptr AstJsonPrinter::visitAssignmentExpr(AssignmentExpr& assignmentExpr) {
 	m_output << R"({"type":"Assignment","value":{"variable":")" << assignmentExpr.getName().getValue().asString()
 			<< R"(","newValue":)";
 	assignmentExpr.getNewValue()->accept(*this);
 	m_output << "}}";
+	return nullptr;
 }
 
-void AstJsonPrinter::visitBinaryExpr(BinaryExpr& binaryExpr) {
+Value::Ptr AstJsonPrinter::visitBinaryExpr(BinaryExpr& binaryExpr) {
 	m_output << R"({"type":"Binary","value":{"operator":")" << TokenTypeName::getFor(binaryExpr.getOperator().getType())
 			<< R"(","lhs":)";
 	binaryExpr.getLhs()->accept(*this);
 	m_output << R"(,"rhs":)";
 	binaryExpr.getRhs()->accept(*this);
 	m_output << "}}";
+	return nullptr;
 }
 
-void AstJsonPrinter::visitCallExpr(CallExpr& callExpr) {
+Value::Ptr AstJsonPrinter::visitCallExpr(CallExpr& callExpr) {
 	m_output << R"({"type":"Call","value":{"function":)";
 	callExpr.getFunction()->accept(*this);
 	m_output << R"(,"arguments":[)";
@@ -51,9 +54,10 @@ void AstJsonPrinter::visitCallExpr(CallExpr& callExpr) {
 		needsComma = true;
 	}
 	m_output << R"(]}})";
+	return nullptr;
 }
 
-void AstJsonPrinter::visitFunction(Function& functionExpr) {
+Value::Ptr AstJsonPrinter::visitFunction(Function& functionExpr) {
 	m_output << R"({"type":"Function","value":{"parameters":[)";
 	bool needsComma = false;
 	for(const auto& parameter : functionExpr.getParameters()) {
@@ -65,15 +69,17 @@ void AstJsonPrinter::visitFunction(Function& functionExpr) {
 	m_output << R"(], "implementation":)";
 	functionExpr.getImplementation()->accept(*this);
 	m_output << R"(}})";
+	return nullptr;
 }
 
-void AstJsonPrinter::visitGroupExpr(GroupExpr& groupExpr) {
+Value::Ptr AstJsonPrinter::visitGroupExpr(GroupExpr& groupExpr) {
 	m_output << R"({"type":"Group","value":)";
 	groupExpr.getExpr()->accept(*this);
 	m_output << "}";
+	return nullptr;
 }
 
-void AstJsonPrinter::visitLiteral(Literal& literal) {
+Value::Ptr AstJsonPrinter::visitLiteral(Literal& literal) {
 	m_output << R"({"type":"Literal","literalType":")" << ValueTypeName::getFor(literal.getValue().getType())
 			<< R"(","value":")";
 	switch(literal.getValue().getType()) {
@@ -87,23 +93,27 @@ void AstJsonPrinter::visitLiteral(Literal& literal) {
 			break;
 	}
 	m_output << R"("})";
+	return nullptr;
 }
 
-void AstJsonPrinter::visitObject(Object& objectExpr) {
+Value::Ptr AstJsonPrinter::visitObject(Object& objectExpr) {
 	m_output << R"({"type":"Object","value":{"implementation":)";
 	objectExpr.getImplementation()->accept(*this);
 	m_output << R"(}})";
+	return nullptr;
 }
 
-void AstJsonPrinter::visitUnaryExpr(UnaryExpr& unaryExpr) {
+Value::Ptr AstJsonPrinter::visitUnaryExpr(UnaryExpr& unaryExpr) {
 	m_output << R"({"type":"Unary","value":{"operator":")" << TokenTypeName::getFor(unaryExpr.getOperator().getType())
 			<< R"(","rhs":)";
 	unaryExpr.getRhs()->accept(*this);
 	m_output << "}}";
+	return nullptr;
 }
 
-void AstJsonPrinter::visitVariable(Variable& variableExpr) {
+Value::Ptr AstJsonPrinter::visitVariable(Variable& variableExpr) {
 	m_output << R"({"type":"Variable","value":")" << variableExpr.getName().getValue().asString() << R"("})";
+	return nullptr;
 }
 
 void AstJsonPrinter::visitBlockStmt(BlockStmt& blockStmt) {
