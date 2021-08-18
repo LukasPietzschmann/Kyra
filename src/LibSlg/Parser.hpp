@@ -2,6 +2,7 @@
 
 #include <vector>
 #include <iostream>
+#include "Exceptions.hpp"
 #include "Expressions/AccessExpr.hpp"
 #include "Expressions/AssignmentExpr.hpp"
 #include "Expressions/BinaryExpr.hpp"
@@ -22,14 +23,6 @@
 #include "Token.hpp"
 
 namespace LibSlg {
-class ParserException : std::exception {
-public:
-	explicit ParserException(std::string message) : m_message(std::move(message)) {}
-	const char* what() const noexcept override { return m_message.c_str(); }
-private:
-	std::string m_message;
-};
-
 class Parser {
 public:
 	explicit Parser(const std::vector<Token>& tokens) : m_tokens(tokens) {
