@@ -129,7 +129,8 @@ void AstJsonPrinter::visitBlockStmt(BlockStmt& blockStmt) {
 }
 
 void AstJsonPrinter::visitDeclarationStmt(DeclarationStmt& declarationStmt) {
-	m_output << R"({"type":"Declaration","value":{"variable":")" << declarationStmt.getIdentifier() << R"(")";
+	m_output << R"({"type":"Declaration","value":{"variable":")"
+			<< declarationStmt.getIdentifier().getValue().asString() << R"(")";
 	if(const Expression::Ptr& init = declarationStmt.getInitializer()) {
 		m_output << R"(,"newValue":)";
 		init->accept(*this);

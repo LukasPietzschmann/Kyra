@@ -40,7 +40,7 @@ public:
 	}
 
 	void visitDeclarationStmt(DeclarationStmt& declarationStmt) override {
-		COUT << "Declaration of variable " << declarationStmt.getIdentifier();
+		COUT << "Declaration of variable " << declarationStmt.getIdentifier().getValue().asString();
 		if(declarationStmt.getInitializer()) {
 			std::cout << " to " << std::endl;
 			++m_indent;

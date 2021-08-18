@@ -11,7 +11,7 @@ Statement::Ptr Parser::declaration() {
 	if(!matchAndAdvance(TokenType::VAR))
 		return statement();
 
-	std::string identifier = consume(TokenType::NAME).getValue().asString();
+	Token identifier = consume(TokenType::NAME);
 	Expression::Ptr init = nullptr;
 	if(matchAndAdvance(TokenType::EQUAL))
 		init = assignment();
