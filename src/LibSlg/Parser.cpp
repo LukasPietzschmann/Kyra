@@ -171,6 +171,7 @@ Expression::Ptr Parser::primary() {
 	if(matchAndAdvance(TokenType::LEFT_PAREN)) {
 		Expression::Ptr expr = assignment();
 		consume(TokenType::RIGHT_PAREN);
+		return Expression::makePtr<GroupExpr>(expr);
 	}
 	if(matchAndAdvance(TokenType::NOTHING))
 		return Expression::makePtr<Literal>(Value());

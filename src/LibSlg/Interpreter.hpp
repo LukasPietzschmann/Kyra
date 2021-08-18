@@ -21,6 +21,7 @@ public:
 	void visitBinaryExpr(BinaryExpr& binaryExpr) override;
 	void visitCallExpr(CallExpr& callExpr) override;
 	void visitFunction(Function& functionExpr) override;
+	void visitGroupExpr(GroupExpr& groupExpr) override;
 	void visitLiteral(Literal& literal) override;
 	void visitObject(Object& objectExpr) override;
 	void visitUnaryExpr(UnaryExpr& unaryExpr) override;

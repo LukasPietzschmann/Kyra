@@ -8,6 +8,7 @@
 #include "Expressions/CallExpr.hpp"
 #include "Expressions/Expression.hpp"
 #include "Expressions/Function.hpp"
+#include "Expressions/GroupExpr.hpp"
 #include "Expressions/Literal.hpp"
 #include "Expressions/Object.hpp"
 #include "Expressions/UnaryExpr.hpp"

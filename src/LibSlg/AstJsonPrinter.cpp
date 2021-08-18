@@ -67,6 +67,12 @@ void AstJsonPrinter::visitFunction(Function& functionExpr) {
 	m_output << R"(}})";
 }
 
+void AstJsonPrinter::visitGroupExpr(GroupExpr& groupExpr) {
+	m_output << R"({"type":"Group","value":)";
+	groupExpr.getExpr()->accept(*this);
+	m_output << "}";
+}
+
 void AstJsonPrinter::visitLiteral(Literal& literal) {
 	m_output << R"({"type":"Literal","literalType":")" << ValueTypeName::getFor(literal.getValue().getType())
 			<< R"(","value":")";

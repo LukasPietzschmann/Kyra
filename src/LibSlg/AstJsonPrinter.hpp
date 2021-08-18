@@ -9,6 +9,7 @@
 #include "Expressions/CallExpr.hpp"
 #include "Expressions/Expression.hpp"
 #include "Expressions/Function.hpp"
+#include "Expressions/GroupExpr.hpp"
 #include "Expressions/Literal.hpp"
 #include "Expressions/Object.hpp"
 #include "Expressions/UnaryExpr.hpp"
@@ -34,6 +35,7 @@ public:
 	void visitBinaryExpr(BinaryExpr& binaryExpr) override;
 	void visitCallExpr(CallExpr& callExpr) override;
 	void visitFunction(Function& functionExpr) override;
+	void visitGroupExpr(GroupExpr& groupExpr) override;
 	void visitLiteral(Literal& literal) override;
 	void visitObject(Object& objectExpr) override;
 	void visitUnaryExpr(UnaryExpr& unaryExpr) override;

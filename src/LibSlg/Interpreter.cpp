@@ -45,6 +45,10 @@ void Interpreter::visitFunction(Function& functionExpr) {
 
 }
 
+void Interpreter::visitGroupExpr(GroupExpr& groupExpr) {
+
+}
+
 void Interpreter::visitLiteral(Literal& literal) {
 
 }

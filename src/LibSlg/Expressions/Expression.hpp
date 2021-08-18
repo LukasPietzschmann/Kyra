@@ -11,6 +11,7 @@ public:
 	virtual void visitBinaryExpr(BinaryExpr& binaryExpr) = 0;
 	virtual void visitCallExpr(CallExpr& callExpr) = 0;
 	virtual void visitFunction(Function& functionExpr) = 0;
+	virtual void visitGroupExpr(GroupExpr& groupExpr) = 0;
 	virtual void visitLiteral(Literal& literal) = 0;
 	virtual void visitObject(Object& objectExpr) = 0;
 	virtual void visitUnaryExpr(UnaryExpr& unaryExpr) = 0;

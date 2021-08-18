@@ -8,6 +8,7 @@
 #include "Expressions/CallExpr.hpp"
 #include "Expressions/Expression.hpp"
 #include "Expressions/Function.hpp"
+#include "Expressions/GroupExpr.hpp"
 #include "Expressions/Literal.hpp"
 #include "Expressions/Object.hpp"
 #include "Expressions/UnaryExpr.hpp"
@@ -117,6 +118,13 @@ public:
 		COUT << "Implementation" << std::endl;
 		++m_indent;
 		functionExpr.getImplementation()->accept(*this);
+		--m_indent;
+	}
+
+	void visitGroupExpr(GroupExpr& groupExpr) override {
+		COUT << "Group" << std::endl;
+		++m_indent;
+		groupExpr.getExpr()->accept(*this);
 		--m_indent;
 	}
 
