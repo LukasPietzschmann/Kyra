@@ -21,6 +21,11 @@ public:
 	std::string getLexeme() const { return m_lexeme; }
 	TokenValue getValue() const { return m_value; }
 
+	bool operator==(const Token& other) const {
+		return m_type == other.m_type && m_line == other.m_line && m_lexeme == other.m_lexeme &&
+				m_value.value == other.m_value.value;
+	}
+
 	friend std::ostream& operator<<(std::ostream& os, const Token& token) {
 		os << "Type " << TokenTypeName::getFor(token.m_type) << " at line " << token.m_line;
 		if(!token.m_lexeme.empty())
