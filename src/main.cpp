@@ -35,7 +35,7 @@ int main(int argc, char** argv) {
 
 		if(!result.count("file")) {
 			std::cout << "Slanguage 0.9 by Lukas Pietzschmann" << "\n";
-			std::cout << R"(Type "exit" or "CTRL-C" to exit the REPL)" << std::endl;
+			std::cout << R"(Type "exit" or press "CTRL-C" to exit the REPL)" << std::endl;
 #ifdef HAS_READLINE
 			niceRepl();
 #else
