@@ -2,6 +2,7 @@
 
 #include <string>
 #include "AstLogger.hpp"
+#include "Context.hpp"
 #include "Expressions/Expression.hpp"
 #include "Lexer.hpp"
 #include "Parser.hpp"
@@ -33,5 +34,7 @@ public:
 	void visitReturnStmt(ReturnStmt& returnStmt) override;
 private:
 	Interpreter() = default;
+
+	Context m_global;
 };
 }
