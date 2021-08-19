@@ -6,5 +6,5 @@ class DeclarationStmt;
 class ExpressionStmt;
 class PrintStmt;
 class ReturnStmt;
-class Statemnt;
+class Statement;
 }

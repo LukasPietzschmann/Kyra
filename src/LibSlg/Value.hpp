@@ -12,9 +12,9 @@ public:
 	typedef std::shared_ptr<Value> Ptr;
 
 	Value() : m_type(NOTHING) {};
-	explicit Value(int value) : m_type(NUMBER), m_intVal(value) {}
-	explicit Value(bool value) : m_type(BOOL), m_boolVal(value) {}
-	explicit Value(std::string value) : m_type(STRING), m_stringVal(std::move(value)) {}
+	explicit Value(int value) : m_intVal(value), m_type(NUMBER) {}
+	explicit Value(bool value) : m_boolVal(value), m_type(BOOL) {}
+	explicit Value(std::string value) : m_stringVal(std::move(value)), m_type(STRING) {}
 
 	~Value() {
 		switch(m_type) {
@@ -148,6 +148,7 @@ public:
 			return Value(m_intVal + other.m_intVal);
 		if(m_type == STRING)
 			return Value(m_stringVal + other.m_stringVal);
+		assert(false);
 	}
 
 	Value operator-(const Value& other) const {

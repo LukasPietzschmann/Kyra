@@ -1,5 +1,6 @@
 #pragma once
 
+#include <utility>
 #include <vector>
 #include <iostream>
 #include "Exceptions.hpp"
@@ -25,7 +26,7 @@
 namespace LibSlg {
 class Parser {
 public:
-	explicit Parser(const std::vector<Token>& tokens) : m_tokens(tokens) {
+	explicit Parser(std::vector<Token>  tokens) : m_tokens(std::move(tokens)) {
 		m_statements.reserve(m_tokens.size());
 	}
 

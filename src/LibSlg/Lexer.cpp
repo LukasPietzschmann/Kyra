@@ -96,7 +96,7 @@ void Lexer::nameOrKeyword() {
 		advance();
 
 	std::string string = m_source.substr(m_start, m_current - m_start);
-	std::string literal = "";
+	std::string literal;
 	TokenType type = TokenType::NAME;
 	if(keywords.find(string) != keywords.end())
 		type = keywords.at(string);
@@ -141,6 +141,6 @@ bool Lexer::isAlpha(char character) {
 }
 
 bool Lexer::isAtEnd() const {
-	return m_current >= m_source.size();
+	return (unsigned long) m_current >= m_source.size();
 }
 }

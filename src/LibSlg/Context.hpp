@@ -17,4 +17,4 @@ private:
 	const std::shared_ptr<Context> m_parent;
 	std::unordered_map<std::string, Value::Ptr> m_variables;
 };
-};
+}

@@ -64,7 +64,7 @@ Value::Ptr Interpreter::visitBinaryExpr(BinaryExpr& binaryExpr) {
 			if(!(lhs->getType() == Value::NUMBER && rhs->getType() == Value::NUMBER) &&
 					!(lhs->getType() == Value::STRING && rhs->getType() == Value::STRING))
 				throw RuntimeException("The + Operator can only operate on two numbers or two strings");
-			return Value::makePtr(*lhs + *rhs);;
+			return Value::makePtr(*lhs + *rhs);
 		case TokenType::STAR:
 			if((lhs->getType() != Value::NUMBER && lhs->getType() != Value::STRING) || rhs->getType() != Value::NUMBER)
 				throw RuntimeException("The * Operator can only operate on two numbers or a string and a number");
@@ -72,7 +72,7 @@ Value::Ptr Interpreter::visitBinaryExpr(BinaryExpr& binaryExpr) {
 		case TokenType::SLASH:
 			if(lhs->getType() != Value::NUMBER || rhs->getType() != Value::NUMBER)
 				throw RuntimeException("The / Operator can only operate on two numbers");
-			return Value::makePtr(*lhs / *rhs);;
+			return Value::makePtr(*lhs / *rhs);
 		default: assert(false);
 	}
 }

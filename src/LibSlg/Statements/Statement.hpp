@@ -22,5 +22,7 @@ public:
 		static_assert(std::is_constructible<T, Args...>::value, "Cannot construct object in Statement::makePtr");
 		return std::make_shared<T>(args...);
 	}
+protected:
+	virtual ~Statement() {}
 };
 }
