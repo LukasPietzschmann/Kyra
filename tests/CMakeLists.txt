@@ -7,7 +7,7 @@ FetchContent_Declare(
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(googletest)
 
-add_executable(Tests lexerTests.cpp parserTests.cpp)
+add_executable(Tests lexerTests.cpp parserTests.cpp interpreterTest.cpp)
 target_link_libraries(Tests gtest_main gmock_main LibSlg)
 
 include(googletest)
