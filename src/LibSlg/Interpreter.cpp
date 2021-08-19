@@ -43,7 +43,33 @@ Value::Ptr Interpreter::visitAssignmentExpr(AssignmentExpr& assignmentExpr) {
 }
 
 Value::Ptr Interpreter::visitBinaryExpr(BinaryExpr& binaryExpr) {
-	return {};
+	Value::Ptr lhs = binaryExpr.getLhs()->accept(*this);
+	Value::Ptr rhs = binaryExpr.getRhs()->accept(*this);
+	switch(binaryExpr.getOperator().getType()) {
+		case TokenType::EQUAL_EQUAL: return Value::makePtr(*lhs == *rhs);
+		case TokenType::BANG_EQUAL: return Value::makePtr(*lhs != *rhs);
+		case TokenType::GREATER: return Value::makePtr(*lhs > *rhs);
+		case TokenType::GREATER_EQUAL: return Value::makePtr(*lhs >= *rhs);
+		case TokenType::LESS: return Value::makePtr(*lhs < *rhs);
+		case TokenType::LESS_EQUAL: return Value::makePtr(*lhs <= *rhs);
+		case TokenType::MINUS:
+			if(lhs->getType() != Value::NUMBER || rhs->getType() != Value::NUMBER)
+				throw RuntimeException("The - Operator can only operate on two numbers");
+			return Value::makePtr(*lhs - *rhs);
+		case TokenType::PLUS:
+			if(lhs->getType() != Value::NUMBER || rhs->getType() != Value::NUMBER)
+				throw RuntimeException("The + Operator can only operate on two numbers");
+			return Value::makePtr(*lhs + *rhs);;
+		case TokenType::STAR:
+			if((lhs->getType() != Value::NUMBER && lhs->getType() != Value::STRING) || rhs->getType() != Value::NUMBER)
+				throw RuntimeException("The - Operator can only operate on two numbers or a string and a number");
+			return Value::makePtr(*lhs * *rhs);
+		case TokenType::SLASH:
+			if(lhs->getType() != Value::NUMBER || rhs->getType() != Value::NUMBER)
+				throw RuntimeException("The / Operator can only operate on two numbers");
+			return Value::makePtr(*lhs / *rhs);;
+		default: assert(false);
+	}
 }
 
 Value::Ptr Interpreter::visitCallExpr(CallExpr& callExpr) {
@@ -67,7 +93,17 @@ Value::Ptr Interpreter::visitObject(Object& objectExpr) {
 }
 
 Value::Ptr Interpreter::visitUnaryExpr(UnaryExpr& unaryExpr) {
-	return {};
+	Value::Ptr value = unaryExpr.getRhs()->accept(*this);
+	std::stringstream ss;
+	switch(unaryExpr.getOperator().getType()) {
+		case TokenType::BANG: return Value::makePtr(!value->isTrue());
+		case TokenType::MINUS:
+			if(value->getType() == Value::NUMBER)
+				return Value::makePtr(value->number() * -1);
+			ss << *value << " is not a number";
+			throw RuntimeException(ss.str());
+		default: assert(false);
+	}
 }
 
 Value::Ptr Interpreter::visitVariable(Variable& variableExpr) {

@@ -58,6 +58,18 @@ public:
 		return m_stringVal;
 	}
 
+	bool isTrue() {
+		if(m_type == BOOL)
+			return m_boolVal;
+		return m_type != NOTHING;
+	}
+
+	template <class... Args>
+	static Value::Ptr makePtr(Args... args) {
+		static_assert(std::is_constructible<Value, Args...>::value, "Cannot construct Value in Value::makePtr");
+		return std::make_shared<Value>(args...);
+	}
+
 	friend std::ostream& operator<<(std::ostream& os, const Value& value) {
 		switch(value.m_type) {
 			case NOTHING: os << "nothing";
@@ -70,6 +82,94 @@ public:
 				break;
 		}
 		return os;
+	}
+
+	bool operator==(const Value& other) const {
+		if(m_type != other.m_type)
+			return false;
+		switch(m_type) {
+			case NOTHING: return true;
+			case BOOL: return m_boolVal == other.m_boolVal;
+			case NUMBER: return m_intVal == other.m_intVal;
+			case STRING: return m_stringVal == other.m_stringVal;
+		}
+	}
+
+	bool operator!=(const Value& other) const { return !(other == *this); }
+
+	bool operator<(const Value& other) const {
+		if(m_type != other.m_type)
+			return false;
+		switch(m_type) {
+			case BOOL: return !m_boolVal && other.m_boolVal;
+			case NOTHING: return false;
+			case NUMBER: return m_intVal < other.m_intVal;
+			case STRING: return m_stringVal < other.m_stringVal;
+		}
+	}
+
+	bool operator>(const Value& other) const {
+		if(m_type != other.m_type)
+			return false;
+		switch(m_type) {
+			case BOOL: return m_boolVal && !other.m_boolVal;
+			case NOTHING: return false;
+			case NUMBER: return m_intVal > other.m_intVal;
+			case STRING: return m_stringVal > other.m_stringVal;
+		}
+	}
+
+	bool operator<=(const Value& other) const {
+		if(m_type != other.m_type)
+			return false;
+		switch(m_type) {
+			case BOOL: return !(m_boolVal && !other.m_boolVal);
+			case NOTHING: return true;
+			case NUMBER: return m_intVal <= other.m_intVal;
+			case STRING: return m_stringVal <= other.m_stringVal;
+		}
+	}
+
+	bool operator>=(const Value& other) const {
+		if(m_type != other.m_type)
+			return false;
+		switch(m_type) {
+			case BOOL: return !(!m_boolVal && other.m_boolVal);
+			case NOTHING: return true;
+			case NUMBER: return m_intVal >= other.m_intVal;
+			case STRING: return m_stringVal >= other.m_stringVal;
+		}
+	}
+
+	Value operator+(const Value& other) const {
+		if(m_type != NUMBER || other.m_type != NUMBER)
+			throw BadEntryException();
+		return Value(m_intVal + other.m_intVal);
+	}
+
+	Value operator-(const Value& other) const {
+		if(m_type != NUMBER || other.m_type != NUMBER)
+			throw BadEntryException();
+		return Value(m_intVal - other.m_intVal);
+	}
+
+	Value operator/(const Value& other) const {
+		if(m_type != NUMBER || other.m_type != NUMBER)
+			throw BadEntryException();
+		return Value(m_intVal / other.m_intVal);
+	}
+
+	Value operator*(const Value& other) const {
+		if(m_type == STRING && other.m_type == NUMBER) {
+			int mult = other.m_intVal;
+			std::string out;
+			while(mult-- > 0)
+				out += m_stringVal;
+			return Value(out);
+		}
+		if(m_type != NUMBER || other.m_type != NUMBER)
+			throw BadEntryException();
+		return Value(m_intVal * other.m_intVal);
 	}
 private:
 	union {
