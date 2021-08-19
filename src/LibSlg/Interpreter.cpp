@@ -6,7 +6,7 @@ Interpreter& Interpreter::getInstance() {
 	return instance;
 }
 
-void Interpreter::execute(const std::string& code, bool verboseLogging) {
+void Interpreter::execute(const std::string& code, bool verboseLogging, bool passThroughExceptions) {
 	Lexer lexer(code);
 	auto tokens = lexer.scanTokens();
 
@@ -24,10 +24,14 @@ void Interpreter::execute(const std::string& code, bool verboseLogging) {
 			try {
 				statement->accept(*this);
 			}catch(RuntimeException& exception) {
+				if(passThroughExceptions)
+					throw RuntimeException(exception);
 				std::cout << "[ERROR] " << exception.what() << std::endl;
 			}
 		}
 	}catch(ParserException& exception) {
+		if(passThroughExceptions)
+			throw ParserException(exception);
 		std::cout << "[ERROR] " << exception.what() << std::endl;
 	}
 }

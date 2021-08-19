@@ -15,7 +15,7 @@ public:
 	Interpreter(Interpreter const&) = delete;
 	void operator=(Interpreter const&) = delete;
 
-	void execute(const std::string& code, bool verboseLogging=false);
+	void execute(const std::string& code, bool verboseLogging=false, bool passThroughExceptions=false);
 
 	Value::Ptr visitAccessExpr(AccessExpr& accessExpr) override;
 	Value::Ptr visitAssignmentExpr(AssignmentExpr& assignmentExpr) override;
