@@ -60,9 +60,9 @@ public:
 
 	friend std::ostream& operator<<(std::ostream& os, const Value& value) {
 		switch(value.m_type) {
-			case NOTHING: os << "NOTHING";
+			case NOTHING: os << "nothing";
 				break;
-			case BOOL: os << value.m_boolVal;
+			case BOOL: os << (value.m_boolVal ? "true" : "false");
 				break;
 			case NUMBER: os << value.m_intVal;
 				break;
