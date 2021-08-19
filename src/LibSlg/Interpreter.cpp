@@ -57,8 +57,9 @@ Value::Ptr Interpreter::visitBinaryExpr(BinaryExpr& binaryExpr) {
 				throw RuntimeException("The - Operator can only operate on two numbers");
 			return Value::makePtr(*lhs - *rhs);
 		case TokenType::PLUS:
-			if(lhs->getType() != Value::NUMBER || rhs->getType() != Value::NUMBER)
-				throw RuntimeException("The + Operator can only operate on two numbers");
+			if(!(lhs->getType() == Value::NUMBER && rhs->getType() == Value::NUMBER) &&
+					!(lhs->getType() == Value::STRING && rhs->getType() == Value::STRING))
+				throw RuntimeException("The + Operator can only operate on two numbers or two strings");
 			return Value::makePtr(*lhs + *rhs);;
 		case TokenType::STAR:
 			if((lhs->getType() != Value::NUMBER && lhs->getType() != Value::STRING) || rhs->getType() != Value::NUMBER)

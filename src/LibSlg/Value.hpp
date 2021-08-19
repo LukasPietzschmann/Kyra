@@ -142,9 +142,12 @@ public:
 	}
 
 	Value operator+(const Value& other) const {
-		if(m_type != NUMBER || other.m_type != NUMBER)
+		if(!(m_type == NUMBER && other.m_type == NUMBER) && !(m_type == STRING && other.m_type == STRING))
 			throw BadEntryException();
-		return Value(m_intVal + other.m_intVal);
+		if(m_type == NUMBER)
+			return Value(m_intVal + other.m_intVal);
+		if(m_type == STRING)
+			return Value(m_stringVal + other.m_stringVal);
 	}
 
 	Value operator-(const Value& other) const {
