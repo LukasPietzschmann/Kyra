@@ -1,6 +1,7 @@
 #include <iostream>
 #include <fstream>
 #include <cxxopts.hpp>
+#include <config.h>
 #include "LibSlg/Interpreter.hpp"
 
 #ifdef HAS_READLINE
@@ -17,10 +18,12 @@ bool verbose = false;
 
 int main(int argc, char** argv) {
 	std::ostream::sync_with_stdio(false);
-	cxxopts::Options options(argv[0], "The Slanguage programming language");
+	std::string desc("The Slanguage programming language");
+	cxxopts::Options options(argv[0], desc + " - Version " + PROJECT_VERSION);
 	options.add_options()
-			("verbose", "Prints as much information as available", cxxopts::value<bool>(verbose))
 			("f,file", "The file to execute", cxxopts::value<std::string>())
+			("verbose", "Prints as much information as available", cxxopts::value<bool>(verbose))
+			("v,version", "Prints the version number")
 			("h,help", "Prints this message");
 	options.parse_positional({"file"});
 	options.positional_help("[FILE]").show_positional_help();
@@ -33,8 +36,13 @@ int main(int argc, char** argv) {
 			return 0;
 		}
 
+		if(result.count("version")) {
+			std::cout << "Slanguage " << PROJECT_VERSION << std::endl;
+			return 0;
+		}
+
 		if(!result.count("file")) {
-			std::cout << "Slanguage 0.9 by Lukas Pietzschmann" << "\n";
+			std::cout << "Slanguage " << PROJECT_VERSION << " by Lukas Pietzschmann" << "\n";
 			std::cout << R"(Type "exit" or press "CTRL-C" to exit the REPL)" << std::endl;
 #ifdef HAS_READLINE
 			niceRepl();

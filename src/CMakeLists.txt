@@ -13,8 +13,9 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(cxxopts)
 
-add_executable(Slanguage main.cpp)
+add_executable(Slanguage main.cpp ${PROJECT_SOURCE_DIR}/include/config.h)
 
+target_include_directories(Slanguage PRIVATE ${PROJECT_SOURCE_DIR}/include)
 target_link_libraries(Slanguage LibSlg cxxopts)
 
 if (READLINE_FOUND)
