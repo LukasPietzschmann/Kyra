@@ -33,8 +33,8 @@ public:
 	void visitPrintStmt(PrintStmt& printStmt) override;
 	void visitReturnStmt(ReturnStmt& returnStmt) override;
 private:
-	Interpreter() = default;
+	Interpreter() : m_currentContext(Context::makePtr()) {};
 
-	Context m_global;
+	Context::Ptr m_currentContext;
 };
 }

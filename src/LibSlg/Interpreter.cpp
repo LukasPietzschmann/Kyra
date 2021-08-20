@@ -42,7 +42,7 @@ Value::Ptr Interpreter::visitAccessExpr(AccessExpr& accessExpr) {
 
 Value::Ptr Interpreter::visitAssignmentExpr(AssignmentExpr& assignmentExpr) {
 	Value::Ptr newValue = assignmentExpr.getNewValue()->accept(*this);
-	m_global.mutate(assignmentExpr.getName().getValue().asString(), newValue);
+	m_currentContext->mutate(assignmentExpr.getName().getValue().asString(), newValue);
 	return newValue;
 }
 
@@ -112,7 +112,7 @@ Value::Ptr Interpreter::visitUnaryExpr(UnaryExpr& unaryExpr) {
 }
 
 Value::Ptr Interpreter::visitVariable(Variable& variableExpr) {
-	return m_global.get(variableExpr.getName().getValue().asString());
+	return m_currentContext->get(variableExpr.getName().getValue().asString());
 }
 
 void Interpreter::visitBlockStmt(BlockStmt& blockStmt) {
@@ -122,9 +122,9 @@ void Interpreter::visitBlockStmt(BlockStmt& blockStmt) {
 
 void Interpreter::visitDeclarationStmt(DeclarationStmt& declarationStmt) {
 	if(const Expression::Ptr& init = declarationStmt.getInitializer())
-		m_global.declare(declarationStmt.getIdentifier().getValue().asString(), init->accept(*this));
+		m_currentContext->declare(declarationStmt.getIdentifier().getValue().asString(), init->accept(*this));
 	else
-		m_global.declare(declarationStmt.getIdentifier().getValue().asString());
+		m_currentContext->declare(declarationStmt.getIdentifier().getValue().asString());
 }
 
 void Interpreter::visitExpressionStmt(ExpressionStmt& expressionStmt) {

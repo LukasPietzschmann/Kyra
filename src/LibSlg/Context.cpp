@@ -3,6 +3,8 @@
 #include <utility>
 
 namespace LibSlg {
+const std::shared_ptr<Context>& Context::getParent() const { return m_parent; }
+
 Value::Ptr Context::get(const std::string& name) {
 	auto pos = m_variables.find(name);
 	if(pos != m_variables.end())
