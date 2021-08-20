@@ -5,7 +5,6 @@
 #include "LibSlg/Interpreter.hpp"
 
 #ifdef HAS_READLINE
-#include <readline/history.h>
 #include <readline/readline.h>
 #endif
 
