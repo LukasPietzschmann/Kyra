@@ -25,3 +25,6 @@ The project uses [GoogleTest](https://github.com/google/googletest). To run all 
 > `Debug/bin/Tests`
 
 > To disable automatic testing after building, invoke cmake with `-DRUN_TESTS_AFTER_BUILD=OFF`
+
+## Some additional stuff
+- When using ninja as a build system (like I do :satisfied:), GCC and (Apple)Clang won't add ANSI escape sequences for colored output. To _fix_ this behaviour you can invoke cmake with `-DFORCE_COLORED_OUTPUT`. If you want to print the output to a text file, your probably want to disable colors again by using `-DFORCE_COLORED_OUTPUT=OFF`.
