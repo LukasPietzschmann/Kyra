@@ -4,22 +4,26 @@
 #include <ostream>
 
 namespace LibSlg {
+class Context;
+
 class Value {
 public:
 	class BadEntryException : std::exception {};
 
-	typedef enum { NOTHING, NUMBER, BOOL, STRING } Type;
+	typedef enum { NOTHING, NUMBER, BOOL, STRING, OBJECT } Type;
 	typedef std::shared_ptr<Value> Ptr;
 
 	Value() : m_type(NOTHING) {};
 	explicit Value(int value) : m_intVal(value), m_type(NUMBER) {}
 	explicit Value(bool value) : m_boolVal(value), m_type(BOOL) {}
 	explicit Value(std::string value) : m_stringVal(std::move(value)), m_type(STRING) {}
+	explicit Value(std::shared_ptr<Context> value) : m_objectVal(value), m_type(OBJECT) {}
 
 	~Value() {
 		switch(m_type) {
 			case NOTHING:
 			case NUMBER:
+			case OBJECT:
 			case BOOL: break;
 			case STRING: m_stringVal.~basic_string();
 				break;
@@ -34,6 +38,8 @@ public:
 			case BOOL: m_boolVal = other.m_boolVal;
 				break;
 			case STRING: m_stringVal = other.m_stringVal;
+				break;
+			case OBJECT: m_objectVal = other.m_objectVal;
 				break;
 		}
 	}
@@ -58,6 +64,12 @@ public:
 		return m_stringVal;
 	}
 
+	std::shared_ptr<Context> object() const {
+		if(m_type != OBJECT)
+			throw BadEntryException();
+		return m_objectVal;
+	}
+
 	bool isTrue() {
 		if(m_type == BOOL)
 			return m_boolVal;
@@ -80,6 +92,8 @@ public:
 				break;
 			case STRING: os << value.m_stringVal;
 				break;
+			case OBJECT: os << "[object]";
+				break;
 		}
 		return os;
 	}
@@ -92,6 +106,7 @@ public:
 			case BOOL: return m_boolVal == other.m_boolVal;
 			case NUMBER: return m_intVal == other.m_intVal;
 			case STRING: return m_stringVal == other.m_stringVal;
+			case OBJECT: return m_objectVal == other.m_objectVal;
 		}
 	}
 
@@ -105,6 +120,7 @@ public:
 			case NOTHING: return false;
 			case NUMBER: return m_intVal < other.m_intVal;
 			case STRING: return m_stringVal < other.m_stringVal;
+			case OBJECT: return false;
 		}
 	}
 
@@ -116,6 +132,7 @@ public:
 			case NOTHING: return false;
 			case NUMBER: return m_intVal > other.m_intVal;
 			case STRING: return m_stringVal > other.m_stringVal;
+			case OBJECT: return false;
 		}
 	}
 
@@ -127,6 +144,7 @@ public:
 			case NOTHING: return true;
 			case NUMBER: return m_intVal <= other.m_intVal;
 			case STRING: return m_stringVal <= other.m_stringVal;
+			case OBJECT: return *this == other;
 		}
 	}
 
@@ -138,6 +156,7 @@ public:
 			case NOTHING: return true;
 			case NUMBER: return m_intVal >= other.m_intVal;
 			case STRING: return m_stringVal >= other.m_stringVal;
+			case OBJECT: return *this == other;
 		}
 	}
 
@@ -180,6 +199,7 @@ private:
 		bool m_boolVal {};
 		int m_intVal;
 		std::string m_stringVal;
+		std::shared_ptr<Context> m_objectVal; //FIXME Context::Ptr not accessible as it's a nested non forward declarable typedef.
 	};
 	Type m_type;
 };
@@ -187,7 +207,7 @@ private:
 class ValueTypeName {
 public:
 	static std::string getFor(Value::Type type) {
-		const std::string names[] = {"NOTHING", "NUMBER", "BOOL", "STRING"};
+		const std::string names[] = {"NOTHING", "NUMBER", "BOOL", "STRING", "OBJECT"};
 		return names[static_cast<std::underlying_type<Value::Type>::type>(type)];
 	}
 };

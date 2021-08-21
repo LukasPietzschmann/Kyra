@@ -37,7 +37,11 @@ void Interpreter::execute(const std::string& code, bool verboseLogging, bool pas
 }
 
 Value::Ptr Interpreter::visitAccessExpr(AccessExpr& accessExpr) {
-	return {};
+	Value::Ptr owner = accessExpr.getOwner()->accept(*this);
+	if(owner->getType() != Value::OBJECT)
+		throw RuntimeException("Variable " + accessExpr.getName().getValue().asString() +
+				" can't be accessed from an expression, that doesn't provide a scope.");
+	return owner->object()->get(accessExpr.getName().getValue().asString());
 }
 
 Value::Ptr Interpreter::visitAssignmentExpr(AssignmentExpr& assignmentExpr) {
@@ -94,7 +98,12 @@ Value::Ptr Interpreter::visitLiteral(Literal& literal) {
 }
 
 Value::Ptr Interpreter::visitObject(Object& objectExpr) {
-	return {};
+	Context::Ptr context = Context::makePtr(m_currentContext);
+	m_currentContext = context;
+	for(const auto& statement : std::dynamic_pointer_cast<BlockStmt>(objectExpr.getImplementation())->getStatements())
+		statement->accept(*this);
+	m_currentContext = context->getParent();
+	return Value::makePtr(context);
 }
 
 Value::Ptr Interpreter::visitUnaryExpr(UnaryExpr& unaryExpr) {
@@ -116,8 +125,11 @@ Value::Ptr Interpreter::visitVariable(Variable& variableExpr) {
 }
 
 void Interpreter::visitBlockStmt(BlockStmt& blockStmt) {
+	Context::Ptr context = Context::makePtr(m_currentContext);
+	m_currentContext = context;
 	for(const auto& statement : blockStmt.getStatements())
 		statement->accept(*this);
+	m_currentContext = context->getParent();
 }
 
 void Interpreter::visitDeclarationStmt(DeclarationStmt& declarationStmt) {
