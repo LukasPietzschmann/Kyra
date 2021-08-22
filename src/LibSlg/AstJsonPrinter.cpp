@@ -93,6 +93,8 @@ Value::Ptr AstJsonPrinter::visitLiteral(LiteralExpr& literalExpr) {
 			break;
 		case Value::OBJECT: m_output << "object";
 			break;
+		case Value::FUNCTION: m_output << "function";
+			break;
 	}
 	m_output << R"("})";
 	return nullptr;
