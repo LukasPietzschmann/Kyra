@@ -5,6 +5,14 @@
 #include "Value.hpp"
 
 namespace LibSlg {
+class LexerException : std::exception {
+public:
+	explicit LexerException(std::string message) : m_message(std::move(message)) {}
+	const char* what() const noexcept override { return m_message.c_str(); }
+private:
+	std::string m_message;
+};
+
 class ParserException : std::exception {
 public:
 	explicit ParserException(std::string message, bool unfinished=false) :

@@ -7,12 +7,9 @@ Interpreter& Interpreter::getInstance() {
 }
 
 void Interpreter::execute(const std::string& code, bool verboseLogging, bool passThroughExceptions) {
-	Lexer lexer(code);
-	auto tokens = lexer.scanTokens();
-
-	Parser parser(tokens);
 	try {
-		auto statements = parser.parse();
+		auto tokens = Lexer(code).scanTokens();
+		auto statements = Parser(tokens).parse();
 		if(verboseLogging) {
 			AstLogger logger;
 			for(const auto& token : tokens)
@@ -27,7 +24,7 @@ void Interpreter::execute(const std::string& code, bool verboseLogging, bool pas
 				if(passThroughExceptions)
 					throw RuntimeException(exception);
 				std::cout << "[ERROR] " << exception.what() << std::endl;
-			}catch (ReturnException& exception){
+			}catch(ReturnException& exception) {
 				std::cout << "[ERROR] " << "Return Statements can only be used in Functions." << std::endl;
 			}
 		}
@@ -35,15 +32,21 @@ void Interpreter::execute(const std::string& code, bool verboseLogging, bool pas
 		if(passThroughExceptions)
 			throw ParserException(exception);
 		std::cout << "[ERROR] " << exception.what() << std::endl;
+	}catch(LexerException& exception) {
+		if(passThroughExceptions)
+			throw LexerException(exception);
+		std::cout << "[ERROR] " << exception.what() << std::endl;
 	}
 }
 
 bool Interpreter::isIncompleteStatement(const std::string& code) {
-	Parser parser(Lexer(code).scanTokens());
 	try {
+		Parser parser(Lexer(code).scanTokens());
 		parser.parse();
 	}catch(ParserException& exception) {
 		return exception.isUnfinished();
+	}catch(...) {
+		return false;
 	}
 	return false;
 }

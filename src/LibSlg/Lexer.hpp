@@ -5,6 +5,7 @@
 #include <unordered_map>
 #include <utility>
 #include <vector>
+#include "Exceptions.hpp"
 #include "Token.hpp"
 
 namespace LibSlg {
