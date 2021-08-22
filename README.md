@@ -9,8 +9,18 @@ print "Hello, World";
 Slanguage is just a Hobby Project of mine. Don't expect to come across any new industry-disrupting features. I'm trying to implement a basic language to become more familiar with C++ and the magic behind compilers and interpreters.
 
 ### For others:
-Well, I think I'll describe this when I have convinced the interpreter to function :)
-Until then, many concepts of the language might change.
+Slanguage is a **very** basic language, currently supporting:
+- first-class functions and objects
+- mutable variables
+  - strings, signed integers, booleans, functions, objects and nothing (nil) values
+- closures
+- little things like
+  - console logging
+  - comparisons
+  - arithmetic
+  - and of course comments
+
+See [example.slg](https://github.com/LukasPietzschmann/Slanguage/blob/master/example.slg) for a simple example.
 
 ## Compile the Project
 To compile the Code yourself, execute the following steps:
