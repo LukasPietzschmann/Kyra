@@ -16,6 +16,7 @@ public:
 	void operator=(Interpreter const&) = delete;
 
 	void execute(const std::string& code, bool verboseLogging=false, bool passThroughExceptions=false);
+	bool isUncompleteStatement(const std::string& code);
 
 	Value::Ptr visitAccessExpr(AccessExpr& accessExpr) override;
 	Value::Ptr visitAssignmentExpr(AssignmentExpr& assignmentExpr) override;

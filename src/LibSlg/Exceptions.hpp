@@ -6,10 +6,13 @@
 namespace LibSlg {
 class ParserException : std::exception {
 public:
-	explicit ParserException(std::string message) : m_message(std::move(message)) {}
+	explicit ParserException(std::string message, bool unfinished=false) :
+			m_message(std::move(message)), m_unfinished(unfinished) {}
 	const char* what() const noexcept override { return m_message.c_str(); }
+	bool isUnfinished() const { return m_unfinished; }
 private:
 	std::string m_message;
+	const bool m_unfinished;
 };
 
 class RuntimeException : std::exception {

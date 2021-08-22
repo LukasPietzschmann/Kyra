@@ -195,7 +195,7 @@ Expression::Ptr Parser::primary() {
 				"Expected expression before " + peek().getLexeme() + " in line " + std::to_string(peek().getLine()));
 	else
 		throw ParserException("Expected expression after " + previous().getLexeme() +
-				" in line " + std::to_string(previous().getLine()));
+				" in line " + std::to_string(previous().getLine()), true);
 }
 
 Expression::Ptr Parser::function() {
@@ -225,10 +225,12 @@ Token Parser::advance() {
 }
 
 Token Parser::consume(TokenType expected) {
-	if(match(expected))
+	Token next = peek();
+	if(!isAtEnd() && next.getType() == expected)
 		return advance();
+	bool unfinished = next.getType() == TokenType::END_OF_FILE;
 	throw ParserException("Expected " + TokenTypeName::getFor(expected) + " but got " +
-			TokenTypeName::getFor(peek().getType()) + " at line " + std::to_string(peek().getLine()));
+			TokenTypeName::getFor(peek().getType()) + " at line " + std::to_string(peek().getLine()), unfinished);
 }
 
 Token Parser::peek() const {
