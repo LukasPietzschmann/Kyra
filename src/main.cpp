@@ -69,12 +69,13 @@ int main(int argc, char** argv) {
 
 #ifndef HAS_READLINE
 void simpleRepl() {
+	std::cout << "Btw: To get the full REPL experience install the GNU readline library!" << std::endl;
 	std::cout << PROMPT;
 	for(std::string line; std::getline(std::cin, line);) {
 		if(line == "exit")
 			break;
 
-		LibSlg::Interpreter::getInstance().execute(inputLine, verbose);
+		LibSlg::Interpreter::getInstance().execute(line, verbose);
 
 		std::cout << PROMPT;
 	}
