@@ -83,16 +83,29 @@ void simpleRepl() {
 
 #ifdef HAS_READLINE
 void niceRepl() {
+	static bool unfinished = false;
+	static std::string completeCode;
+	static std::string prompt = PROMPT;
+
 	while(true) {
-		char* inputLine = readline(PROMPT);
+		char* inputLine = readline(prompt.c_str());
 		if(!inputLine || std::strcmp(inputLine, "exit") == 0) {
 			free(inputLine);
 			break;
 		}
-		if(*inputLine)
-			add_history(inputLine);
 
-		LibSlg::Interpreter::getInstance().execute(inputLine, verbose);
+		completeCode += inputLine;
+		unfinished = LibSlg::Interpreter::getInstance().isUncompleteStatement(completeCode);
+
+		if(unfinished) {
+			prompt = ".... ";
+			completeCode += "\n";
+		}else {
+			add_history(completeCode.c_str());
+			LibSlg::Interpreter::getInstance().execute(completeCode, verbose);
+			completeCode.clear();
+			prompt = PROMPT;
+		}
 
 		free(inputLine);
 	}
