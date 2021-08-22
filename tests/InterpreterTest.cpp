@@ -117,3 +117,28 @@ TEST_F(InterpreterTest, StringConcat) {
 	m_interpreter->execute(R"(print "zero times: " + "lol" * -10;)");
 	EXPECT_STREQ(GetCapturedStdout().c_str(), "zero times: \n");
 }
+
+TEST_F(InterpreterTest, BlockScope) {
+	EXPECT_ANY_THROW(m_interpreter->execute("var z; var z;", false, true));
+	EXPECT_NO_THROW(m_interpreter->execute("var x; {var x;}", false, true));
+
+	CaptureStdout();
+	m_interpreter->execute("var y = 420; {print y;}");
+	EXPECT_STREQ(GetCapturedStdout().c_str(), "420\n");
+}
+
+TEST_F(InterpreterTest, Functions) {
+	// Check Arity
+	EXPECT_ANY_THROW(m_interpreter->execute("fun(a, b){return a + b;}();", false, true));
+	EXPECT_NO_THROW(m_interpreter->execute("fun(a, b){return a + b;}(2, 2);", false, true));
+
+	// Simple function exec
+	CaptureStdout();
+	m_interpreter->execute("fun(a){print a;}(\"Hi\");");
+	EXPECT_STREQ(GetCapturedStdout().c_str(), "Hi\n");
+
+	// Closures
+	CaptureStdout();
+	m_interpreter->execute("var closure = fun(a){return fun(){return a;};}(10); print closure();");
+	EXPECT_STREQ(GetCapturedStdout().c_str(), "10\n");
+}
