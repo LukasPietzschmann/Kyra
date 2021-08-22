@@ -1,5 +1,9 @@
 # The Slanguage programming language
 
+```
+print "Hello, World";
+```
+
 ## What is Slanguage?
 ### For me:
 Slanguage is just a Hobby Project of mine. Don't expect to come across any new industry-disrupting features. I'm trying to implement a basic language to become more familiar with C++ and the magic behind compilers and interpreters.
