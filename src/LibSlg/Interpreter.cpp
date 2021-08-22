@@ -109,10 +109,8 @@ Value::Ptr Interpreter::visitLiteral(Literal& literal) {
 
 Value::Ptr Interpreter::visitObject(Object& objectExpr) {
 	Context::Ptr context = Context::makePtr(m_currentContext);
-	m_currentContext = context;
-	for(const auto& statement : std::dynamic_pointer_cast<BlockStmt>(objectExpr.getImplementation())->getStatements())
-		statement->accept(*this);
-	m_currentContext = context->getParent();
+	const auto& block = std::dynamic_pointer_cast<BlockStmt>(objectExpr.getImplementation());
+	executeStatementsOnContext(block->getStatements(), context);
 	return Value::makePtr(context);
 }
 
@@ -135,11 +133,7 @@ Value::Ptr Interpreter::visitVariable(Variable& variableExpr) {
 }
 
 void Interpreter::visitBlockStmt(BlockStmt& blockStmt) {
-	Context::Ptr context = Context::makePtr(m_currentContext);
-	m_currentContext = context;
-	for(const auto& statement : blockStmt.getStatements())
-		statement->accept(*this);
-	m_currentContext = context->getParent();
+	executeStatementsOnContext(blockStmt.getStatements(), Context::makePtr(m_currentContext));
 }
 
 void Interpreter::visitDeclarationStmt(DeclarationStmt& declarationStmt) {
@@ -159,5 +153,13 @@ void Interpreter::visitPrintStmt(PrintStmt& printStmt) {
 
 void Interpreter::visitReturnStmt(ReturnStmt& returnStmt) {
 
+}
+
+void Interpreter::executeStatementsOnContext(const std::vector<Statement::Ptr>& statements, const Context::Ptr& context) {
+	Context::Ptr prev = m_currentContext;
+	m_currentContext = context;
+	for(const auto& statement : statements)
+		statement->accept(*this);
+	m_currentContext = prev;
 }
 }

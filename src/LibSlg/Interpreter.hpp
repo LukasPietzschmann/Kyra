@@ -37,5 +37,7 @@ private:
 	Interpreter() : m_currentContext(Context::makePtr()) {};
 
 	Context::Ptr m_currentContext;
+
+	void executeStatementsOnContext(const std::vector<Statement::Ptr>& statements, const Context::Ptr& context);
 };
 }
