@@ -36,7 +36,7 @@ void Interpreter::execute(const std::string& code, bool verboseLogging, bool pas
 	}
 }
 
-bool Interpreter::isUncompleteStatement(const std::string& code) {
+bool Interpreter::isIncompleteStatement(const std::string& code) {
 	Parser parser(Lexer(code).scanTokens());
 	try {
 		parser.parse();

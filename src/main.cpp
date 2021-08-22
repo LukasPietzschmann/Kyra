@@ -96,7 +96,7 @@ void niceRepl() {
 		}
 
 		completeCode += inputLine;
-		unfinished = LibSlg::Interpreter::getInstance().isUncompleteStatement(completeCode);
+		unfinished = LibSlg::Interpreter::getInstance().isIncompleteStatement(completeCode);
 
 		if(unfinished) {
 			prompt = ".... ";
