@@ -2,8 +2,8 @@ add_library(LibSlg AstLogger.hpp AstJsonPrinter.hpp AstJsonPrinter.cpp Context.h
 				TokenType.hpp Token.hpp Lexer.cpp Lexer.hpp Parser.cpp Parser.hpp
 				Value.hpp Interpreter.hpp Interpreter.cpp
 				Expressions/AssignmentExpr.hpp Expressions/CallExpr.hpp Expressions/Expression.hpp
-				Expressions/UnaryExpr.hpp Expressions/BinaryExpr.hpp Expressions/Literal.hpp Expressions/Variable.hpp
-				Expressions/Object.hpp Expressions/Function.hpp Expressions/AccessExpr.hpp Expressions/GroupExpr.hpp
+				Expressions/UnaryExpr.hpp Expressions/BinaryExpr.hpp Expressions/LiteralExpr.hpp Expressions/VariableExpr.hpp
+		Expressions/ObjectExpr.hpp Expressions/FunctionExpr.hpp Expressions/AccessExpr.hpp Expressions/GroupExpr.hpp
 				Expressions/Forward.hpp
 				Statements/BlockStmt.hpp Statements/DeclarationStmt.hpp Statements/ExpressionStmt.hpp Statements/PrintStmt.hpp
 				Statements/PrintStmt.hpp Statements/ReturnStmt.hpp Statements/Statement.hpp Statements/Forward.hpp)

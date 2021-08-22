@@ -174,17 +174,17 @@ Expression::Ptr Parser::primary() {
 		return Expression::makePtr<GroupExpr>(expr);
 	}
 	if(matchAndAdvance(TokenType::NOTHING))
-		return Expression::makePtr<Literal>(Value());
+		return Expression::makePtr<LiteralExpr>(Value());
 	if(matchAndAdvance(TokenType::NUMBER))
-		return Expression::makePtr<Literal>(Value(previous().getValue().asInt()));
+		return Expression::makePtr<LiteralExpr>(Value(previous().getValue().asInt()));
 	if(matchAndAdvance(TokenType::STRING))
-		return Expression::makePtr<Literal>(Value(previous().getValue().asString()));
+		return Expression::makePtr<LiteralExpr>(Value(previous().getValue().asString()));
 	if(matchAndAdvance(TokenType::TRUE))
-		return Expression::makePtr<Literal>(Value(true));
+		return Expression::makePtr<LiteralExpr>(Value(true));
 	if(matchAndAdvance(TokenType::FALSE))
-		return Expression::makePtr<Literal>(Value(false));
+		return Expression::makePtr<LiteralExpr>(Value(false));
 	if(matchAndAdvance(TokenType::NAME))
-		return Expression::makePtr<Variable>(previous());
+		return Expression::makePtr<VariableExpr>(previous());
 	if(match(TokenType::FUN))
 		return function();
 	if(match(TokenType::OBJECT))
@@ -212,12 +212,12 @@ Expression::Ptr Parser::function() {
 
 	Statement::Ptr implementation = block();
 
-	return Expression::makePtr<Function>(parameters, implementation);
+	return Expression::makePtr<FunctionExpr>(parameters, implementation);
 }
 
 Expression::Ptr Parser::object() {
 	consume(TokenType::OBJECT);
-	return Expression::makePtr<Object>(block());
+	return Expression::makePtr<ObjectExpr>(block());
 }
 
 Token Parser::advance() {

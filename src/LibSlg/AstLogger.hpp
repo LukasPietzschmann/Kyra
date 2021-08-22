@@ -7,12 +7,12 @@
 #include "Expressions/BinaryExpr.hpp"
 #include "Expressions/CallExpr.hpp"
 #include "Expressions/Expression.hpp"
-#include "Expressions/Function.hpp"
+#include "Expressions/FunctionExpr.hpp"
 #include "Expressions/GroupExpr.hpp"
-#include "Expressions/Literal.hpp"
-#include "Expressions/Object.hpp"
+#include "Expressions/LiteralExpr.hpp"
+#include "Expressions/ObjectExpr.hpp"
 #include "Expressions/UnaryExpr.hpp"
-#include "Expressions/Variable.hpp"
+#include "Expressions/VariableExpr.hpp"
 #include "Statements/BlockStmt.hpp"
 #include "Statements/DeclarationStmt.hpp"
 #include "Statements/ExpressionStmt.hpp"
@@ -113,7 +113,7 @@ public:
 		return nullptr;
 	}
 
-	Value::Ptr visitFunction(Function& functionExpr) override {
+	Value::Ptr visitFunction(FunctionExpr& functionExpr) override {
 		std::stringstream parameters;
 		for(const auto& parameter : functionExpr.getParameters())
 			parameters << parameter.getValue().asString() << " ";
@@ -134,12 +134,12 @@ public:
 		return nullptr;
 	}
 
-	Value::Ptr visitLiteral(Literal& literal) override {
+	Value::Ptr visitLiteral(LiteralExpr& literal) override {
 		COUT << "Literal with value of " << literal.getValue() << std::endl;
 		return nullptr;
 	}
 
-	Value::Ptr visitObject(Object& objectExpr) override {
+	Value::Ptr visitObject(ObjectExpr& objectExpr) override {
 		COUT << "Object" << std::endl;
 		COUT << "Implementation" << std::endl;
 		++m_indent;
@@ -157,7 +157,7 @@ public:
 		return nullptr;
 	}
 
-	Value::Ptr visitVariable(Variable& variableExpr) override {
+	Value::Ptr visitVariable(VariableExpr& variableExpr) override {
 		COUT << "Variable with identifier " << variableExpr.getName().getValue().asString() << std::endl;
 		return nullptr;
 	}

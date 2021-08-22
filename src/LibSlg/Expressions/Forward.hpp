@@ -5,10 +5,10 @@ class AccessExpr;
 class AssignmentExpr;
 class BinaryExpr;
 class CallExpr;
-class Function;
+class FunctionExpr;
 class GroupExpr;
-class Literal;
-class Object;
+class LiteralExpr;
+class ObjectExpr;
 class UnaryExpr;
-class Variable;
+class VariableExpr;
 }

@@ -22,12 +22,12 @@ public:
 	Value::Ptr visitAssignmentExpr(AssignmentExpr& assignmentExpr) override;
 	Value::Ptr visitBinaryExpr(BinaryExpr& binaryExpr) override;
 	Value::Ptr visitCallExpr(CallExpr& callExpr) override;
-	Value::Ptr visitFunction(Function& functionExpr) override;
+	Value::Ptr visitFunction(FunctionExpr& functionExpr) override;
 	Value::Ptr visitGroupExpr(GroupExpr& groupExpr) override;
-	Value::Ptr visitLiteral(Literal& literal) override;
-	Value::Ptr visitObject(Object& objectExpr) override;
+	Value::Ptr visitLiteral(LiteralExpr& literalExpr) override;
+	Value::Ptr visitObject(ObjectExpr& objectExpr) override;
 	Value::Ptr visitUnaryExpr(UnaryExpr& unaryExpr) override;
-	Value::Ptr visitVariable(Variable& variableExpr) override;
+	Value::Ptr visitVariable(VariableExpr& variableExpr) override;
 	void visitBlockStmt(BlockStmt& blockStmt) override;
 	void visitDeclarationStmt(DeclarationStmt& declarationStmt) override;
 	void visitExpressionStmt(ExpressionStmt& expressionStmt) override;

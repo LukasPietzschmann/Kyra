@@ -5,11 +5,11 @@
 #include "../Token.hpp"
 
 namespace LibSlg {
-class Function : public Expression {
+class FunctionExpr : public Expression {
 public:
-	Function(std::vector<Token> parameters, Statement::Ptr impl) :
+	FunctionExpr(std::vector<Token> parameters, Statement::Ptr impl) :
 			m_parameters(std::move(parameters)), m_implementation(std::move(impl)) {}
-	~Function() override {}
+	~FunctionExpr() override {}
 	Value::Ptr accept(ExpressionVisitor& visitor) override { return visitor.visitFunction(*this); }
 	const std::vector<Token>& getParameters() const { return m_parameters; }
 	const Statement::Ptr& getImplementation() const { return m_implementation; }

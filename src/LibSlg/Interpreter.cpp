@@ -95,7 +95,7 @@ Value::Ptr Interpreter::visitCallExpr(CallExpr& callExpr) {
 	return {};
 }
 
-Value::Ptr Interpreter::visitFunction(Function& functionExpr) {
+Value::Ptr Interpreter::visitFunction(FunctionExpr& functionExpr) {
 	return {};
 }
 
@@ -103,11 +103,11 @@ Value::Ptr Interpreter::visitGroupExpr(GroupExpr& groupExpr) {
 	return groupExpr.getExpr()->accept(*this);
 }
 
-Value::Ptr Interpreter::visitLiteral(Literal& literal) {
-	return Value::makePtr(literal.getValue());
+Value::Ptr Interpreter::visitLiteral(LiteralExpr& literalExpr) {
+	return Value::makePtr(literalExpr.getValue());
 }
 
-Value::Ptr Interpreter::visitObject(Object& objectExpr) {
+Value::Ptr Interpreter::visitObject(ObjectExpr& objectExpr) {
 	Context::Ptr context = Context::makePtr(m_currentContext);
 	const auto& block = std::dynamic_pointer_cast<BlockStmt>(objectExpr.getImplementation());
 	executeStatementsOnContext(block->getStatements(), context);
@@ -128,7 +128,7 @@ Value::Ptr Interpreter::visitUnaryExpr(UnaryExpr& unaryExpr) {
 	}
 }
 
-Value::Ptr Interpreter::visitVariable(Variable& variableExpr) {
+Value::Ptr Interpreter::visitVariable(VariableExpr& variableExpr) {
 	return m_currentContext->get(variableExpr.getName().getValue().asString());
 }
 

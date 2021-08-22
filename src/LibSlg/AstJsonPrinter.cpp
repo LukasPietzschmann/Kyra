@@ -57,7 +57,7 @@ Value::Ptr AstJsonPrinter::visitCallExpr(CallExpr& callExpr) {
 	return nullptr;
 }
 
-Value::Ptr AstJsonPrinter::visitFunction(Function& functionExpr) {
+Value::Ptr AstJsonPrinter::visitFunction(FunctionExpr& functionExpr) {
 	m_output << R"({"type":"Function","value":{"parameters":[)";
 	bool needsComma = false;
 	for(const auto& parameter : functionExpr.getParameters()) {
@@ -79,15 +79,15 @@ Value::Ptr AstJsonPrinter::visitGroupExpr(GroupExpr& groupExpr) {
 	return nullptr;
 }
 
-Value::Ptr AstJsonPrinter::visitLiteral(Literal& literal) {
-	m_output << R"({"type":"Literal","literalType":")" << ValueTypeName::getFor(literal.getValue().getType())
+Value::Ptr AstJsonPrinter::visitLiteral(LiteralExpr& literalExpr) {
+	m_output << R"({"type":"Literal","literalType":")" << ValueTypeName::getFor(literalExpr.getValue().getType())
 			<< R"(","value":")";
-	switch(literal.getValue().getType()) {
-		case Value::STRING: m_output << literal.getValue().string();
+	switch(literalExpr.getValue().getType()) {
+		case Value::STRING: m_output << literalExpr.getValue().string();
 			break;
-		case Value::NUMBER: m_output << literal.getValue().number();
+		case Value::NUMBER: m_output << literalExpr.getValue().number();
 			break;
-		case Value::BOOL: m_output << literal.getValue().boolean();
+		case Value::BOOL: m_output << literalExpr.getValue().boolean();
 			break;
 		case Value::NOTHING: m_output << "nothing";
 			break;
@@ -98,7 +98,7 @@ Value::Ptr AstJsonPrinter::visitLiteral(Literal& literal) {
 	return nullptr;
 }
 
-Value::Ptr AstJsonPrinter::visitObject(Object& objectExpr) {
+Value::Ptr AstJsonPrinter::visitObject(ObjectExpr& objectExpr) {
 	m_output << R"({"type":"Object","value":{"implementation":)";
 	objectExpr.getImplementation()->accept(*this);
 	m_output << R"(}})";
@@ -113,7 +113,7 @@ Value::Ptr AstJsonPrinter::visitUnaryExpr(UnaryExpr& unaryExpr) {
 	return nullptr;
 }
 
-Value::Ptr AstJsonPrinter::visitVariable(Variable& variableExpr) {
+Value::Ptr AstJsonPrinter::visitVariable(VariableExpr& variableExpr) {
 	m_output << R"({"type":"Variable","value":")" << variableExpr.getName().getValue().asString() << R"("})";
 	return nullptr;
 }

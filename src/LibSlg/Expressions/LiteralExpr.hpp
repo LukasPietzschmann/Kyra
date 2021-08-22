@@ -4,10 +4,10 @@
 #include "../Value.hpp"
 
 namespace LibSlg {
-class Literal : public Expression {
+class LiteralExpr : public Expression {
 public:
-	explicit Literal(const Value& value) : m_value(value) {}
-	~Literal() override {}
+	explicit LiteralExpr(const Value& value) : m_value(value) {}
+	~LiteralExpr() override {}
 	Value::Ptr accept(ExpressionVisitor& visitor) override { return visitor.visitLiteral(*this); }
 	const Value& getValue() const { return m_value; }
 private:

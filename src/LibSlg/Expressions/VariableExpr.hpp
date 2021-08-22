@@ -5,10 +5,10 @@
 #include "../Token.hpp"
 
 namespace LibSlg {
-class Variable : public Expression {
+class VariableExpr : public Expression {
 public:
-	explicit Variable(Token name) : m_name(std::move(name)) {}
-	~Variable() override {}
+	explicit VariableExpr(Token name) : m_name(std::move(name)) {}
+	~VariableExpr() override {}
 	Value::Ptr accept(ExpressionVisitor& visitor) override { return visitor.visitVariable(*this); }
 	const Token& getName() const { return m_name; }
 private:
