@@ -88,6 +88,8 @@ void niceRepl() {
 	static std::string completeCode;
 	static std::string prompt = PROMPT;
 
+	rl_bind_key('\t', rl_insert);
+
 	while(true) {
 		char* inputLine = readline(prompt.c_str());
 		if(!inputLine || std::strcmp(inputLine, "exit") == 0) {
