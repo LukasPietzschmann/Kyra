@@ -16,6 +16,7 @@ public:
 	void operator=(Interpreter const&) = delete;
 
 	void execute(const std::string& code, bool verboseLogging=false, bool passThroughExceptions=false);
+	void executeStatementsOnContext(const std::vector<Statement::Ptr>& statements, const Context::Ptr& context);
 	bool isIncompleteStatement(const std::string& code);
 
 	Value::Ptr visitAccessExpr(AccessExpr& accessExpr) override;
@@ -38,6 +39,5 @@ private:
 
 	Context::Ptr m_currentContext;
 
-	void executeStatementsOnContext(const std::vector<Statement::Ptr>& statements, const Context::Ptr& context);
 };
 }
