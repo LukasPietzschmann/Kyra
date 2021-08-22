@@ -92,11 +92,24 @@ Value::Ptr Interpreter::visitBinaryExpr(BinaryExpr& binaryExpr) {
 }
 
 Value::Ptr Interpreter::visitCallExpr(CallExpr& callExpr) {
-	return {};
+	Value::Ptr fun = callExpr.getFunction()->accept(*this);
+	unsigned int arity = fun->function()->getArity();
+
+	if(arity != callExpr.getArguments().size())
+		throw RuntimeException(
+				"The Function needs to be called with " + std::to_string(arity) + " arguments. You provided " +
+						std::to_string(callExpr.getArguments().size()) + ".");
+
+	std::vector<Value::Ptr> arguments;
+	for(const auto& arg : callExpr.getArguments())
+		arguments.push_back(arg->accept(*this));
+
+	Value::Ptr res = fun->function()->exec(arguments);
+	return res;
 }
 
 Value::Ptr Interpreter::visitFunction(FunctionExpr& functionExpr) {
-	return {};
+	return Value::makePtr(Function::makePtr(functionExpr, m_currentContext));
 }
 
 Value::Ptr Interpreter::visitGroupExpr(GroupExpr& groupExpr) {

@@ -4,6 +4,7 @@
 #include "AstLogger.hpp"
 #include "Context.hpp"
 #include "Expressions/Expression.hpp"
+#include "Function.hpp"
 #include "Lexer.hpp"
 #include "Parser.hpp"
 #include "Statements/Statement.hpp"
