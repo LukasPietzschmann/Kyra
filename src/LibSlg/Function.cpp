@@ -11,7 +11,11 @@ Value::Ptr Function::exec(std::vector<Value::Ptr> arguments) {
 
 	auto block = std::dynamic_pointer_cast<BlockStmt>(m_functionExpr.getImplementation());
 
-	Interpreter::getInstance().executeStatementsOnContext(block->getStatements(), runtimeContext);
+	try {
+		Interpreter::getInstance().executeStatementsOnContext(block->getStatements(), runtimeContext);
+	}catch(ReturnException& exception) {
+		return exception.getReturnVal();
+	}
 	return Value::makePtr();
 }
 }

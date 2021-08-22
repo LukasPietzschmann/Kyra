@@ -27,6 +27,8 @@ void Interpreter::execute(const std::string& code, bool verboseLogging, bool pas
 				if(passThroughExceptions)
 					throw RuntimeException(exception);
 				std::cout << "[ERROR] " << exception.what() << std::endl;
+			}catch (ReturnException& exception){
+				std::cout << "[ERROR] " << "Return Statements can only be used in Functions." << std::endl;
 			}
 		}
 	}catch(ParserException& exception) {
@@ -165,14 +167,21 @@ void Interpreter::visitPrintStmt(PrintStmt& printStmt) {
 }
 
 void Interpreter::visitReturnStmt(ReturnStmt& returnStmt) {
-
+	Value::Ptr returnVal = returnStmt.getExpr()->accept(*this);
+	throw ReturnException(returnVal);
 }
 
-void Interpreter::executeStatementsOnContext(const std::vector<Statement::Ptr>& statements, const Context::Ptr& context) {
+void Interpreter::executeStatementsOnContext(const std::vector<Statement::Ptr>& statements,
+		const Context::Ptr& context) {
 	Context::Ptr prev = m_currentContext;
 	m_currentContext = context;
-	for(const auto& statement : statements)
-		statement->accept(*this);
+	try {
+		for(const auto& statement : statements)
+			statement->accept(*this);
+	}catch(ReturnException& exception) {
+		m_currentContext = prev;
+		throw ReturnException(exception);
+	}
 	m_currentContext = prev;
 }
 }
