@@ -11,7 +11,7 @@ Slanguage is just a Hobby Project of mine. Don't expect to come across any new i
 ### For others:
 Slanguage is a **very** basic language, currently supporting:
 - first-class functions and objects
-- mutable variables
+- mutable and immutable variables
   - strings, signed integers, booleans, functions, objects and nothing (nil) values
 - closures
 - little things like
