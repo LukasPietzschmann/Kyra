@@ -36,6 +36,12 @@ TEST_F(InterpreterTest, VarDeclAndAssignment) {
 
 	EXPECT_THROW(m_interpreter->execute("var alreadyDeclared; var alreadyDeclared = 1;", false, true),
 			LibSlg::RuntimeException);
+
+	// immutable vals
+	EXPECT_THROW(m_interpreter->execute("val immutable = 1; immutable = 2;", false, true),
+			LibSlg::RuntimeException);
+	EXPECT_THROW(m_interpreter->execute("val immutableTwo; immutableTwo = 2;", false, true),
+			LibSlg::RuntimeException);
 }
 
 TEST_F(InterpreterTest, SimpleBooleanComparison) {
