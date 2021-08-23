@@ -22,6 +22,8 @@ Slanguage is a **very** basic language, currently supporting:
 
 See [example.slg](https://github.com/LukasPietzschmann/Slanguage/blob/master/example.slg) for a simple example.
 
+For more details visit the [Wiki](https://github.com/LukasPietzschmann/Slanguage/wiki).
+
 ## Compile the Project
 To compile the Code yourself, execute the following steps:
 1. Navigate to the projects root
