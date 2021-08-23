@@ -63,7 +63,6 @@ Value::Ptr Interpreter::visitAssignmentExpr(AssignmentExpr& assignmentExpr) {
 	const Context::ContextValue& cValue = m_currentContext->get(assignmentExpr.getName().getValue().asString());
 	if(!cValue.isMutable)
 		throw RuntimeException("Variable " + assignmentExpr.getName().getValue().asString() + " can't be rebound");
-	const Value::Ptr& value = cValue.value;
 	Value::Ptr newValue = assignmentExpr.getNewValue()->accept(*this);
 	m_currentContext->mutate(assignmentExpr.getName().getValue().asString(), newValue);
 	return newValue;
