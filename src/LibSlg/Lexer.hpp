@@ -16,6 +16,7 @@ public:
 private:
 	const std::unordered_map<std::string, TokenType> keywords {
 			{"var", TokenType::VAR},
+			{"val", TokenType::VAL},
 			{"fun", TokenType::FUN},
 			{"object", TokenType::OBJECT},
 			{"print", TokenType::PRINT},

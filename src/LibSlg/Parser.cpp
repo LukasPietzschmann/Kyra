@@ -8,16 +8,17 @@ std::vector<Statement::Ptr> Parser::parse() {
 }
 
 Statement::Ptr Parser::declaration() {
-	if(!matchAndAdvance(TokenType::VAR))
+	if(!matchAndAdvance({TokenType::VAR, TokenType::VAL}))
 		return statement();
 
+	bool isMutable = previous().getType() == TokenType::VAR;
 	Token identifier = consume(TokenType::NAME);
 	Expression::Ptr init = nullptr;
 	if(matchAndAdvance(TokenType::EQUAL))
 		init = assignment();
 	consume(TokenType::SEMICOLON);
 
-	return Statement::makePtr<DeclarationStmt>(identifier, init);
+	return Statement::makePtr<DeclarationStmt>(identifier, init, isMutable);
 }
 
 Statement::Ptr Parser::statement() {

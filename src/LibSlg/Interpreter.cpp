@@ -56,10 +56,14 @@ Value::Ptr Interpreter::visitAccessExpr(AccessExpr& accessExpr) {
 	if(owner->getType() != Value::OBJECT)
 		throw RuntimeException("Variable " + accessExpr.getName().getValue().asString() +
 				" can't be accessed from an expression, that doesn't provide a scope.");
-	return owner->object()->get(accessExpr.getName().getValue().asString());
+	return owner->object()->get(accessExpr.getName().getValue().asString()).value;
 }
 
 Value::Ptr Interpreter::visitAssignmentExpr(AssignmentExpr& assignmentExpr) {
+	const Context::ContextValue& cValue = m_currentContext->get(assignmentExpr.getName().getValue().asString());
+	if(!cValue.isMutable)
+		throw RuntimeException("Variable " + assignmentExpr.getName().getValue().asString() + " can't be rebound");
+	const Value::Ptr& value = cValue.value;
 	Value::Ptr newValue = assignmentExpr.getNewValue()->accept(*this);
 	m_currentContext->mutate(assignmentExpr.getName().getValue().asString(), newValue);
 	return newValue;
@@ -147,7 +151,7 @@ Value::Ptr Interpreter::visitUnaryExpr(UnaryExpr& unaryExpr) {
 }
 
 Value::Ptr Interpreter::visitVariable(VariableExpr& variableExpr) {
-	return m_currentContext->get(variableExpr.getName().getValue().asString());
+	return m_currentContext->get(variableExpr.getName().getValue().asString()).value;
 }
 
 void Interpreter::visitBlockStmt(BlockStmt& blockStmt) {
@@ -156,9 +160,11 @@ void Interpreter::visitBlockStmt(BlockStmt& blockStmt) {
 
 void Interpreter::visitDeclarationStmt(DeclarationStmt& declarationStmt) {
 	if(const Expression::Ptr& init = declarationStmt.getInitializer())
-		m_currentContext->declare(declarationStmt.getIdentifier().getValue().asString(), init->accept(*this));
+		m_currentContext->declare(declarationStmt.getIdentifier().getValue().asString(), init->accept(*this),
+				declarationStmt.isMutable());
 	else
-		m_currentContext->declare(declarationStmt.getIdentifier().getValue().asString());
+		m_currentContext->declare(declarationStmt.getIdentifier().getValue().asString(), Value::makePtr(),
+				declarationStmt.isMutable());
 }
 
 void Interpreter::visitExpressionStmt(ExpressionStmt& expressionStmt) {
