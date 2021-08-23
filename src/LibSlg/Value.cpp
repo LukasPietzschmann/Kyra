@@ -90,7 +90,7 @@ bool Value::operator==(const Value& other) const {
 		case NOTHING: return true;
 		case BOOL: return m_boolVal == other.m_boolVal;
 		case NUMBER: return m_intVal == other.m_intVal;
-		case STRING: return m_stringVal == other.m_stringVal;
+		case STRING: return m_stringVal.compare(other.m_stringVal) == 0;
 		case OBJECT: return m_objectVal == other.m_objectVal;
 		case FUNCTION: return m_functionVal == other.m_functionVal;
 	}
@@ -104,7 +104,7 @@ bool Value::operator<(const Value& other) const {
 		case BOOL: return !m_boolVal && other.m_boolVal;
 		case NOTHING: return false;
 		case NUMBER: return m_intVal < other.m_intVal;
-		case STRING: return m_stringVal < other.m_stringVal;
+		case STRING: return m_stringVal.compare(other.m_stringVal) < 0;
 		case OBJECT: return false;
 		case FUNCTION: return false;
 	}
@@ -117,7 +117,7 @@ bool Value::operator>(const Value& other) const {
 		case BOOL: return m_boolVal && !other.m_boolVal;
 		case NOTHING: return false;
 		case NUMBER: return m_intVal > other.m_intVal;
-		case STRING: return m_stringVal > other.m_stringVal;
+		case STRING: return m_stringVal.compare(other.m_stringVal) > 0;
 		case OBJECT: return false;
 		case FUNCTION: return false;
 	}
@@ -130,7 +130,7 @@ bool Value::operator<=(const Value& other) const {
 		case BOOL: return !(m_boolVal && !other.m_boolVal);
 		case NOTHING: return true;
 		case NUMBER: return m_intVal <= other.m_intVal;
-		case STRING: return m_stringVal <= other.m_stringVal;
+		case STRING: return m_stringVal.compare(other.m_stringVal) <= 0;
 		case OBJECT: return *this == other;
 		case FUNCTION: return *this == other;
 	}
@@ -143,7 +143,7 @@ bool Value::operator>=(const Value& other) const {
 		case BOOL: return !(!m_boolVal && other.m_boolVal);
 		case NOTHING: return true;
 		case NUMBER: return m_intVal >= other.m_intVal;
-		case STRING: return m_stringVal >= other.m_stringVal;
+		case STRING: return m_stringVal.compare(other.m_stringVal) >= 0;
 		case OBJECT: return *this == other;
 		case FUNCTION: return *this == other;
 	}
