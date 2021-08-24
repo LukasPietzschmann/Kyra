@@ -26,7 +26,7 @@ Slanguage{
     ReturnStatement = "return" Expression ";"
 
     //Declarations
-    Declaration = "var" identifier ("=" Expression)? ";" -- varDecl
+    Declaration = varKeyword identifier ("=" Expression)? ";" -- varDecl
                 | Statement
 
     //Slanguage Object
@@ -39,6 +39,7 @@ Slanguage{
     IdentifierList = "(" (identifier ("," identifier)*)? ")"
     ExpressionList = "(" (Expression ("," Expression)*)? ")"
     DotIdentifier = "." identifier
+    varKeyword = "val" | "var"
 
     //Lexical Grammar
     string = "\""(~"\"" any)*"\""
@@ -47,5 +48,5 @@ Slanguage{
     nothing = "Nothing"
     true = "true"
     false = "false"
-    keyword = nothing | "var" | "fun" | "object" | "return" | "print" | "true" | "false"
+    keyword = nothing | "var" | "val" | "fun" | "object" | "return" | "print" | "true" | "false"
 }
