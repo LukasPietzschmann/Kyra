@@ -10,7 +10,7 @@ namespace LibSlg {
 class Value {
 public:
 	typedef std::shared_ptr<Value> Ptr;
-	typedef char* Type;
+	typedef std::string Type;
 	typedef struct NativeType {
 		static const Type Nothing;
 		static const Type Number;
