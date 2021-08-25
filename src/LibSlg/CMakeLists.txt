@@ -1,4 +1,4 @@
-add_library(LibSlg AstLogger.hpp AstJsonPrinter.hpp AstJsonPrinter.cpp Context.hpp Context.cpp Exceptions.hpp Function.hpp
+add_library(LibSlg AstLogger.hpp Context.hpp Context.cpp Exceptions.hpp Function.hpp
 				Function.cpp TokenType.hpp Token.hpp Lexer.cpp Lexer.hpp Parser.cpp Parser.hpp
 				Value.hpp Value.cpp Interpreter.hpp Interpreter.cpp
 				Expressions/AssignmentExpr.hpp Expressions/CallExpr.hpp Expressions/Expression.hpp
