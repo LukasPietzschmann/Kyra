@@ -85,8 +85,8 @@ Value::Ptr Interpreter::visitBinaryExpr(BinaryExpr& binaryExpr) {
 			return *lhs - rhs;
 		case TokenType::PLUS:
 			if(!(lhs->getType() == Value::NativeTypes::Number && rhs->getType() == Value::NativeTypes::Number) &&
-					!(lhs->getType() == Value::NativeTypes::String && rhs->getType() == Value::NativeTypes::String))
-				throw RuntimeException("The + Operator can only operate on two numbers or two strings");
+					!(lhs->getType() == Value::NativeTypes::String))
+				throw RuntimeException("The + Operator can only operate on a string and two numbers");
 			return *lhs + rhs;
 		case TokenType::STAR:
 			if((lhs->getType() != Value::NativeTypes::Number && lhs->getType() != Value::NativeTypes::String) ||
