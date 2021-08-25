@@ -69,11 +69,17 @@ Statement::Ptr Parser::expression() {
 Expression::Ptr Parser::assignment() {
 	Expression::Ptr expr = equality();
 
-	if(match(TokenType::EQUAL)) {
-		Token name = previous();
-		advance();
-		Expression::Ptr newValue = assignment();
-		expr = Expression::makePtr<AssignmentExpr>(name, newValue);
+	if(matchAndAdvance(TokenType::EQUAL)) {
+		auto accessExpression = std::dynamic_pointer_cast<AccessExpr>(expr);
+		auto variableExpression = std::dynamic_pointer_cast<VariableExpr>(expr);
+		if(accessExpression) {//FIXME: May god forgive me for using std::dynamic_pointer_cast
+			Expression::Ptr newValue = assignment();
+			expr = Expression::makePtr<AssignmentExpr>(accessExpression->getOwner(), accessExpression->getName(),
+					newValue);
+		}else if(variableExpression) {
+			Expression::Ptr newValue = assignment();
+			expr = Expression::makePtr<AssignmentExpr>(nullptr, variableExpression->getName(), newValue);
+		}
 	}
 
 	return expr;

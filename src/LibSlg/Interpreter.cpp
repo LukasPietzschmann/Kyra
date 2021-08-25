@@ -61,11 +61,19 @@ Value::Ptr Interpreter::visitAccessExpr(AccessExpr& accessExpr) {
 }
 
 Value::Ptr Interpreter::visitAssignmentExpr(AssignmentExpr& assignmentExpr) {
-	const Context::ContextValue& cValue = m_currentContext->get(assignmentExpr.getName().getValue().asString());
+	Context::Ptr context;
+	if(assignmentExpr.getOwner()) {
+		auto owner = assignmentExpr.getOwner()->accept(*this);
+		if(owner->getType() != Value::NativeTypes::Object)
+			throw ParserException("Variables can only be accessed on objects");
+		context = Value::as<Object>(owner)->getContext();
+	}else
+		context = m_currentContext;
+	const Context::ContextValue& cValue = context->get(assignmentExpr.getName().getValue().asString());
 	if(!cValue.isMutable)
 		throw RuntimeException("Variable " + assignmentExpr.getName().getValue().asString() + " can't be rebound");
 	Value::Ptr newValue = assignmentExpr.getNewValue()->accept(*this);
-	m_currentContext->mutate(assignmentExpr.getName().getValue().asString(), newValue);
+	context->mutate(assignmentExpr.getName().getValue().asString(), newValue);
 	return newValue;
 }
 
@@ -111,7 +119,7 @@ Value::Ptr Interpreter::visitCallExpr(CallExpr& callExpr) {
 						std::to_string(callExpr.getArguments().size()) + ".");
 
 	std::vector<Value::Ptr> arguments;
-	for(const auto& arg : callExpr.getArguments())
+	for(const auto& arg: callExpr.getArguments())
 		arguments.push_back(arg->accept(*this));
 
 	Value::Ptr res = Value::as<Function>(fun)->exec(arguments);
@@ -186,7 +194,7 @@ void Interpreter::executeStatementsOnContext(const std::vector<Statement::Ptr>& 
 	Context::Ptr prev = m_currentContext;
 	m_currentContext = context;
 	try {
-		for(const auto& statement : statements)
+		for(const auto& statement: statements)
 			statement->accept(*this);
 	}catch(ReturnException& exception) {
 		m_currentContext = prev;
