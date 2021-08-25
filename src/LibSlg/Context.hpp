@@ -3,7 +3,7 @@
 #include <unordered_map>
 #include <utility>
 #include "Exceptions.hpp"
-#include "Value.hpp"
+#include "Values/Nothing.hpp"
 
 namespace LibSlg {
 class Context {
@@ -18,7 +18,7 @@ public:
 
 	const std::shared_ptr<Context>& getParent() const;
 	ContextValue get(const std::string& name);
-	void declare(const std::string& name, Value::Ptr value = Value::makePtr(), bool isMutable = true);
+	void declare(const std::string& name, Value::Ptr value = Value::makePtr<Nothing>(), bool isMutable = true);
 	void mutate(const std::string& name, Value::Ptr value);
 
 	template <class... Args>

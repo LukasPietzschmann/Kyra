@@ -1,4 +1,5 @@
 #include "Interpreter.hpp"
+#include "Values/Bool.hpp"
 
 namespace LibSlg {
 Interpreter& Interpreter::getInstance() {
@@ -53,10 +54,10 @@ bool Interpreter::isIncompleteStatement(const std::string& code) {
 
 Value::Ptr Interpreter::visitAccessExpr(AccessExpr& accessExpr) {
 	Value::Ptr owner = accessExpr.getOwner()->accept(*this);
-	if(owner->getType() != Value::OBJECT)
+	if(owner->getType() != Value::NativeTypes::Object)
 		throw RuntimeException("Variable " + accessExpr.getName().getValue().asString() +
 				" can't be accessed from an expression, that doesn't provide a scope.");
-	return owner->object()->get(accessExpr.getName().getValue().asString()).value;
+	return Value::as<Object>(owner)->getContext()->get(accessExpr.getName().getValue().asString()).value;
 }
 
 Value::Ptr Interpreter::visitAssignmentExpr(AssignmentExpr& assignmentExpr) {
@@ -72,36 +73,37 @@ Value::Ptr Interpreter::visitBinaryExpr(BinaryExpr& binaryExpr) {
 	Value::Ptr lhs = binaryExpr.getLhs()->accept(*this);
 	Value::Ptr rhs = binaryExpr.getRhs()->accept(*this);
 	switch(binaryExpr.getOperator().getType()) {
-		case TokenType::EQUAL_EQUAL: return Value::makePtr(*lhs == *rhs);
-		case TokenType::BANG_EQUAL: return Value::makePtr(*lhs != *rhs);
-		case TokenType::GREATER: return Value::makePtr(*lhs > *rhs);
-		case TokenType::GREATER_EQUAL: return Value::makePtr(*lhs >= *rhs);
-		case TokenType::LESS: return Value::makePtr(*lhs < *rhs);
-		case TokenType::LESS_EQUAL: return Value::makePtr(*lhs <= *rhs);
+		case TokenType::EQUAL_EQUAL: return Value::makePtr<Bool>(*lhs == rhs);
+		case TokenType::BANG_EQUAL: return Value::makePtr<Bool>(*lhs != rhs);
+		case TokenType::GREATER: return Value::makePtr<Bool>(*lhs > rhs);
+		case TokenType::GREATER_EQUAL: return Value::makePtr<Bool>(*lhs >= rhs);
+		case TokenType::LESS: return Value::makePtr<Bool>(*lhs < rhs);
+		case TokenType::LESS_EQUAL: return Value::makePtr<Bool>(*lhs <= rhs);
 		case TokenType::MINUS:
-			if(lhs->getType() != Value::NUMBER || rhs->getType() != Value::NUMBER)
+			if(lhs->getType() != Value::NativeTypes::Number || rhs->getType() != Value::NativeTypes::Number)
 				throw RuntimeException("The - Operator can only operate on two numbers");
-			return Value::makePtr(*lhs - *rhs);
+			return *lhs - rhs;
 		case TokenType::PLUS:
-			if(!(lhs->getType() == Value::NUMBER && rhs->getType() == Value::NUMBER) &&
-					!(lhs->getType() == Value::STRING && rhs->getType() == Value::STRING))
+			if(!(lhs->getType() == Value::NativeTypes::Number && rhs->getType() == Value::NativeTypes::Number) &&
+					!(lhs->getType() == Value::NativeTypes::String && rhs->getType() == Value::NativeTypes::String))
 				throw RuntimeException("The + Operator can only operate on two numbers or two strings");
-			return Value::makePtr(*lhs + *rhs);
+			return *lhs + rhs;
 		case TokenType::STAR:
-			if((lhs->getType() != Value::NUMBER && lhs->getType() != Value::STRING) || rhs->getType() != Value::NUMBER)
+			if((lhs->getType() != Value::NativeTypes::Number && lhs->getType() != Value::NativeTypes::String) ||
+					rhs->getType() != Value::NativeTypes::Number)
 				throw RuntimeException("The * Operator can only operate on two numbers or a string and a number");
-			return Value::makePtr(*lhs * *rhs);
+			return *lhs * rhs;
 		case TokenType::SLASH:
-			if(lhs->getType() != Value::NUMBER || rhs->getType() != Value::NUMBER)
+			if(lhs->getType() != Value::NativeTypes::Number || rhs->getType() != Value::NativeTypes::Number)
 				throw RuntimeException("The / Operator can only operate on two numbers");
-			return Value::makePtr(*lhs / *rhs);
+			return *lhs / rhs;
 		default: assert(false);
 	}
 }
 
 Value::Ptr Interpreter::visitCallExpr(CallExpr& callExpr) {
 	Value::Ptr fun = callExpr.getFunction()->accept(*this);
-	unsigned int arity = fun->function()->getArity();
+	unsigned int arity = Value::as<Function>(fun)->getArity();
 
 	if(arity != callExpr.getArguments().size())
 		throw RuntimeException(
@@ -112,12 +114,12 @@ Value::Ptr Interpreter::visitCallExpr(CallExpr& callExpr) {
 	for(const auto& arg : callExpr.getArguments())
 		arguments.push_back(arg->accept(*this));
 
-	Value::Ptr res = fun->function()->exec(arguments);
+	Value::Ptr res = Value::as<Function>(fun)->exec(arguments);
 	return res;
 }
 
 Value::Ptr Interpreter::visitFunction(FunctionExpr& functionExpr) {
-	return Value::makePtr(Function::makePtr(functionExpr, m_currentContext));
+	return Value::makePtr<Function>(functionExpr, m_currentContext);
 }
 
 Value::Ptr Interpreter::visitGroupExpr(GroupExpr& groupExpr) {
@@ -125,25 +127,25 @@ Value::Ptr Interpreter::visitGroupExpr(GroupExpr& groupExpr) {
 }
 
 Value::Ptr Interpreter::visitLiteral(LiteralExpr& literalExpr) {
-	return Value::makePtr(literalExpr.getValue());
+	return literalExpr.getValue();
 }
 
 Value::Ptr Interpreter::visitObject(ObjectExpr& objectExpr) {
 	Context::Ptr context = Context::makePtr(m_currentContext);
 	const auto& block = std::dynamic_pointer_cast<BlockStmt>(objectExpr.getImplementation());
 	executeStatementsOnContext(block->getStatements(), context);
-	return Value::makePtr(context);
+	return Value::makePtr<Object>(context);
 }
 
 Value::Ptr Interpreter::visitUnaryExpr(UnaryExpr& unaryExpr) {
 	Value::Ptr value = unaryExpr.getRhs()->accept(*this);
 	std::stringstream ss;
 	switch(unaryExpr.getOperator().getType()) {
-		case TokenType::BANG: return Value::makePtr(!value->isTrue());
+		case TokenType::BANG: return Value::makePtr<Bool>(!value->isImplicitlyTrue());
 		case TokenType::MINUS:
-			if(value->getType() == Value::NUMBER)
-				return Value::makePtr(value->number() * -1);
-			ss << *value << " is not a number";
+			if(value->getType() == Value::NativeTypes::Number)
+				return *value * Value::makePtr<Number>(-1);
+			ss << value->toString() << " is not a number";
 			throw RuntimeException(ss.str());
 		default: assert(false);
 	}
@@ -162,7 +164,7 @@ void Interpreter::visitDeclarationStmt(DeclarationStmt& declarationStmt) {
 		m_currentContext->declare(declarationStmt.getIdentifier().getValue().asString(), init->accept(*this),
 				declarationStmt.isMutable());
 	else
-		m_currentContext->declare(declarationStmt.getIdentifier().getValue().asString(), Value::makePtr(),
+		m_currentContext->declare(declarationStmt.getIdentifier().getValue().asString(), Value::makePtr<Nothing>(),
 				declarationStmt.isMutable());
 }
 
@@ -171,7 +173,7 @@ void Interpreter::visitExpressionStmt(ExpressionStmt& expressionStmt) {
 }
 
 void Interpreter::visitPrintStmt(PrintStmt& printStmt) {
-	std::cout << *printStmt.getExpr()->accept(*this) << std::endl;
+	std::cout << printStmt.getExpr()->accept(*this)->toString() << std::endl;
 }
 
 void Interpreter::visitReturnStmt(ReturnStmt& returnStmt) {

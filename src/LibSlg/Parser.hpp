@@ -22,6 +22,12 @@
 #include "Statements/ReturnStmt.hpp"
 #include "Statements/Statement.hpp"
 #include "Token.hpp"
+#include "Values/Bool.hpp"
+#include "Values/Function.hpp"
+#include "Values/Nothing.hpp"
+#include "Values/Number.hpp"
+#include "Values/Object.hpp"
+#include "Values/String.hpp"
 
 namespace LibSlg {
 class Parser {

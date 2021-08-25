@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Forward.hpp"
-#include "../Value.hpp"
+#include "../Values/Value.hpp"
 
 namespace LibSlg {
 

@@ -1,16 +1,16 @@
 #pragma once
 
 #include "Expression.hpp"
-#include "../Value.hpp"
+#include "../Values/Value.hpp"
 
 namespace LibSlg {
 class LiteralExpr : public Expression {
 public:
-	explicit LiteralExpr(const Value& value) : m_value(value) {}
+	explicit LiteralExpr(Value::Ptr value) : m_value(std::move(value)) {}
 	~LiteralExpr() override {}
 	Value::Ptr accept(ExpressionVisitor& visitor) override { return visitor.visitLiteral(*this); }
-	const Value& getValue() const { return m_value; }
+	const Value::Ptr& getValue() const { return m_value; }
 private:
-	Value m_value;
+	Value::Ptr m_value;
 };
 }

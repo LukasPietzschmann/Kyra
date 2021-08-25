@@ -175,15 +175,15 @@ Expression::Ptr Parser::primary() {
 		return Expression::makePtr<GroupExpr>(expr);
 	}
 	if(matchAndAdvance(TokenType::NOTHING))
-		return Expression::makePtr<LiteralExpr>(Value());
+		return Expression::makePtr<LiteralExpr>(Value::makePtr<Nothing>());
 	if(matchAndAdvance(TokenType::NUMBER))
-		return Expression::makePtr<LiteralExpr>(Value(previous().getValue().asInt()));
+		return Expression::makePtr<LiteralExpr>(Value::makePtr<Number>(previous().getValue().asInt()));
 	if(matchAndAdvance(TokenType::STRING))
-		return Expression::makePtr<LiteralExpr>(Value(previous().getValue().asString()));
+		return Expression::makePtr<LiteralExpr>(Value::makePtr<String>(previous().getValue().asString()));
 	if(matchAndAdvance(TokenType::TRUE))
-		return Expression::makePtr<LiteralExpr>(Value(true));
+		return Expression::makePtr<LiteralExpr>(Value::makePtr<Bool>(true));
 	if(matchAndAdvance(TokenType::FALSE))
-		return Expression::makePtr<LiteralExpr>(Value(false));
+		return Expression::makePtr<LiteralExpr>(Value::makePtr<Bool>(false));
 	if(matchAndAdvance(TokenType::NAME))
 		return Expression::makePtr<VariableExpr>(previous());
 	if(match(TokenType::FUN))
