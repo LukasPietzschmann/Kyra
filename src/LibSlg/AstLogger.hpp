@@ -116,7 +116,7 @@ public:
 	Value::Ptr visitFunction(FunctionExpr& functionExpr) override {
 		std::stringstream parameters;
 		for(const auto& parameter : functionExpr.getParameters())
-			parameters << parameter.getValue().asString() << " ";
+			parameters << parameter.name.getValue().asString() << " ";
 		COUT << "Function" << std::endl;
 		COUT << "Parameter " << parameters.str() << std::endl;
 		COUT << "Implementation" << std::endl;

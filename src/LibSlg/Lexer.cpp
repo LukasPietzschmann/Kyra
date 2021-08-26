@@ -34,6 +34,8 @@ void Lexer::scanToken() {
 			break;
 		case '.': addToken(TokenType::DOT);
 			break;
+		case ':': addToken(TokenType::COLON);
+			break;
 		case '-': addToken(TokenType::MINUS);
 			break;
 		case '+': addToken(TokenType::PLUS);

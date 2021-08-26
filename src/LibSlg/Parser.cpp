@@ -12,13 +12,18 @@ Statement::Ptr Parser::declaration() {
 		return statement();
 
 	bool isMutable = previous().getType() == TokenType::VAR;
+
 	Token identifier = consume(TokenType::NAME);
+
+	consume(TokenType::COLON);
+	Value::Type type = consume(TokenType::NAME).getValue().asString();
+
 	Expression::Ptr init = nullptr;
 	if(matchAndAdvance(TokenType::EQUAL))
 		init = assignment();
 	consume(TokenType::SEMICOLON);
 
-	return Statement::makePtr<DeclarationStmt>(identifier, init, isMutable);
+	return Statement::makePtr<DeclarationStmt>(identifier, init, type, isMutable);
 }
 
 Statement::Ptr Parser::statement() {
@@ -208,11 +213,14 @@ Expression::Ptr Parser::primary() {
 Expression::Ptr Parser::function() {
 	consume(TokenType::FUN);
 
-	std::vector<Token> parameters;
+	std::vector<FunctionExpr::Parameter> parameters;
 	consume(TokenType::LEFT_PAREN);
 	if(!match(TokenType::RIGHT_PAREN)) {
 		do {
-			parameters.push_back(consume(TokenType::NAME));
+			Token name = consume(TokenType::NAME);
+			consume(TokenType::COLON);
+			Value::Type type = consume(TokenType::NAME).getValue().asString();
+			parameters.emplace_back(name, type);
 		}while(matchAndAdvance(TokenType::COMMA));
 	}
 	consume(TokenType::RIGHT_PAREN);

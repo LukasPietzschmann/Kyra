@@ -13,12 +13,12 @@ void Interpreter::execute(const std::string& code, bool verboseLogging, bool pas
 		auto statements = Parser(tokens).parse();
 		if(verboseLogging) {
 			AstLogger logger;
-			for(const auto& token : tokens)
+			for(const auto& token: tokens)
 				std::cout << token << std::endl;
-			for(const auto& statement : statements)
+			for(const auto& statement: statements)
 				logger.logStatement(statement);
 		}
-		for(const auto& statement : statements) {
+		for(const auto& statement: statements) {
 			try {
 				statement->accept(*this);
 			}catch(RuntimeException& exception) {
@@ -73,6 +73,9 @@ Value::Ptr Interpreter::visitAssignmentExpr(AssignmentExpr& assignmentExpr) {
 	if(!cValue.isMutable)
 		throw RuntimeException("Variable " + assignmentExpr.getName().getValue().asString() + " can't be rebound");
 	Value::Ptr newValue = assignmentExpr.getNewValue()->accept(*this);
+	if(cValue.type != newValue->getType())
+		throw ParserException(
+				"Given type " + newValue->getType() + " does not match expected type " + cValue.type);
 	context->mutate(assignmentExpr.getName().getValue().asString(), newValue);
 	return newValue;
 }
@@ -168,12 +171,24 @@ void Interpreter::visitBlockStmt(BlockStmt& blockStmt) {
 }
 
 void Interpreter::visitDeclarationStmt(DeclarationStmt& declarationStmt) {
-	if(const Expression::Ptr& init = declarationStmt.getInitializer())
-		m_currentContext->declare(declarationStmt.getIdentifier().getValue().asString(), init->accept(*this),
-				declarationStmt.isMutable());
-	else
+	if(!m_currentContext->isTypeKnown(declarationStmt.getType()))
+		throw RuntimeException("Unknown Type " + declarationStmt.getType());
+	if(declarationStmt.getType() == Value::NativeTypes::Object){
+		if(declarationStmt.getInitializer() == nullptr)
+			throw RuntimeException("Objects must be initialized inline");
+		if(!m_currentContext->declareType(declarationStmt.getIdentifier().getValue().asString()))
+			throw RuntimeException("Type " + declarationStmt.getIdentifier().getValue().asString() + " already exists");
+	}
+	if(const Expression::Ptr& init = declarationStmt.getInitializer()) {
+		Value::Ptr res = init->accept(*this);
+		if(declarationStmt.getType() != res->getType())
+			throw ParserException(
+					"Given type " + res->getType() + " does not match expected type " + declarationStmt.getType());
+		m_currentContext->declare(declarationStmt.getIdentifier().getValue().asString(), res,
+				declarationStmt.getType(), declarationStmt.isMutable());
+	}else
 		m_currentContext->declare(declarationStmt.getIdentifier().getValue().asString(), Value::makePtr<Nothing>(),
-				declarationStmt.isMutable());
+				declarationStmt.getType(), declarationStmt.isMutable());
 }
 
 void Interpreter::visitExpressionStmt(ExpressionStmt& expressionStmt) {
