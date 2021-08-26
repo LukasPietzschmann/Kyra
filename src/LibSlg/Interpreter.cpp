@@ -53,30 +53,18 @@ bool Interpreter::isIncompleteStatement(const std::string& code) {
 }
 
 Value::Ptr Interpreter::visitAccessExpr(AccessExpr& accessExpr) {
-	Value::Ptr owner = accessExpr.getOwner()->accept(*this);
-	if(owner->getType() != Value::NativeTypes::Object)
-		throw RuntimeException("Variable " + accessExpr.getName().getValue().asString() +
-				" can't be accessed from an expression, that doesn't provide a scope.");
-	return Value::as<Object>(owner)->getContext()->get(accessExpr.getName().getValue().asString()).value;
+	return m_currentContext->get(accessExpr.getName().getValue().asString()).value;
 }
 
 Value::Ptr Interpreter::visitAssignmentExpr(AssignmentExpr& assignmentExpr) {
-	Context::Ptr context;
-	if(assignmentExpr.getOwner()) {
-		auto owner = assignmentExpr.getOwner()->accept(*this);
-		if(owner->getType() != Value::NativeTypes::Object)
-			throw ParserException("Variables can only be accessed on objects");
-		context = Value::as<Object>(owner)->getContext();
-	}else
-		context = m_currentContext;
-	const Context::ContextValue& cValue = context->get(assignmentExpr.getName().getValue().asString());
+	const Context::ContextValue& cValue = m_currentContext->get(assignmentExpr.getName().getValue().asString());
 	if(!cValue.isMutable)
 		throw RuntimeException("Variable " + assignmentExpr.getName().getValue().asString() + " can't be rebound");
 	Value::Ptr newValue = assignmentExpr.getNewValue()->accept(*this);
 	if(cValue.type != newValue->getType())
 		throw ParserException(
 				"Given type " + newValue->getType() + " does not match expected type " + cValue.type);
-	context->mutate(assignmentExpr.getName().getValue().asString(), newValue);
+	m_currentContext->mutate(assignmentExpr.getName().getValue().asString(), newValue);
 	return newValue;
 }
 
@@ -141,13 +129,6 @@ Value::Ptr Interpreter::visitLiteral(LiteralExpr& literalExpr) {
 	return literalExpr.getValue();
 }
 
-Value::Ptr Interpreter::visitObject(ObjectExpr& objectExpr) {
-	Context::Ptr context = Context::makePtr(m_currentContext);
-	const auto& block = std::dynamic_pointer_cast<BlockStmt>(objectExpr.getImplementation());
-	executeStatementsOnContext(block->getStatements(), context);
-	return Value::makePtr<Object>(context);
-}
-
 Value::Ptr Interpreter::visitUnaryExpr(UnaryExpr& unaryExpr) {
 	Value::Ptr value = unaryExpr.getRhs()->accept(*this);
 	std::stringstream ss;
@@ -173,12 +154,6 @@ void Interpreter::visitBlockStmt(BlockStmt& blockStmt) {
 void Interpreter::visitDeclarationStmt(DeclarationStmt& declarationStmt) {
 	if(!m_currentContext->isTypeKnown(declarationStmt.getType()))
 		throw RuntimeException("Unknown Type " + declarationStmt.getType());
-	if(declarationStmt.getType() == Value::NativeTypes::Object){
-		if(declarationStmt.getInitializer() == nullptr)
-			throw RuntimeException("Objects must be initialized inline");
-		if(!m_currentContext->declareType(declarationStmt.getIdentifier().getValue().asString()))
-			throw RuntimeException("Type " + declarationStmt.getIdentifier().getValue().asString() + " already exists");
-	}
 	if(const Expression::Ptr& init = declarationStmt.getInitializer()) {
 		Value::Ptr res = init->accept(*this);
 		if(declarationStmt.getType() != res->getType())

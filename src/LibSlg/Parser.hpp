@@ -12,7 +12,6 @@
 #include "Expressions/FunctionExpr.hpp"
 #include "Expressions/GroupExpr.hpp"
 #include "Expressions/LiteralExpr.hpp"
-#include "Expressions/ObjectExpr.hpp"
 #include "Expressions/UnaryExpr.hpp"
 #include "Expressions/VariableExpr.hpp"
 #include "Statements/BlockStmt.hpp"
@@ -26,7 +25,6 @@
 #include "Values/Function.hpp"
 #include "Values/Nothing.hpp"
 #include "Values/Number.hpp"
-#include "Values/Object.hpp"
 #include "Values/String.hpp"
 
 namespace LibSlg {
@@ -58,7 +56,6 @@ private:
 	Expression::Ptr call();
 	Expression::Ptr primary();
 	Expression::Ptr function();
-	Expression::Ptr object();
 
 	Token advance();
 	Token consume(TokenType expected);

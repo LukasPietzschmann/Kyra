@@ -199,8 +199,6 @@ Expression::Ptr Parser::primary() {
 		return Expression::makePtr<VariableExpr>(previous());
 	if(match(TokenType::FUN))
 		return function();
-	if(match(TokenType::OBJECT))
-		return object();
 
 	if(previous().getType() == TokenType::END_OF_FILE)
 		throw ParserException(
@@ -228,11 +226,6 @@ Expression::Ptr Parser::function() {
 	Statement::Ptr implementation = block();
 
 	return Expression::makePtr<FunctionExpr>(parameters, implementation);
-}
-
-Expression::Ptr Parser::object() {
-	consume(TokenType::OBJECT);
-	return Expression::makePtr<ObjectExpr>(block());
 }
 
 Token Parser::advance() {

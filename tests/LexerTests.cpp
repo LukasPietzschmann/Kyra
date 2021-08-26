@@ -2,7 +2,7 @@
 #include "../src/LibSlg/Lexer.hpp"
 
 TEST(lexer, AllTokens) {
-	LibSlg::Lexer lexer("(){},;.-+/*= ==! != < <= > >=name\"string\"123var fun object print nothing true false return");
+	LibSlg::Lexer lexer("(){},;.-+/*= ==! != < <= > >=name\"string\"123var fun print nothing true false return");
 	std::vector<LibSlg::Token> expected {
 			LibSlg::Token(LibSlg::TokenType::LEFT_PAREN, 0, "("),
 			LibSlg::Token(LibSlg::TokenType::RIGHT_PAREN, 0, ")"),
@@ -28,7 +28,6 @@ TEST(lexer, AllTokens) {
 			LibSlg::Token(LibSlg::TokenType::NUMBER, 0, "123", "123"),
 			LibSlg::Token(LibSlg::TokenType::VAR, 0, "var"),
 			LibSlg::Token(LibSlg::TokenType::FUN, 0, "fun"),
-			LibSlg::Token(LibSlg::TokenType::OBJECT, 0, "object"),
 			LibSlg::Token(LibSlg::TokenType::PRINT, 0, "print"),
 			LibSlg::Token(LibSlg::TokenType::NOTHING, 0, "nothing"),
 			LibSlg::Token(LibSlg::TokenType::TRUE, 0, "true"),

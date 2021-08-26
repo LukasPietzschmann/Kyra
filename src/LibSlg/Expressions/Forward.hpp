@@ -8,7 +8,6 @@ class CallExpr;
 class FunctionExpr;
 class GroupExpr;
 class LiteralExpr;
-class ObjectExpr;
 class UnaryExpr;
 class VariableExpr;
 }

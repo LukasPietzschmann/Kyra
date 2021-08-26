@@ -16,7 +16,6 @@ public:
 		static const Type Number;
 		static const Type Bool;
 		static const Type String;
-		static const Type Object;
 		static const Type Function;
 	} NativeTypes;
 

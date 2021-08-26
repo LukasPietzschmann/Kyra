@@ -10,7 +10,6 @@
 #include "Expressions/FunctionExpr.hpp"
 #include "Expressions/GroupExpr.hpp"
 #include "Expressions/LiteralExpr.hpp"
-#include "Expressions/ObjectExpr.hpp"
 #include "Expressions/UnaryExpr.hpp"
 #include "Expressions/VariableExpr.hpp"
 #include "Statements/BlockStmt.hpp"
@@ -34,7 +33,7 @@ public:
 	void visitBlockStmt(BlockStmt& blockStmt) override {
 		COUT << "Block" << std::endl;
 		++m_indent;
-		for(const auto& stmt : blockStmt.getStatements())
+		for(const auto& stmt: blockStmt.getStatements())
 			stmt->accept(*this);
 		--m_indent;
 	}
@@ -107,7 +106,7 @@ public:
 		--m_indent;
 		COUT << "With arguments" << std::endl;
 		++m_indent;
-		for(const auto& argument : callExpr.getArguments())
+		for(const auto& argument: callExpr.getArguments())
 			argument->accept(*this);
 		--m_indent;
 		return nullptr;
@@ -115,7 +114,7 @@ public:
 
 	Value::Ptr visitFunction(FunctionExpr& functionExpr) override {
 		std::stringstream parameters;
-		for(const auto& parameter : functionExpr.getParameters())
+		for(const auto& parameter: functionExpr.getParameters())
 			parameters << parameter.name.getValue().asString() << " ";
 		COUT << "Function" << std::endl;
 		COUT << "Parameter " << parameters.str() << std::endl;
@@ -136,15 +135,6 @@ public:
 
 	Value::Ptr visitLiteral(LiteralExpr& literal) override {
 		COUT << "Literal with value of " << literal.getValue() << std::endl;
-		return nullptr;
-	}
-
-	Value::Ptr visitObject(ObjectExpr& objectExpr) override {
-		COUT << "Object" << std::endl;
-		COUT << "Implementation" << std::endl;
-		++m_indent;
-		objectExpr.getImplementation()->accept(*this);
-		--m_indent;
 		return nullptr;
 	}
 

@@ -35,6 +35,6 @@ private:
 	const std::shared_ptr<Context> m_parent;
 	std::unordered_map<std::string, ContextValue> m_variables;
 	std::vector<Value::Type> m_types {Value::NativeTypes::Nothing, Value::NativeTypes::Number, Value::NativeTypes::Bool,
-			Value::NativeTypes::String, Value::NativeTypes::Object, Value::NativeTypes::Function};
+			Value::NativeTypes::String, Value::NativeTypes::Function};
 };
 }
