@@ -1,7 +1,5 @@
 #include "Context.hpp"
 
-#include <utility>
-
 namespace LibSlg {
 const std::shared_ptr<Context>& Context::getParent() const { return m_parent; }
 
@@ -14,7 +12,7 @@ Context::ContextValue Context::get(const std::string& name) {
 	throw RuntimeException("Undefined variable " + name);
 }
 
-void Context::declare(const std::string& name, Value::Ptr value, Value::Type type, bool isMutable) {
+void Context::declareVar(const std::string& name, Value::Ptr value, Value::Type type, bool isMutable) {
 	if(m_variables.contains(name))
 		throw RuntimeException("Variable " + name + " already declared");
 	m_variables.emplace(std::make_pair(name, Context::ContextValue(std::move(value), std::move(type), isMutable)));
@@ -31,16 +29,18 @@ void Context::mutate(const std::string& name, Value::Ptr value) {
 }
 
 bool Context::isTypeKnown(const Value::Type& type) {
-	if(std::find(m_types.begin(), m_types.end(), type) != m_types.end())
+	if(std::find(m_nativeTypes.begin(), m_nativeTypes.end(), type) != m_nativeTypes.end() ||
+			m_customTypes.contains(type))
 		return true;
 	if(m_parent != nullptr)
 		return m_parent->isTypeKnown(type);
 	return false;
 }
 
-bool Context::declareType(const Value::Type& type) {
+bool Context::declareType(const Value::Type& type, Klass klass) {
 	if(isTypeKnown(type))
 		return false;
-	m_types.emplace_back(type);
+	m_customTypes.emplace(type, klass);
+	return true;
 }
 }

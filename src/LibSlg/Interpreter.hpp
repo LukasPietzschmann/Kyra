@@ -5,6 +5,7 @@
 #include "Context.hpp"
 #include "Expressions/Expression.hpp"
 #include "Values/Function.hpp"
+#include "Values/Klass.hpp"
 #include "Lexer.hpp"
 #include "Parser.hpp"
 #include "Statements/Statement.hpp"
@@ -31,6 +32,7 @@ public:
 	Value::Ptr visitVariable(VariableExpr& variableExpr) override;
 	void visitBlockStmt(BlockStmt& blockStmt) override;
 	void visitDeclarationStmt(DeclarationStmt& declarationStmt) override;
+	void visitClassDeclarationStmt(ClassDeclarationStmt& classDeclarationStmt) override;
 	void visitExpressionStmt(ExpressionStmt& expressionStmt) override;
 	void visitPrintStmt(PrintStmt& printStmt) override;
 	void visitReturnStmt(ReturnStmt& returnStmt) override;

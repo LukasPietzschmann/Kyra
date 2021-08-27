@@ -4,6 +4,7 @@
 #include <utility>
 #include "Statement.hpp"
 #include "../Token.hpp"
+#include "../Expressions/Expression.hpp"
 
 namespace LibSlg {
 class DeclarationStmt : public Statement {

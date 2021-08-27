@@ -8,6 +8,7 @@ class StatementVisitor {
 public:
 	virtual void visitBlockStmt(BlockStmt& blockStmt) = 0;
 	virtual void visitDeclarationStmt(DeclarationStmt& declarationStmt) = 0;
+	virtual void visitClassDeclarationStmt(ClassDeclarationStmt& classDeclarationStmt) = 0;
 	virtual void visitExpressionStmt(ExpressionStmt& expressionStmt) = 0;
 	virtual void visitPrintStmt(PrintStmt& printStmt) = 0;
 	virtual void visitReturnStmt(ReturnStmt& returnStmt) = 0;

@@ -18,6 +18,7 @@ private:
 			{"var", TokenType::VAR},
 			{"val", TokenType::VAL},
 			{"fun", TokenType::FUN},
+			{"class", TokenType::CLASS},
 			{"print", TokenType::PRINT},
 			{"nothing", TokenType::NOTHING},
 			{"true", TokenType::TRUE},

@@ -26,7 +26,9 @@ Slanguage{
     ReturnStatement = "return" Expression ";"
 
     //Declarations
-    Declaration = varKeyword identifier TypeSpecifier ("=" Expression)? ";" -- varDecl
+    Declaration = "class" identifier IdentifierListWithVal Block -- classDeclaration
+                | VarDeclaration
+    VarDeclaration = varKeyword identifier TypeSpecifier ("=" Expression)? ";" -- varDecl
                 | Statement
 
     //Slanguage Object
@@ -34,8 +36,9 @@ Slanguage{
 
     //Utilities
     Group = "(" Expression ")"
-    Block = "{" Declaration+ "}"
+    Block = "{" Declaration* "}"
     IdentifierList = "(" (identifier TypeSpecifier ("," identifier TypeSpecifier)*)? ")"
+    IdentifierListWithVal = "(" (varKeyword identifier TypeSpecifier ("," varKeyword identifier TypeSpecifier)*)? ")"
     ExpressionList = "(" (Expression ("," Expression)*)? ")"
     DotIdentifier = "." identifier
     varKeyword = "val" | "var"
@@ -48,5 +51,5 @@ Slanguage{
     nothing = "Nothing"
     true = "true"
     false = "false"
-    keyword = nothing | "var" | "val" | "fun" | "return" | "print" | "true" | "false"
+    keyword = nothing | "var" | "val" | "fun" | "class" | "return" | "print" | "true" | "false"
 }

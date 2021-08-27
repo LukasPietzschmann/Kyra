@@ -8,9 +8,17 @@ std::vector<Statement::Ptr> Parser::parse() {
 }
 
 Statement::Ptr Parser::declaration() {
-	if(!matchAndAdvance({TokenType::VAR, TokenType::VAL}))
+	if(!match({TokenType::VAR, TokenType::VAL, TokenType::CLASS}))
 		return statement();
 
+	if(match(TokenType::CLASS))
+		return classDeclaration();
+
+	return varDeclaration();
+}
+
+Statement::Ptr Parser::varDeclaration() {
+	matchAndAdvance({TokenType::VAL, TokenType::VAR});
 	bool isMutable = previous().getType() == TokenType::VAR;
 
 	Token identifier = consume(TokenType::NAME);
@@ -24,6 +32,33 @@ Statement::Ptr Parser::declaration() {
 	consume(TokenType::SEMICOLON);
 
 	return Statement::makePtr<DeclarationStmt>(identifier, init, type, isMutable);
+}
+
+Statement::Ptr Parser::classDeclaration() {
+	consume(TokenType::CLASS);
+	Token name = consume(TokenType::NAME);
+
+	std::vector<ClassDeclarationStmt::ConstructorParameter> constructorParameter;
+	consume(TokenType::LEFT_PAREN);
+	if(!match(TokenType::RIGHT_PAREN)) {
+		do {
+
+			matchAndAdvance({TokenType::VAR, TokenType::VAL});
+			bool isMutable = previous().getType() == TokenType::VAR;
+			Token name = consume(TokenType::NAME);
+			consume(TokenType::COLON);
+			Value::Type type = consume(TokenType::NAME).getValue().asString();
+			constructorParameter.emplace_back(name, isMutable, type);
+		}while(matchAndAdvance(TokenType::COMMA));
+	}
+	consume(TokenType::RIGHT_PAREN);
+	consume(TokenType::LEFT_CURLY);
+
+	std::vector<std::shared_ptr<DeclarationStmt>> declarations;
+	while(!isAtEnd() && !matchAndAdvance(TokenType::RIGHT_CURLY))
+		declarations.push_back(std::dynamic_pointer_cast<DeclarationStmt>(varDeclaration()));
+
+	return Statement::makePtr<ClassDeclarationStmt>(name, constructorParameter, declarations);
 }
 
 Statement::Ptr Parser::statement() {

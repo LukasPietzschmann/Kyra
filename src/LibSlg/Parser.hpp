@@ -15,6 +15,7 @@
 #include "Expressions/UnaryExpr.hpp"
 #include "Expressions/VariableExpr.hpp"
 #include "Statements/BlockStmt.hpp"
+#include "Statements/ClassDeclarationStmt.hpp"
 #include "Statements/DeclarationStmt.hpp"
 #include "Statements/ExpressionStmt.hpp"
 #include "Statements/PrintStmt.hpp"
@@ -41,6 +42,8 @@ private:
 	int m_current {};
 
 	Statement::Ptr declaration();
+	Statement::Ptr varDeclaration();
+	Statement::Ptr classDeclaration();
 	Statement::Ptr statement();
 	Statement::Ptr expression();
 	Statement::Ptr block();

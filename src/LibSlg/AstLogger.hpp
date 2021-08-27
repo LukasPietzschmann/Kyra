@@ -13,6 +13,7 @@
 #include "Expressions/UnaryExpr.hpp"
 #include "Expressions/VariableExpr.hpp"
 #include "Statements/BlockStmt.hpp"
+#include "Statements/ClassDeclarationStmt.hpp"
 #include "Statements/DeclarationStmt.hpp"
 #include "Statements/ExpressionStmt.hpp"
 #include "Statements/PrintStmt.hpp"
@@ -47,6 +48,22 @@ public:
 			--m_indent;
 		}else
 			std::cout << std::endl;
+	}
+
+	void visitClassDeclarationStmt(ClassDeclarationStmt& classDeclarationStmt) override {
+		COUT << "Declaration of class " << classDeclarationStmt.getIdentifier().getValue().asString() << "\n";
+		COUT << "Constructor";
+		++m_indent;
+		std::stringstream parameter;
+		for(const auto& param: classDeclarationStmt.getConstructorParameters())
+			parameter << param.name.getValue().asString() << " ";
+		COUT << parameter.str() << "\n";
+		--m_indent;
+		std::cout << "Declarations" << std::endl;
+		++m_indent;
+		for(const auto& decl: classDeclarationStmt.getDeclarations())
+			decl->accept(*this);
+		--m_indent;
 	}
 
 	void visitExpressionStmt(ExpressionStmt& expressionStmt) override {

@@ -5,6 +5,7 @@
 #include <vector>
 #include "Exceptions.hpp"
 #include "Values/Nothing.hpp"
+#include "Values/Klass.hpp"
 
 namespace LibSlg {
 class Context {
@@ -21,10 +22,10 @@ public:
 
 	const std::shared_ptr<Context>& getParent() const;
 	ContextValue get(const std::string& name);
-	void declare(const std::string& name, Value::Ptr value, Value::Type type, bool isMutable = true);
+	void declareVar(const std::string& name, Value::Ptr value, Value::Type type, bool isMutable = true);
 	void mutate(const std::string& name, Value::Ptr value);
 	bool isTypeKnown(const Value::Type& type);
-	bool declareType(const Value::Type& type);
+	bool declareType(const Value::Type& type, Klass klass);
 
 	template <class... Args>
 	static Context::Ptr makePtr(Args... args) {
@@ -34,7 +35,8 @@ public:
 private:
 	const std::shared_ptr<Context> m_parent;
 	std::unordered_map<std::string, ContextValue> m_variables;
-	std::vector<Value::Type> m_types {Value::NativeTypes::Nothing, Value::NativeTypes::Number, Value::NativeTypes::Bool,
-			Value::NativeTypes::String, Value::NativeTypes::Function};
+	std::vector<Value::Type> m_nativeTypes {Value::NativeTypes::Nothing, Value::NativeTypes::Number,
+			Value::NativeTypes::Bool, Value::NativeTypes::String, Value::NativeTypes::Function};
+	std::unordered_map<Value::Type, Klass> m_customTypes;
 };
 }

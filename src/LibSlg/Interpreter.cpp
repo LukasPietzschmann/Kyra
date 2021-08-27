@@ -159,11 +159,17 @@ void Interpreter::visitDeclarationStmt(DeclarationStmt& declarationStmt) {
 		if(declarationStmt.getType() != res->getType())
 			throw ParserException(
 					"Given type " + res->getType() + " does not match expected type " + declarationStmt.getType());
-		m_currentContext->declare(declarationStmt.getIdentifier().getValue().asString(), res,
+		m_currentContext->declareVar(declarationStmt.getIdentifier().getValue().asString(), res,
 				declarationStmt.getType(), declarationStmt.isMutable());
 	}else
-		m_currentContext->declare(declarationStmt.getIdentifier().getValue().asString(), Value::makePtr<Nothing>(),
+		m_currentContext->declareVar(declarationStmt.getIdentifier().getValue().asString(), Value::makePtr<Nothing>(),
 				declarationStmt.getType(), declarationStmt.isMutable());
+}
+
+void Interpreter::visitClassDeclarationStmt(ClassDeclarationStmt& classDeclarationStmt) {
+	auto name = classDeclarationStmt.getIdentifier().getValue().asString();
+	if(!m_currentContext->declareType(name, Klass(classDeclarationStmt)))
+		throw RuntimeException("Class " + name + " is already declared");
 }
 
 void Interpreter::visitExpressionStmt(ExpressionStmt& expressionStmt) {

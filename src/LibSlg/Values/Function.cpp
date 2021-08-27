@@ -6,7 +6,7 @@ Value::Ptr Function::exec(std::vector<Value::Ptr> arguments) {
 	assert(arguments.size() == getArity());
 	Context::Ptr runtimeContext = Context::makePtr(m_definitionContext);
 	for(unsigned long i = 0; i < arguments.size(); ++i)
-		runtimeContext->declare(m_functionExpr.getParameters()[i].name.getValue().asString(), arguments[i],
+		runtimeContext->declareVar(m_functionExpr.getParameters()[i].name.getValue().asString(), arguments[i],
 				m_functionExpr.getParameters()[i].type);
 	auto block = std::dynamic_pointer_cast<BlockStmt>(m_functionExpr.getImplementation());
 	try {
