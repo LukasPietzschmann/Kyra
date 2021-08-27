@@ -10,6 +10,7 @@ public:
 	~Nothing() override {}
 	bool isImplicitlyTrue() const override { return false; }
 	Type getType() const override { return Value::NativeTypes::Nothing; }
+	bool hasCorrectTypeForAssignment(const Value::Type&) const override { return true; }
 	std::string toString() const override { return "nothing"; }
 
 	bool operator==(const Value::Ptr& other) const override {

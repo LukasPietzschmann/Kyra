@@ -61,7 +61,7 @@ Value::Ptr Interpreter::visitAssignmentExpr(AssignmentExpr& assignmentExpr) {
 	if(!cValue.isMutable)
 		throw RuntimeException("Variable " + assignmentExpr.getName().getValue().asString() + " can't be rebound");
 	Value::Ptr newValue = assignmentExpr.getNewValue()->accept(*this);
-	if(cValue.type != newValue->getType())
+	if(!newValue->hasCorrectTypeForAssignment(cValue.type))
 		throw ParserException(
 				"Given type " + newValue->getType() + " does not match expected type " + cValue.type);
 	m_currentContext->mutate(assignmentExpr.getName().getValue().asString(), newValue);
@@ -156,7 +156,7 @@ void Interpreter::visitDeclarationStmt(DeclarationStmt& declarationStmt) {
 		throw RuntimeException("Unknown Type " + declarationStmt.getType());
 	if(const Expression::Ptr& init = declarationStmt.getInitializer()) {
 		Value::Ptr res = init->accept(*this);
-		if(declarationStmt.getType() != res->getType())
+		if(!res->hasCorrectTypeForAssignment(declarationStmt.getType()))
 			throw ParserException(
 					"Given type " + res->getType() + " does not match expected type " + declarationStmt.getType());
 		m_currentContext->declareVar(declarationStmt.getIdentifier().getValue().asString(), res,

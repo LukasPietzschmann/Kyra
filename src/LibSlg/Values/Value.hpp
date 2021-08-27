@@ -23,6 +23,8 @@ public:
 	virtual Type getType() const = 0;
 	virtual std::string toString() const = 0;
 
+	virtual bool hasCorrectTypeForAssignment(const Value::Type& type) const { return getType() == type; };
+
 	template <typename R>
 	static std::shared_ptr<R> as(Value::Ptr value) {
 		return std::dynamic_pointer_cast<R>(value);
