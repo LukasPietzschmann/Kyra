@@ -21,7 +21,8 @@ public:
 	explicit Context(Ptr parent = nullptr) : m_parent(parent) {}
 
 	const std::shared_ptr<Context>& getParent() const;
-	ContextValue get(const std::string& name);
+	ContextValue getVar(const std::string& name) const;
+	const Klass& getCustomType(const Value::Type& type) const;
 	void declareVar(const std::string& name, Value::Ptr value, Value::Type type, bool isMutable = true);
 	void mutate(const std::string& name, Value::Ptr value);
 	bool isTypeKnown(const Value::Type& type);

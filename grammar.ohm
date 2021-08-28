@@ -17,7 +17,7 @@ Slanguage{
     Unary = ("!" | "-") Unary -- Unary
           | Call
     Call = Primary (ExpressionList | DotIdentifier)*
-    Primary = number | string | true | false | nothing | Group | identifier | Function
+    Primary = number | string | true | false | nothing | Group | identifier | Function | Instantiation
 
     //Statements
     Statement = Block | ExpressionStatement | PrintStatement | ReturnStatement
@@ -43,6 +43,7 @@ Slanguage{
     DotIdentifier = "." identifier
     varKeyword = "val" | "var"
     TypeSpecifier = ":" identifier
+    Instantiation = "instantiate" identifier ExpressionList
 
     //Lexical Grammar
     string = "\""(~"\"" any)*"\""
@@ -51,5 +52,5 @@ Slanguage{
     nothing = "Nothing"
     true = "true"
     false = "false"
-    keyword = nothing | "var" | "val" | "fun" | "class" | "return" | "print" | "true" | "false"
+    keyword = nothing | "var" | "val" | "fun" | "class" | "return" | "print" | "true" | "false" | "instantiate"
 }

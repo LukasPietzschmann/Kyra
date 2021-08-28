@@ -13,6 +13,7 @@ public:
 	virtual Value::Ptr visitCallExpr(CallExpr& callExpr) = 0;
 	virtual Value::Ptr visitFunction(FunctionExpr& functionExpr) = 0;
 	virtual Value::Ptr visitGroupExpr(GroupExpr& groupExpr) = 0;
+	virtual Value::Ptr visitInstantiationExpr(InstantiationExpr& instantiationExpr) = 0;
 	virtual Value::Ptr visitLiteral(LiteralExpr& literalExpr) = 0;
 	virtual Value::Ptr visitUnaryExpr(UnaryExpr& unaryExpr) = 0;
 	virtual Value::Ptr visitVariable(VariableExpr& variableExpr) = 0;

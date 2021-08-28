@@ -9,6 +9,7 @@
 #include "Expressions/Expression.hpp"
 #include "Expressions/FunctionExpr.hpp"
 #include "Expressions/GroupExpr.hpp"
+#include "Expressions/InstantiationExpr.hpp"
 #include "Expressions/LiteralExpr.hpp"
 #include "Expressions/UnaryExpr.hpp"
 #include "Expressions/VariableExpr.hpp"
@@ -147,6 +148,16 @@ public:
 		COUT << "Group" << std::endl;
 		++m_indent;
 		groupExpr.getExpr()->accept(*this);
+		--m_indent;
+		return nullptr;
+	}
+
+	Value::Ptr visitInstantiationExpr(InstantiationExpr& instantiationExpr) override {
+		COUT << "Instantiation of class " + instantiationExpr.getName() + "\n";
+		COUT << "With constructor arguments\n";
+		++m_indent;
+		for(const auto& argument: instantiationExpr.getArguments())
+			argument->accept(*this);
 		--m_indent;
 		return nullptr;
 	}

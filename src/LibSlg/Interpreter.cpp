@@ -53,19 +53,41 @@ bool Interpreter::isIncompleteStatement(const std::string& code) {
 }
 
 Value::Ptr Interpreter::visitAccessExpr(AccessExpr& accessExpr) {
-	return m_currentContext->get(accessExpr.getName().getValue().asString()).value;
+	Value::Ptr owner = accessExpr.getOwner()->accept(*this);
+	auto klass = Value::as<Klass>(owner);
+	if(klass == nullptr)
+		throw RuntimeException("Variables can only be accessed on classes");
+	bool classContainsIdentifier = std::any_of(klass->getDeclarations().begin(), klass->getDeclarations().end(),
+			[&accessExpr](const std::shared_ptr<DeclarationStmt>& decl)->bool {
+				return decl->getIdentifier().getValue().asString() == accessExpr.getName().getValue().asString();
+			});
+	if(!classContainsIdentifier)
+		throw RuntimeException("Class " + owner->getType() + " does not contain a variable named " +
+				accessExpr.getName().getValue().asString());
+	else
+		return klass->getInstanceContext()->getVar(accessExpr.getName().getValue().asString()).value;
 }
 
 Value::Ptr Interpreter::visitAssignmentExpr(AssignmentExpr& assignmentExpr) {
-	const Context::ContextValue& cValue = m_currentContext->get(assignmentExpr.getName().getValue().asString());
+	Context::Ptr context = m_currentContext;
+	if(assignmentExpr.getOwner() != nullptr) {
+		Value::Ptr owner = assignmentExpr.getOwner()->accept(*this);
+		auto klass = Value::as<Klass>(owner);
+		if(klass == nullptr)
+			throw RuntimeException(assignmentExpr.getName().getValue().asString() + " is not an instance of a class");
+		context = klass->getInstanceContext();
+	}
+
+	const Context::ContextValue& cValue = context->getVar(assignmentExpr.getName().getValue().asString());
 	if(!cValue.isMutable)
 		throw RuntimeException("Variable " + assignmentExpr.getName().getValue().asString() + " can't be rebound");
 	Value::Ptr newValue = assignmentExpr.getNewValue()->accept(*this);
 	if(!newValue->hasCorrectTypeForAssignment(cValue.type))
 		throw ParserException(
 				"Given type " + newValue->getType() + " does not match expected type " + cValue.type);
-	m_currentContext->mutate(assignmentExpr.getName().getValue().asString(), newValue);
+	context->mutate(assignmentExpr.getName().getValue().asString(), newValue);
 	return newValue;
+
 }
 
 Value::Ptr Interpreter::visitBinaryExpr(BinaryExpr& binaryExpr) {
@@ -107,7 +129,7 @@ Value::Ptr Interpreter::visitCallExpr(CallExpr& callExpr) {
 	if(arity != callExpr.getArguments().size())
 		throw RuntimeException(
 				"The Function needs to be called with " + std::to_string(arity) + " arguments. You provided " +
-						std::to_string(callExpr.getArguments().size()) + ".");
+						std::to_string(callExpr.getArguments().size()));
 
 	std::vector<Value::Ptr> arguments;
 	for(const auto& arg: callExpr.getArguments())
@@ -123,6 +145,19 @@ Value::Ptr Interpreter::visitFunction(FunctionExpr& functionExpr) {
 
 Value::Ptr Interpreter::visitGroupExpr(GroupExpr& groupExpr) {
 	return groupExpr.getExpr()->accept(*this);
+}
+
+Value::Ptr Interpreter::visitInstantiationExpr(InstantiationExpr& instantiationExpr) {
+	Value::Ptr klass = Value::makePtr<Klass>(m_currentContext->getCustomType(instantiationExpr.getName()));
+	if(instantiationExpr.getArguments().size() != Value::as<Klass>(klass)->getArity())
+		throw RuntimeException(
+				"The Class needs to be constructed with " + std::to_string(Value::as<Klass>(klass)->getArity()) +
+						" arguments. You provided " + std::to_string(instantiationExpr.getArguments().size()));
+	std::vector<Value::Ptr> values;
+	for(const auto& argument: instantiationExpr.getArguments())
+		values.emplace_back(argument->accept(*this));
+	Value::as<Klass>(klass)->instantiate(values);
+	return klass;
 }
 
 Value::Ptr Interpreter::visitLiteral(LiteralExpr& literalExpr) {
@@ -144,7 +179,7 @@ Value::Ptr Interpreter::visitUnaryExpr(UnaryExpr& unaryExpr) {
 }
 
 Value::Ptr Interpreter::visitVariable(VariableExpr& variableExpr) {
-	return m_currentContext->get(variableExpr.getName().getValue().asString()).value;
+	return m_currentContext->getVar(variableExpr.getName().getValue().asString()).value;
 }
 
 void Interpreter::visitBlockStmt(BlockStmt& blockStmt) {

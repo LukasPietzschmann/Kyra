@@ -234,6 +234,8 @@ Expression::Ptr Parser::primary() {
 		return Expression::makePtr<VariableExpr>(previous());
 	if(match(TokenType::FUN))
 		return function();
+	if(match(TokenType::INSTANTIATE))
+		return instantiation();
 
 	if(previous().getType() == TokenType::END_OF_FILE)
 		throw ParserException(
@@ -261,6 +263,22 @@ Expression::Ptr Parser::function() {
 	Statement::Ptr implementation = block();
 
 	return Expression::makePtr<FunctionExpr>(parameters, implementation);
+}
+
+Expression::Ptr Parser::instantiation() {
+	consume(TokenType::INSTANTIATE);
+	Value::Type name = consume(TokenType::NAME).getValue().asString();
+
+	std::vector<Expression::Ptr> parameters;
+	consume(TokenType::LEFT_PAREN);
+	if(!match(TokenType::RIGHT_PAREN)) {
+		do {
+			parameters.emplace_back(assignment());
+		}while(matchAndAdvance(TokenType::COMMA));
+	}
+	consume(TokenType::RIGHT_PAREN);
+
+	return Expression::makePtr<InstantiationExpr>(name, parameters);
 }
 
 Token Parser::advance() {

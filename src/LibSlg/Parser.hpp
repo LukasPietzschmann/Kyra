@@ -11,6 +11,7 @@
 #include "Expressions/Expression.hpp"
 #include "Expressions/FunctionExpr.hpp"
 #include "Expressions/GroupExpr.hpp"
+#include "Expressions/InstantiationExpr.hpp"
 #include "Expressions/LiteralExpr.hpp"
 #include "Expressions/UnaryExpr.hpp"
 #include "Expressions/VariableExpr.hpp"
@@ -31,7 +32,7 @@
 namespace LibSlg {
 class Parser {
 public:
-	explicit Parser(std::vector<Token>  tokens) : m_tokens(std::move(tokens)) {
+	explicit Parser(std::vector<Token> tokens) : m_tokens(std::move(tokens)) {
 		m_statements.reserve(m_tokens.size());
 	}
 
@@ -59,6 +60,7 @@ private:
 	Expression::Ptr call();
 	Expression::Ptr primary();
 	Expression::Ptr function();
+	Expression::Ptr instantiation();
 
 	Token advance();
 	Token consume(TokenType expected);

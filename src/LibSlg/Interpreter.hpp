@@ -27,6 +27,7 @@ public:
 	Value::Ptr visitCallExpr(CallExpr& callExpr) override;
 	Value::Ptr visitFunction(FunctionExpr& functionExpr) override;
 	Value::Ptr visitGroupExpr(GroupExpr& groupExpr) override;
+	Value::Ptr visitInstantiationExpr(InstantiationExpr& instantiationExpr) override;
 	Value::Ptr visitLiteral(LiteralExpr& literalExpr) override;
 	Value::Ptr visitUnaryExpr(UnaryExpr& unaryExpr) override;
 	Value::Ptr visitVariable(VariableExpr& variableExpr) override;

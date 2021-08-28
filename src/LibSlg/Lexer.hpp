@@ -24,6 +24,7 @@ private:
 			{"true", TokenType::TRUE},
 			{"false", TokenType::FALSE},
 			{"return", TokenType::RETURN},
+			{"instantiate", TokenType::INSTANTIATE}
 	};
 	const std::string m_source;
 	std::vector<Token> m_tokens;

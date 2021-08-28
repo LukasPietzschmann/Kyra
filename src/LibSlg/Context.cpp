@@ -3,13 +3,22 @@
 namespace LibSlg {
 const std::shared_ptr<Context>& Context::getParent() const { return m_parent; }
 
-Context::ContextValue Context::get(const std::string& name) {
+Context::ContextValue Context::getVar(const std::string& name) const {
 	auto pos = m_variables.find(name);
 	if(pos != m_variables.end())
 		return pos->second;
 	if(m_parent != nullptr)
-		return m_parent->get(name);
+		return m_parent->getVar(name);
 	throw RuntimeException("Undefined variable " + name);
+}
+
+const Klass& Context::getCustomType(const Value::Type& type) const {
+	auto it = m_customTypes.find(type);
+	if(it != m_customTypes.end())
+		return it->second;
+	if(m_parent != nullptr)
+		return m_parent->getCustomType(type);
+	throw RuntimeException("Undefined type " + type);
 }
 
 void Context::declareVar(const std::string& name, Value::Ptr value, Value::Type type, bool isMutable) {
