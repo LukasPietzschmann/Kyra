@@ -52,12 +52,13 @@ public:
 
 	void visitClassDeclarationStmt(ClassDeclarationStmt& classDeclarationStmt) override {
 		COUT << "Declaration of class " << classDeclarationStmt.getIdentifier().getValue().asString() << "\n";
-		COUT << "Constructor";
+		COUT << "Constructor parameter\n";
 		++m_indent;
 		std::stringstream parameter;
 		for(const auto& param: classDeclarationStmt.getConstructorParameters())
 			parameter << param.name.getValue().asString() << " ";
-		COUT << parameter.str() << "\n";
+		if(classDeclarationStmt.getConstructorParameters().size() > 0)
+			COUT << parameter.str() << "\n";
 		--m_indent;
 		std::cout << "Declarations" << std::endl;
 		++m_indent;
@@ -151,7 +152,7 @@ public:
 	}
 
 	Value::Ptr visitLiteral(LiteralExpr& literal) override {
-		COUT << "Literal with value of " << literal.getValue() << std::endl;
+		COUT << "Literal with value of " << literal.getValue()->toString() << std::endl;
 		return nullptr;
 	}
 
