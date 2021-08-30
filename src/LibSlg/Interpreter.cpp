@@ -57,11 +57,7 @@ Value::Ptr Interpreter::visitAccessExpr(AccessExpr& accessExpr) {
 	auto klass = Value::as<Klass>(owner);
 	if(klass == nullptr)
 		throw RuntimeException("Variables can only be accessed on classes");
-	bool classContainsIdentifier = std::any_of(klass->getDeclarations().begin(), klass->getDeclarations().end(),
-			[&accessExpr](const std::shared_ptr<DeclarationStmt>& decl)->bool {
-				return decl->getIdentifier().getValue().asString() == accessExpr.getName().getValue().asString();
-			});
-	if(!classContainsIdentifier)
+	if(!klass->knowsIdentifier(accessExpr.getName().getValue().asString()))
 		throw RuntimeException("Class " + owner->getType() + " does not contain a variable named " +
 				accessExpr.getName().getValue().asString());
 	else

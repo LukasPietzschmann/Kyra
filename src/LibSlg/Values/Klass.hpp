@@ -10,7 +10,7 @@ class Klass : public Value {
 public:
 	explicit Klass(const ClassDeclarationStmt& declarationStmt) : m_declarationStmt(declarationStmt) {}
 
-	const std::vector<std::shared_ptr<DeclarationStmt>> getDeclarations() const { return m_declarationStmt.getDeclarations(); }
+	bool knowsIdentifier(const std::string& identifier) const;
 	const std::shared_ptr<Context>& getInstanceContext() const { return m_instanceContext; }
 	unsigned int getArity() const { return m_declarationStmt.getConstructorParameters().size(); }
 	void instantiate(std::vector<Value::Ptr> constructorArguments);
