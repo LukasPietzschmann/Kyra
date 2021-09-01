@@ -12,7 +12,7 @@
 
 namespace LibSlg {
 class Interpreter : public ExpressionVisitor, public StatementVisitor {
-NEEDS_VISIT_RETURN_OF_TYPE(Value::Ptr);
+EXPR_NEEDS_VISIT_RETURN_OF_TYPE(Value::Ptr);
 public:
 	static Interpreter& getInstance();
 	Interpreter(Interpreter const&) = delete;

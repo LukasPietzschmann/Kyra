@@ -7,10 +7,10 @@ namespace LibSlg {
 
 class ExpressionVisitor {
 public:
-#define NEEDS_VISIT_RETURN_OF_TYPE(type) private: type m_visitorResult
-#define RETURN_FROM_VISIT(value) m_visitorResult = value; return
-#define GET_FROM_VISIT(dest) dest = m_visitorResult
-#define ACCEPT(visitee, visitor, dest) visitee->accept(visitor); GET_FROM_VISIT(dest)
+#define EXPR_NEEDS_VISIT_RETURN_OF_TYPE(type) private: type m_exprVisitorResult
+#define EXPR_RETURN_FROM_VISIT(value) m_exprVisitorResult = value; return
+#define EXPR_GET_FROM_VISIT(dest) dest = m_exprVisitorResult
+#define EXPR_ACCEPT(visitee, visitor, dest) visitee->accept(visitor); EXPR_GET_FROM_VISIT(dest)
 
 	virtual void visitAccessExpr(AccessExpr& accessExpr) = 0;
 	virtual void visitAssignmentExpr(AssignmentExpr& assignmentExpr) = 0;

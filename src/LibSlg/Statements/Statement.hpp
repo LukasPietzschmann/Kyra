@@ -6,6 +6,11 @@ namespace LibSlg {
 
 class StatementVisitor {
 public:
+#define STMT_NEEDS_VISIT_RETURN_OF_TYPE(type) private: type m_stmtVisitorResult
+#define STMT_RETURN_FROM_VISIT(value) m_stmtVisitorResult = value; return
+#define STMT_GET_FROM_VISIT(dest) dest = m_stmtVisitorResult
+#define STMT_ACCEPT(visitee, visitor, dest) visitee->accept(visitor); STMT_GET_FROM_VISIT(dest)
+
 	virtual void visitBlockStmt(BlockStmt& blockStmt) = 0;
 	virtual void visitDeclarationStmt(DeclarationStmt& declarationStmt) = 0;
 	virtual void visitClassDeclarationStmt(ClassDeclarationStmt& classDeclarationStmt) = 0;

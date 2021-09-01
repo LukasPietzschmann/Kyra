@@ -53,7 +53,7 @@ bool Interpreter::isIncompleteStatement(const std::string& code) {
 }
 
 void Interpreter::visitAccessExpr(AccessExpr& accessExpr) {
-	ACCEPT(accessExpr.getOwner(), *this, Value::Ptr owner);
+	EXPR_ACCEPT(accessExpr.getOwner(), *this, Value::Ptr owner);
 	auto klass = Value::as<Klass>(owner);
 	if(klass == nullptr)
 		throw RuntimeException("Variables can only be accessed on classes");
@@ -61,13 +61,13 @@ void Interpreter::visitAccessExpr(AccessExpr& accessExpr) {
 		throw RuntimeException("Class " + owner->getType() + " does not contain a variable named " +
 				accessExpr.getName().getValue().asString());
 	else
-		RETURN_FROM_VISIT(klass->getInstanceContext()->getVar(accessExpr.getName().getValue().asString()).value);
+		EXPR_RETURN_FROM_VISIT(klass->getInstanceContext()->getVar(accessExpr.getName().getValue().asString()).value);
 }
 
 void Interpreter::visitAssignmentExpr(AssignmentExpr& assignmentExpr) {
 	Context::Ptr context = m_currentContext;
 	if(assignmentExpr.getOwner() != nullptr) {
-		ACCEPT(assignmentExpr.getOwner(), *this, Value::Ptr owner);
+		EXPR_ACCEPT(assignmentExpr.getOwner(), *this, Value::Ptr owner);
 		auto klass = Value::as<Klass>(owner);
 		if(klass == nullptr)
 			throw RuntimeException(assignmentExpr.getName().getValue().asString() + " is not an instance of a class");
@@ -77,48 +77,48 @@ void Interpreter::visitAssignmentExpr(AssignmentExpr& assignmentExpr) {
 	const Context::ContextValue& cValue = context->getVar(assignmentExpr.getName().getValue().asString());
 	if(!cValue.isMutable)
 		throw RuntimeException("Variable " + assignmentExpr.getName().getValue().asString() + " can't be rebound");
-	ACCEPT(assignmentExpr.getNewValue(), *this, Value::Ptr newValue);
+	EXPR_ACCEPT(assignmentExpr.getNewValue(), *this, Value::Ptr newValue);
 	if(!newValue->hasCorrectTypeForAssignment(cValue.type))
 		throw ParserException(
 				"Given type " + newValue->getType() + " does not match expected type " + cValue.type);
 	context->mutate(assignmentExpr.getName().getValue().asString(), newValue);
-	RETURN_FROM_VISIT(newValue);
+	EXPR_RETURN_FROM_VISIT(newValue);
 }
 
 void Interpreter::visitBinaryExpr(BinaryExpr& binaryExpr) {
-	ACCEPT(binaryExpr.getLhs(), *this, Value::Ptr lhs);
-	ACCEPT(binaryExpr.getRhs(), *this, Value::Ptr rhs);
+	EXPR_ACCEPT(binaryExpr.getLhs(), *this, Value::Ptr lhs);
+	EXPR_ACCEPT(binaryExpr.getRhs(), *this, Value::Ptr rhs);
 	switch(binaryExpr.getOperator().getType()) {
-		case TokenType::EQUAL_EQUAL: RETURN_FROM_VISIT(Value::makePtr<Bool>(*lhs == rhs));
-		case TokenType::BANG_EQUAL: RETURN_FROM_VISIT(Value::makePtr<Bool>(*lhs != rhs));
-		case TokenType::GREATER: RETURN_FROM_VISIT(Value::makePtr<Bool>(*lhs > rhs));
-		case TokenType::GREATER_EQUAL: RETURN_FROM_VISIT(Value::makePtr<Bool>(*lhs >= rhs));
-		case TokenType::LESS: RETURN_FROM_VISIT(Value::makePtr<Bool>(*lhs < rhs));
-		case TokenType::LESS_EQUAL: RETURN_FROM_VISIT(Value::makePtr<Bool>(*lhs <= rhs));
+		case TokenType::EQUAL_EQUAL: EXPR_RETURN_FROM_VISIT(Value::makePtr<Bool>(*lhs == rhs));
+		case TokenType::BANG_EQUAL: EXPR_RETURN_FROM_VISIT(Value::makePtr<Bool>(*lhs != rhs));
+		case TokenType::GREATER: EXPR_RETURN_FROM_VISIT(Value::makePtr<Bool>(*lhs > rhs));
+		case TokenType::GREATER_EQUAL: EXPR_RETURN_FROM_VISIT(Value::makePtr<Bool>(*lhs >= rhs));
+		case TokenType::LESS: EXPR_RETURN_FROM_VISIT(Value::makePtr<Bool>(*lhs < rhs));
+		case TokenType::LESS_EQUAL: EXPR_RETURN_FROM_VISIT(Value::makePtr<Bool>(*lhs <= rhs));
 		case TokenType::MINUS:
 			if(lhs->getType() != Value::NativeTypes::Number || rhs->getType() != Value::NativeTypes::Number)
 				throw RuntimeException("The - Operator can only operate on two numbers");
-			RETURN_FROM_VISIT(*lhs - rhs);
+			EXPR_RETURN_FROM_VISIT(*lhs - rhs);
 		case TokenType::PLUS:
 			if(!(lhs->getType() == Value::NativeTypes::Number && rhs->getType() == Value::NativeTypes::Number) &&
 					!(lhs->getType() == Value::NativeTypes::String))
 				throw RuntimeException("The + Operator can only operate on a string and two numbers");
-			RETURN_FROM_VISIT(*lhs + rhs);
+			EXPR_RETURN_FROM_VISIT(*lhs + rhs);
 		case TokenType::STAR:
 			if((lhs->getType() != Value::NativeTypes::Number && lhs->getType() != Value::NativeTypes::String) ||
 					rhs->getType() != Value::NativeTypes::Number)
 				throw RuntimeException("The * Operator can only operate on two numbers or a string and a number");
-			RETURN_FROM_VISIT(*lhs * rhs);
+			EXPR_RETURN_FROM_VISIT(*lhs * rhs);
 		case TokenType::SLASH:
 			if(lhs->getType() != Value::NativeTypes::Number || rhs->getType() != Value::NativeTypes::Number)
 				throw RuntimeException("The / Operator can only operate on two numbers");
-			RETURN_FROM_VISIT(*lhs / rhs);
+			EXPR_RETURN_FROM_VISIT(*lhs / rhs);
 		default: assert(false);
 	}
 }
 
 void Interpreter::visitCallExpr(CallExpr& callExpr) {
-	ACCEPT(callExpr.getFunction(), *this, Value::Ptr fun);
+	EXPR_ACCEPT(callExpr.getFunction(), *this, Value::Ptr fun);
 	unsigned int arity = Value::as<Function>(fun)->getArity();
 
 	if(arity != callExpr.getArguments().size())
@@ -128,16 +128,16 @@ void Interpreter::visitCallExpr(CallExpr& callExpr) {
 
 	std::vector<Value::Ptr> arguments;
 	for(const auto& arg: callExpr.getArguments()) {
-		ACCEPT(arg, *this, Value::Ptr res);
+		EXPR_ACCEPT(arg, *this, Value::Ptr res);
 		arguments.push_back(res);
 	}
 
 	Value::Ptr res = Value::as<Function>(fun)->exec(arguments);
-	RETURN_FROM_VISIT(res);
+	EXPR_RETURN_FROM_VISIT(res);
 }
 
 void Interpreter::visitFunction(FunctionExpr& functionExpr) {
-	RETURN_FROM_VISIT(Value::makePtr<Function>(functionExpr, m_currentContext));
+	EXPR_RETURN_FROM_VISIT(Value::makePtr<Function>(functionExpr, m_currentContext));
 }
 
 void Interpreter::visitGroupExpr(GroupExpr& groupExpr) {
@@ -152,25 +152,25 @@ void Interpreter::visitInstantiationExpr(InstantiationExpr& instantiationExpr) {
 						" arguments. You provided " + std::to_string(instantiationExpr.getArguments().size()));
 	std::vector<Value::Ptr> values;
 	for(const auto& argument: instantiationExpr.getArguments()) {
-		ACCEPT(argument, *this, Value::Ptr res);
+		EXPR_ACCEPT(argument, *this, Value::Ptr res);
 		values.emplace_back(res);
 	}
 	Value::as<Klass>(klass)->instantiate(values);
-	RETURN_FROM_VISIT(klass);
+	EXPR_RETURN_FROM_VISIT(klass);
 }
 
 void Interpreter::visitLiteral(LiteralExpr& literalExpr) {
-	RETURN_FROM_VISIT(literalExpr.getValue());
+	EXPR_RETURN_FROM_VISIT(literalExpr.getValue());
 }
 
 void Interpreter::visitUnaryExpr(UnaryExpr& unaryExpr) {
-	ACCEPT(unaryExpr.getRhs(), *this, Value::Ptr value);
+	EXPR_ACCEPT(unaryExpr.getRhs(), *this, Value::Ptr value);
 	std::stringstream ss;
 	switch(unaryExpr.getOperator().getType()) {
-		case TokenType::BANG: RETURN_FROM_VISIT(Value::makePtr<Bool>(!value->isImplicitlyTrue()));
+		case TokenType::BANG: EXPR_RETURN_FROM_VISIT(Value::makePtr<Bool>(!value->isImplicitlyTrue()));
 		case TokenType::MINUS:
 			if(value->getType() == Value::NativeTypes::Number)
-				RETURN_FROM_VISIT(*value * Value::makePtr<Number>(-1));
+				EXPR_RETURN_FROM_VISIT(*value * Value::makePtr<Number>(-1));
 			ss << value->toString() << " is not a number";
 			throw RuntimeException(ss.str());
 		default: assert(false);
@@ -178,7 +178,7 @@ void Interpreter::visitUnaryExpr(UnaryExpr& unaryExpr) {
 }
 
 void Interpreter::visitVariable(VariableExpr& variableExpr) {
-	RETURN_FROM_VISIT(m_currentContext->getVar(variableExpr.getName().getValue().asString()).value);
+	EXPR_RETURN_FROM_VISIT(m_currentContext->getVar(variableExpr.getName().getValue().asString()).value);
 }
 
 void Interpreter::visitBlockStmt(BlockStmt& blockStmt) {
@@ -189,7 +189,7 @@ void Interpreter::visitDeclarationStmt(DeclarationStmt& declarationStmt) {
 	if(!m_currentContext->isTypeKnown(declarationStmt.getType()))
 		throw RuntimeException("Unknown Type " + declarationStmt.getType());
 	if(const Expression::Ptr& init = declarationStmt.getInitializer()) {
-		ACCEPT(init, *this, Value::Ptr res);
+		EXPR_ACCEPT(init, *this, Value::Ptr res);
 		if(!res->hasCorrectTypeForAssignment(declarationStmt.getType()))
 			throw ParserException(
 					"Given type " + res->getType() + " does not match expected type " + declarationStmt.getType());
@@ -211,12 +211,12 @@ void Interpreter::visitExpressionStmt(ExpressionStmt& expressionStmt) {
 }
 
 void Interpreter::visitPrintStmt(PrintStmt& printStmt) {
-	ACCEPT(printStmt.getExpr(), *this, Value::Ptr value);
+	EXPR_ACCEPT(printStmt.getExpr(), *this, Value::Ptr value);
 	std::cout << value->toString() << std::endl;
 }
 
 void Interpreter::visitReturnStmt(ReturnStmt& returnStmt) {
-	ACCEPT(returnStmt.getExpr(), *this, Value::Ptr returnVal);
+	EXPR_ACCEPT(returnStmt.getExpr(), *this, Value::Ptr returnVal);
 	throw ReturnException(returnVal);
 }
 
