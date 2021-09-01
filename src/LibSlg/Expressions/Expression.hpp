@@ -7,22 +7,27 @@ namespace LibSlg {
 
 class ExpressionVisitor {
 public:
-	virtual Value::Ptr visitAccessExpr(AccessExpr& accessExpr) = 0;
-	virtual Value::Ptr visitAssignmentExpr(AssignmentExpr& assignmentExpr) = 0;
-	virtual Value::Ptr visitBinaryExpr(BinaryExpr& binaryExpr) = 0;
-	virtual Value::Ptr visitCallExpr(CallExpr& callExpr) = 0;
-	virtual Value::Ptr visitFunction(FunctionExpr& functionExpr) = 0;
-	virtual Value::Ptr visitGroupExpr(GroupExpr& groupExpr) = 0;
-	virtual Value::Ptr visitInstantiationExpr(InstantiationExpr& instantiationExpr) = 0;
-	virtual Value::Ptr visitLiteral(LiteralExpr& literalExpr) = 0;
-	virtual Value::Ptr visitUnaryExpr(UnaryExpr& unaryExpr) = 0;
-	virtual Value::Ptr visitVariable(VariableExpr& variableExpr) = 0;
+#define NEEDS_VISIT_RETURN_OF_TYPE(type) private: type m_visitorResult
+#define RETURN_FROM_VISIT(value) m_visitorResult = value; return
+#define GET_FROM_VISIT(dest) dest = m_visitorResult
+#define ACCEPT(visitee, visitor, dest) visitee->accept(visitor); GET_FROM_VISIT(dest)
+
+	virtual void visitAccessExpr(AccessExpr& accessExpr) = 0;
+	virtual void visitAssignmentExpr(AssignmentExpr& assignmentExpr) = 0;
+	virtual void visitBinaryExpr(BinaryExpr& binaryExpr) = 0;
+	virtual void visitCallExpr(CallExpr& callExpr) = 0;
+	virtual void visitFunction(FunctionExpr& functionExpr) = 0;
+	virtual void visitGroupExpr(GroupExpr& groupExpr) = 0;
+	virtual void visitInstantiationExpr(InstantiationExpr& instantiationExpr) = 0;
+	virtual void visitLiteral(LiteralExpr& literalExpr) = 0;
+	virtual void visitUnaryExpr(UnaryExpr& unaryExpr) = 0;
+	virtual void visitVariable(VariableExpr& variableExpr) = 0;
 };
 
 class Expression {
 public:
 	typedef std::shared_ptr<Expression> Ptr;
-	virtual Value::Ptr accept(ExpressionVisitor& visitor) = 0;
+	virtual void accept(ExpressionVisitor& visitor) = 0;
 	template <typename T, class... Args>
 	static Ptr makePtr(Args... args) {
 		static_assert(std::is_constructible<T, Args...>::value, "Cannot construct object in Expression::makePtr");

@@ -89,23 +89,21 @@ public:
 		--m_indent;
 	}
 
-	Value::Ptr visitAccessExpr(AccessExpr& accessExpr) override {
+	void visitAccessExpr(AccessExpr& accessExpr) override {
 		COUT << "Get Variable " << accessExpr.getName().getValue().asString() << " from " << std::endl;
 		++m_indent;
 		accessExpr.getOwner()->accept(*this);
 		--m_indent;
-		return nullptr;
 	}
 
-	Value::Ptr visitAssignmentExpr(AssignmentExpr& assignmentExpr) override {
+	void visitAssignmentExpr(AssignmentExpr& assignmentExpr) override {
 		COUT << "Assignment of variable " << assignmentExpr.getName().getValue().asString() << " to " << std::endl;
 		++m_indent;
 		assignmentExpr.getNewValue()->accept(*this);
 		--m_indent;
-		return nullptr;
 	}
 
-	Value::Ptr visitBinaryExpr(BinaryExpr& binaryExpr) override {
+	void visitBinaryExpr(BinaryExpr& binaryExpr) override {
 		COUT << "Binary Expr with Operand " << TokenTypeName::getFor(binaryExpr.getOperator().getType()) << std::endl;
 		COUT << "Lhs: " << std::endl;
 		++m_indent;
@@ -115,10 +113,9 @@ public:
 		++m_indent;
 		binaryExpr.getRhs()->accept(*this);
 		--m_indent;
-		return nullptr;
 	}
 
-	Value::Ptr visitCallExpr(CallExpr& callExpr) override {
+	void visitCallExpr(CallExpr& callExpr) override {
 		COUT << "Call to" << std::endl;
 		++m_indent;
 		callExpr.getFunction()->accept(*this);
@@ -128,10 +125,9 @@ public:
 		for(const auto& argument: callExpr.getArguments())
 			argument->accept(*this);
 		--m_indent;
-		return nullptr;
 	}
 
-	Value::Ptr visitFunction(FunctionExpr& functionExpr) override {
+	void visitFunction(FunctionExpr& functionExpr) override {
 		std::stringstream parameters;
 		for(const auto& parameter: functionExpr.getParameters())
 			parameters << parameter.name.getValue().asString() << " ";
@@ -141,44 +137,38 @@ public:
 		++m_indent;
 		functionExpr.getImplementation()->accept(*this);
 		--m_indent;
-		return nullptr;
 	}
 
-	Value::Ptr visitGroupExpr(GroupExpr& groupExpr) override {
+	void visitGroupExpr(GroupExpr& groupExpr) override {
 		COUT << "Group" << std::endl;
 		++m_indent;
 		groupExpr.getExpr()->accept(*this);
 		--m_indent;
-		return nullptr;
 	}
 
-	Value::Ptr visitInstantiationExpr(InstantiationExpr& instantiationExpr) override {
+	void visitInstantiationExpr(InstantiationExpr& instantiationExpr) override {
 		COUT << "Instantiation of class " + instantiationExpr.getName() + "\n";
 		COUT << "With constructor arguments\n";
 		++m_indent;
 		for(const auto& argument: instantiationExpr.getArguments())
 			argument->accept(*this);
 		--m_indent;
-		return nullptr;
 	}
 
-	Value::Ptr visitLiteral(LiteralExpr& literal) override {
+	void visitLiteral(LiteralExpr& literal) override {
 		COUT << "Literal with value of " << literal.getValue()->toString() << std::endl;
-		return nullptr;
 	}
 
-	Value::Ptr visitUnaryExpr(UnaryExpr& unaryExpr) override {
+	void visitUnaryExpr(UnaryExpr& unaryExpr) override {
 		COUT << "Unary Expr with Operand " << TokenTypeName::getFor(unaryExpr.getOperator().getType()) << std::endl;
 		COUT << "Rhs: " << std::endl;
 		++m_indent;
 		unaryExpr.getRhs()->accept(*this);
 		--m_indent;
-		return nullptr;
 	}
 
-	Value::Ptr visitVariable(VariableExpr& variableExpr) override {
+	void visitVariable(VariableExpr& variableExpr) override {
 		COUT << "Variable with identifier " << variableExpr.getName().getValue().asString() << std::endl;
-		return nullptr;
 	}
 private:
 	unsigned int m_indent {};

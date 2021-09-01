@@ -12,6 +12,7 @@
 
 namespace LibSlg {
 class Interpreter : public ExpressionVisitor, public StatementVisitor {
+NEEDS_VISIT_RETURN_OF_TYPE(Value::Ptr);
 public:
 	static Interpreter& getInstance();
 	Interpreter(Interpreter const&) = delete;
@@ -21,16 +22,16 @@ public:
 	void executeStatementsOnContext(const std::vector<Statement::Ptr>& statements, const Context::Ptr& context);
 	bool isIncompleteStatement(const std::string& code);
 
-	Value::Ptr visitAccessExpr(AccessExpr& accessExpr) override;
-	Value::Ptr visitAssignmentExpr(AssignmentExpr& assignmentExpr) override;
-	Value::Ptr visitBinaryExpr(BinaryExpr& binaryExpr) override;
-	Value::Ptr visitCallExpr(CallExpr& callExpr) override;
-	Value::Ptr visitFunction(FunctionExpr& functionExpr) override;
-	Value::Ptr visitGroupExpr(GroupExpr& groupExpr) override;
-	Value::Ptr visitInstantiationExpr(InstantiationExpr& instantiationExpr) override;
-	Value::Ptr visitLiteral(LiteralExpr& literalExpr) override;
-	Value::Ptr visitUnaryExpr(UnaryExpr& unaryExpr) override;
-	Value::Ptr visitVariable(VariableExpr& variableExpr) override;
+	void visitAccessExpr(AccessExpr& accessExpr) override;
+	void visitAssignmentExpr(AssignmentExpr& assignmentExpr) override;
+	void visitBinaryExpr(BinaryExpr& binaryExpr) override;
+	void visitCallExpr(CallExpr& callExpr) override;
+	void visitFunction(FunctionExpr& functionExpr) override;
+	void visitGroupExpr(GroupExpr& groupExpr) override;
+	void visitInstantiationExpr(InstantiationExpr& instantiationExpr) override;
+	void visitLiteral(LiteralExpr& literalExpr) override;
+	void visitUnaryExpr(UnaryExpr& unaryExpr) override;
+	void visitVariable(VariableExpr& variableExpr) override;
 	void visitBlockStmt(BlockStmt& blockStmt) override;
 	void visitDeclarationStmt(DeclarationStmt& declarationStmt) override;
 	void visitClassDeclarationStmt(ClassDeclarationStmt& classDeclarationStmt) override;
@@ -40,7 +41,5 @@ public:
 private:
 	Interpreter() : m_currentContext(Context::makePtr()) {};
 
-	Context::Ptr m_currentContext;
-
-};
+	Context::Ptr m_currentContext;};
 }

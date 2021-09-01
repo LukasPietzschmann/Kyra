@@ -10,7 +10,7 @@ public:
 	CallExpr(Expression::Ptr function, std::vector<Expression::Ptr> arguments) :
 			m_function(std::move(function)), m_arguments(std::move(arguments)) {}
 	~CallExpr() override {}
-	Value::Ptr accept(ExpressionVisitor& visitor) override { return visitor.visitCallExpr(*this); }
+	void accept(ExpressionVisitor& visitor) override { return visitor.visitCallExpr(*this); }
 	const Ptr& getFunction() const { return m_function; }
 	const std::vector<Expression::Ptr>& getArguments() const { return m_arguments; }
 private:

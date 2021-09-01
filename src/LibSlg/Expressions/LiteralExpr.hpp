@@ -8,7 +8,7 @@ class LiteralExpr : public Expression {
 public:
 	explicit LiteralExpr(Value::Ptr value) : m_value(std::move(value)) {}
 	~LiteralExpr() override {}
-	Value::Ptr accept(ExpressionVisitor& visitor) override { return visitor.visitLiteral(*this); }
+	void accept(ExpressionVisitor& visitor) override { return visitor.visitLiteral(*this); }
 	const Value::Ptr& getValue() const { return m_value; }
 private:
 	Value::Ptr m_value;

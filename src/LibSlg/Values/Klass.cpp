@@ -29,7 +29,7 @@ void Klass::instantiate(std::vector<Value::Ptr> constructorArguments) {
 	for(const auto& decl: m_declarationStmt.getDeclarations()) {
 		Value::Ptr init = Value::makePtr<Nothing>();
 		if(decl->getInitializer() != nullptr)
-			init = decl->getInitializer()->accept(Interpreter::getInstance());
+			ACCEPT(decl->getInitializer(), Interpreter::getInstance(), init);
 		m_instanceContext->declareVar(decl->getIdentifier().getValue().asString(), init, decl->getType(),
 				decl->isMutable());
 	}

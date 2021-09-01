@@ -16,7 +16,7 @@ public:
 	FunctionExpr(std::vector<Parameter> parameters, Statement::Ptr impl) :
 			m_parameters(std::move(parameters)), m_implementation(std::move(impl)) {}
 	~FunctionExpr() override {}
-	Value::Ptr accept(ExpressionVisitor& visitor) override { return visitor.visitFunction(*this); }
+	void accept(ExpressionVisitor& visitor) override { return visitor.visitFunction(*this); }
 	const std::vector<Parameter>& getParameters() const { return m_parameters; }
 	const Statement::Ptr& getImplementation() const { return m_implementation; }
 private:

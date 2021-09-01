@@ -7,6 +7,7 @@ namespace LibSlg {
 class Context;
 
 class Klass : public Value {
+NEEDS_VISIT_RETURN_OF_TYPE(Value::Ptr);
 public:
 	explicit Klass(const ClassDeclarationStmt& declarationStmt) : m_declarationStmt(declarationStmt) {}
 
