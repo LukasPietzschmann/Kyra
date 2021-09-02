@@ -9,6 +9,7 @@ public:
 	~BlockStmt() override {}
 	void accept(StatementVisitor& visitor) override { visitor.visitBlockStmt(*this); }
 	const std::vector<Statement::Ptr>& getStatements() const { return m_statements; }
+
 private:
 	std::vector<Statement::Ptr> m_statements;
 };

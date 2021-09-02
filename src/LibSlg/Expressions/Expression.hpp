@@ -1,16 +1,22 @@
 #pragma once
 
-#include "Forward.hpp"
 #include "../Values/Value.hpp"
+#include "Forward.hpp"
 
 namespace LibSlg {
 
 class ExpressionVisitor {
 public:
-#define EXPR_NEEDS_VISIT_RETURN_OF_TYPE(type) private: type m_exprVisitorResult
-#define EXPR_RETURN_FROM_VISIT(value) m_exprVisitorResult = value; return
+#define EXPR_NEEDS_VISIT_RETURN_OF_TYPE(type) \
+private:                                      \
+	type m_exprVisitorResult
+#define EXPR_RETURN_FROM_VISIT(value) \
+	m_exprVisitorResult = value;      \
+	return
 #define EXPR_GET_FROM_VISIT(dest) dest = m_exprVisitorResult
-#define EXPR_ACCEPT(visitee, visitor, dest) visitee->accept(visitor); EXPR_GET_FROM_VISIT(dest)
+#define EXPR_ACCEPT(visitee, visitor, dest) \
+	visitee->accept(visitor);               \
+	EXPR_GET_FROM_VISIT(dest)
 
 	virtual void visitAccessExpr(AccessExpr& accessExpr) = 0;
 	virtual void visitAssignmentExpr(AssignmentExpr& assignmentExpr) = 0;
@@ -33,7 +39,8 @@ public:
 		static_assert(std::is_constructible<T, Args...>::value, "Cannot construct object in Expression::makePtr");
 		return std::make_shared<T>(args...);
 	}
+
 protected:
-	virtual ~Expression() {};
+	virtual ~Expression(){};
 };
 }

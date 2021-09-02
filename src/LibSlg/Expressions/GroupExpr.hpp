@@ -1,6 +1,7 @@
 #pragma once
 
 #include <utility>
+
 #include "Expression.hpp"
 
 namespace LibSlg {
@@ -10,6 +11,7 @@ public:
 	~GroupExpr() override {}
 	const Expression::Ptr& getExpr() const { return m_expr; }
 	void accept(ExpressionVisitor& visitor) override { return visitor.visitGroupExpr(*this); }
+
 private:
 	Expression::Ptr m_expr;
 };

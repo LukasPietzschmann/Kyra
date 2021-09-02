@@ -9,6 +9,7 @@ public:
 	~ReturnStmt() override {}
 	void accept(StatementVisitor& visitor) override { visitor.visitReturnStmt(*this); }
 	const Expression::Ptr& getExpr() const { return m_expr; }
+
 private:
 	Expression::Ptr m_expr;
 };

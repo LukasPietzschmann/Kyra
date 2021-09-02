@@ -16,44 +16,25 @@ void Lexer::scanToken() {
 		case ' ':
 		case '\t':
 		case '\r': break;
-		case '\n': ++m_line;
-			break;
-		case '#': comment();
-			break;
-		case '(': addToken(TokenType::LEFT_PAREN);
-			break;
-		case ')': addToken(TokenType::RIGHT_PAREN);
-			break;
-		case '{': addToken(TokenType::LEFT_CURLY);
-			break;
-		case '}': addToken(TokenType::RIGHT_CURLY);
-			break;
-		case ',': addToken(TokenType::COMMA);
-			break;
-		case ';': addToken(TokenType::SEMICOLON);
-			break;
-		case '.': addToken(TokenType::DOT);
-			break;
-		case ':': addToken(TokenType::COLON);
-			break;
-		case '-': addToken(TokenType::MINUS);
-			break;
-		case '+': addToken(TokenType::PLUS);
-			break;
-		case '/': addToken(TokenType::SLASH);
-			break;
-		case '*': addToken(TokenType::STAR);
-			break;
-		case '=': addToken(matchAndAdvance('=') ? TokenType::EQUAL_EQUAL : TokenType::EQUAL);
-			break;
-		case '!': addToken(matchAndAdvance('=') ? TokenType::BANG_EQUAL : TokenType::BANG);
-			break;
-		case '>': addToken(matchAndAdvance('=') ? TokenType::GREATER_EQUAL : TokenType::GREATER);
-			break;
-		case '<': addToken(matchAndAdvance('=') ? TokenType::LESS_EQUAL : TokenType::LESS);
-			break;
-		case '"': string();
-			break;
+		case '\n': ++m_line; break;
+		case '#': comment(); break;
+		case '(': addToken(TokenType::LEFT_PAREN); break;
+		case ')': addToken(TokenType::RIGHT_PAREN); break;
+		case '{': addToken(TokenType::LEFT_CURLY); break;
+		case '}': addToken(TokenType::RIGHT_CURLY); break;
+		case ',': addToken(TokenType::COMMA); break;
+		case ';': addToken(TokenType::SEMICOLON); break;
+		case '.': addToken(TokenType::DOT); break;
+		case ':': addToken(TokenType::COLON); break;
+		case '-': addToken(TokenType::MINUS); break;
+		case '+': addToken(TokenType::PLUS); break;
+		case '/': addToken(TokenType::SLASH); break;
+		case '*': addToken(TokenType::STAR); break;
+		case '=': addToken(matchAndAdvance('=') ? TokenType::EQUAL_EQUAL : TokenType::EQUAL); break;
+		case '!': addToken(matchAndAdvance('=') ? TokenType::BANG_EQUAL : TokenType::BANG); break;
+		case '>': addToken(matchAndAdvance('=') ? TokenType::GREATER_EQUAL : TokenType::GREATER); break;
+		case '<': addToken(matchAndAdvance('=') ? TokenType::LESS_EQUAL : TokenType::LESS); break;
+		case '"': string(); break;
 		default:
 			if(isDigit(current))
 				number();
@@ -107,9 +88,7 @@ void Lexer::nameOrKeyword() {
 	addToken(type, literal);
 }
 
-char Lexer::advance() {
-	return m_source[m_current++];
-}
+char Lexer::advance() { return m_source[m_current++]; }
 
 char Lexer::peek() const {
 	if(isAtEnd())
@@ -117,9 +96,7 @@ char Lexer::peek() const {
 	return m_source[m_current];
 }
 
-bool Lexer::match(char expected) const {
-	return peek() == expected;
-}
+bool Lexer::match(char expected) const { return peek() == expected; }
 
 bool Lexer::matchAndAdvance(char expected) {
 	if(!match(expected))
@@ -133,15 +110,11 @@ void Lexer::addToken(TokenType type, const std::string& literal) {
 	m_tokens.emplace_back(type, m_line, lexeme, literal);
 }
 
-bool Lexer::isDigit(char character) {
-	return character >= '0' && character <= '9';
-}
+bool Lexer::isDigit(char character) { return character >= '0' && character <= '9'; }
 
 bool Lexer::isAlpha(char character) {
 	return (character >= 'a' && character <= 'z') || (character >= 'A' && character <= 'Z');
 }
 
-bool Lexer::isAtEnd() const {
-	return (unsigned long) m_current >= m_source.size();
-}
+bool Lexer::isAtEnd() const { return (unsigned long)m_current >= m_source.size(); }
 }

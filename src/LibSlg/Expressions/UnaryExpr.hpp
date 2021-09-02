@@ -1,8 +1,9 @@
 #pragma once
 
 #include <utility>
-#include "Expression.hpp"
+
 #include "../Token.hpp"
+#include "Expression.hpp"
 
 namespace LibSlg {
 class UnaryExpr : public Expression {
@@ -12,6 +13,7 @@ public:
 	void accept(ExpressionVisitor& visitor) override { return visitor.visitUnaryExpr(*this); }
 	const Token& getOperator() const { return m_operator; }
 	const Expression::Ptr& getRhs() const { return m_rhs; }
+
 private:
 	Token m_operator;
 	Expression::Ptr m_rhs;

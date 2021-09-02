@@ -1,15 +1,15 @@
 #pragma once
 
-#include "Value.hpp"
-#include "Nothing.hpp"
-#include "../Expressions/FunctionExpr.hpp"
 #include "../Context.hpp"
+#include "../Expressions/FunctionExpr.hpp"
+#include "Nothing.hpp"
+#include "Value.hpp"
 
 namespace LibSlg {
 class Function : public Value {
 public:
 	Function(const FunctionExpr& functionExpr, const Context::Ptr& definitionContext) :
-			m_functionExpr(functionExpr), m_definitionContext(definitionContext) {}
+		m_functionExpr(functionExpr), m_definitionContext(definitionContext) {}
 	~Function() override {}
 
 	unsigned int getArity() const { return m_functionExpr.getParameters().size(); }
@@ -22,11 +22,12 @@ public:
 	bool operator==(const Value::Ptr& other) const override {
 		if(getType() != other->getType())
 			return false;
-		return false; //TODO better equality checking
+		return false;  // TODO better equality checking
 	}
 
 	bool operator<(const Value::Ptr&) const override { return false; }
 	bool operator>(const Value::Ptr&) const override { return false; }
+
 private:
 	FunctionExpr m_functionExpr;
 	Context::Ptr m_definitionContext;

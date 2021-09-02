@@ -3,9 +3,10 @@
 #include <unordered_map>
 #include <utility>
 #include <vector>
+
 #include "Exceptions.hpp"
-#include "Values/Nothing.hpp"
 #include "Values/Klass.hpp"
+#include "Values/Nothing.hpp"
 
 namespace LibSlg {
 class Context {
@@ -13,7 +14,7 @@ public:
 	typedef std::shared_ptr<Context> Ptr;
 	typedef struct ContextValue {
 		ContextValue(const Value::Ptr& value, Value::Type type, bool isMutable) :
-				value(value), type(type), isMutable(isMutable) {}
+			value(value), type(type), isMutable(isMutable) {}
 		Value::Ptr value;
 		Value::Type type;
 		bool isMutable;
@@ -33,11 +34,12 @@ public:
 		static_assert(std::is_constructible<Context, Args...>::value, "Cannot construct object in Context::makePtr");
 		return std::make_shared<Context>(args...);
 	}
+
 private:
 	const std::shared_ptr<Context> m_parent;
 	std::unordered_map<std::string, ContextValue> m_variables;
-	std::vector<Value::Type> m_nativeTypes {Value::NativeTypes::Nothing, Value::NativeTypes::Number,
-			Value::NativeTypes::Bool, Value::NativeTypes::String, Value::NativeTypes::Function};
+	std::vector<Value::Type> m_nativeTypes{ Value::NativeTypes::Nothing, Value::NativeTypes::Number,
+		Value::NativeTypes::Bool, Value::NativeTypes::String, Value::NativeTypes::Function };
 	std::unordered_map<Value::Type, Klass> m_customTypes;
 };
 }

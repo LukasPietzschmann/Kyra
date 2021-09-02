@@ -1,7 +1,8 @@
 #pragma once
 
-#include <sstream>
 #include <iostream>
+#include <sstream>
+
 #include "Expressions/AccessExpr.hpp"
 #include "Expressions/AssignmentExpr.hpp"
 #include "Expressions/BinaryExpr.hpp"
@@ -35,7 +36,7 @@ public:
 	void visitBlockStmt(BlockStmt& blockStmt) override {
 		COUT << "Block" << std::endl;
 		++m_indent;
-		for(const auto& stmt: blockStmt.getStatements())
+		for(const auto& stmt : blockStmt.getStatements())
 			stmt->accept(*this);
 		--m_indent;
 	}
@@ -47,7 +48,7 @@ public:
 			++m_indent;
 			declarationStmt.getInitializer()->accept(*this);
 			--m_indent;
-		}else
+		} else
 			std::cout << std::endl;
 	}
 
@@ -56,14 +57,14 @@ public:
 		COUT << "Constructor parameter\n";
 		++m_indent;
 		std::stringstream parameter;
-		for(const auto& param: classDeclarationStmt.getConstructorParameters())
+		for(const auto& param : classDeclarationStmt.getConstructorParameters())
 			parameter << param.name.getValue().asString() << " ";
 		if(classDeclarationStmt.getConstructorParameters().size() > 0)
 			COUT << parameter.str() << "\n";
 		--m_indent;
 		std::cout << "Declarations" << std::endl;
 		++m_indent;
-		for(const auto& decl: classDeclarationStmt.getDeclarations())
+		for(const auto& decl : classDeclarationStmt.getDeclarations())
 			decl->accept(*this);
 		--m_indent;
 	}
@@ -122,14 +123,14 @@ public:
 		--m_indent;
 		COUT << "With arguments" << std::endl;
 		++m_indent;
-		for(const auto& argument: callExpr.getArguments())
+		for(const auto& argument : callExpr.getArguments())
 			argument->accept(*this);
 		--m_indent;
 	}
 
 	void visitFunction(FunctionExpr& functionExpr) override {
 		std::stringstream parameters;
-		for(const auto& parameter: functionExpr.getParameters())
+		for(const auto& parameter : functionExpr.getParameters())
 			parameters << parameter.name.getValue().asString() << " ";
 		COUT << "Function" << std::endl;
 		COUT << "Parameter " << parameters.str() << std::endl;
@@ -150,7 +151,7 @@ public:
 		COUT << "Instantiation of class " + instantiationExpr.getName() + "\n";
 		COUT << "With constructor arguments\n";
 		++m_indent;
-		for(const auto& argument: instantiationExpr.getArguments())
+		for(const auto& argument : instantiationExpr.getArguments())
 			argument->accept(*this);
 		--m_indent;
 	}
@@ -170,8 +171,9 @@ public:
 	void visitVariable(VariableExpr& variableExpr) override {
 		COUT << "Variable with identifier " << variableExpr.getName().getValue().asString() << std::endl;
 	}
+
 private:
-	unsigned int m_indent {};
+	unsigned int m_indent{};
 };
 }
 

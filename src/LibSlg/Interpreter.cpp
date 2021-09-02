@@ -1,4 +1,5 @@
 #include "Interpreter.hpp"
+
 #include "Values/Bool.hpp"
 
 namespace LibSlg {
@@ -13,27 +14,28 @@ void Interpreter::execute(const std::string& code, bool verboseLogging, bool pas
 		auto statements = Parser(tokens).parse();
 		if(verboseLogging) {
 			AstLogger logger;
-			for(const auto& token: tokens)
+			for(const auto& token : tokens)
 				std::cout << token << std::endl;
-			for(const auto& statement: statements)
+			for(const auto& statement : statements)
 				logger.logStatement(statement);
 		}
-		for(const auto& statement: statements) {
+		for(const auto& statement : statements) {
 			try {
 				statement->accept(*this);
-			}catch(RuntimeException& exception) {
+			} catch(RuntimeException& exception) {
 				if(passThroughExceptions)
 					throw RuntimeException(exception);
 				std::cout << "[ERROR] " << exception.what() << std::endl;
-			}catch(ReturnException& exception) {
-				std::cout << "[ERROR] " << "Return Statements can only be used in Functions." << std::endl;
+			} catch(ReturnException& exception) {
+				std::cout << "[ERROR] "
+						  << "Return Statements can only be used in Functions." << std::endl;
 			}
 		}
-	}catch(ParserException& exception) {
+	} catch(ParserException& exception) {
 		if(passThroughExceptions)
 			throw ParserException(exception);
 		std::cout << "[ERROR] " << exception.what() << std::endl;
-	}catch(LexerException& exception) {
+	} catch(LexerException& exception) {
 		if(passThroughExceptions)
 			throw LexerException(exception);
 		std::cout << "[ERROR] " << exception.what() << std::endl;
@@ -44,9 +46,7 @@ bool Interpreter::isIncompleteStatement(const std::string& code) {
 	try {
 		Parser parser(Lexer(code).scanTokens());
 		parser.parse();
-	}catch(ParserException& exception) {
-		return exception.isUnfinished();
-	}catch(...) {
+	} catch(ParserException& exception) { return exception.isUnfinished(); } catch(...) {
 		return false;
 	}
 	return false;
@@ -59,7 +59,7 @@ void Interpreter::visitAccessExpr(AccessExpr& accessExpr) {
 		throw RuntimeException("Variables can only be accessed on classes");
 	if(!klass->knowsIdentifier(accessExpr.getName().getValue().asString()))
 		throw RuntimeException("Class " + owner->getType() + " does not contain a variable named " +
-				accessExpr.getName().getValue().asString());
+							   accessExpr.getName().getValue().asString());
 	else
 		EXPR_RETURN_FROM_VISIT(klass->getInstanceContext()->getVar(accessExpr.getName().getValue().asString()).value);
 }
@@ -79,8 +79,7 @@ void Interpreter::visitAssignmentExpr(AssignmentExpr& assignmentExpr) {
 		throw RuntimeException("Variable " + assignmentExpr.getName().getValue().asString() + " can't be rebound");
 	EXPR_ACCEPT(assignmentExpr.getNewValue(), *this, Value::Ptr newValue);
 	if(!newValue->hasCorrectTypeForAssignment(cValue.type))
-		throw ParserException(
-				"Given type " + newValue->getType() + " does not match expected type " + cValue.type);
+		throw ParserException("Given type " + newValue->getType() + " does not match expected type " + cValue.type);
 	context->mutate(assignmentExpr.getName().getValue().asString(), newValue);
 	EXPR_RETURN_FROM_VISIT(newValue);
 }
@@ -122,12 +121,11 @@ void Interpreter::visitCallExpr(CallExpr& callExpr) {
 	unsigned int arity = Value::as<Function>(fun)->getArity();
 
 	if(arity != callExpr.getArguments().size())
-		throw RuntimeException(
-				"The Function needs to be called with " + std::to_string(arity) + " arguments. You provided " +
-						std::to_string(callExpr.getArguments().size()));
+		throw RuntimeException("The Function needs to be called with " + std::to_string(arity) +
+							   " arguments. You provided " + std::to_string(callExpr.getArguments().size()));
 
 	std::vector<Value::Ptr> arguments;
-	for(const auto& arg: callExpr.getArguments()) {
+	for(const auto& arg : callExpr.getArguments()) {
 		EXPR_ACCEPT(arg, *this, Value::Ptr res);
 		arguments.push_back(res);
 	}
@@ -140,18 +138,16 @@ void Interpreter::visitFunction(FunctionExpr& functionExpr) {
 	EXPR_RETURN_FROM_VISIT(Value::makePtr<Function>(functionExpr, m_currentContext));
 }
 
-void Interpreter::visitGroupExpr(GroupExpr& groupExpr) {
-	return groupExpr.getExpr()->accept(*this);
-}
+void Interpreter::visitGroupExpr(GroupExpr& groupExpr) { return groupExpr.getExpr()->accept(*this); }
 
 void Interpreter::visitInstantiationExpr(InstantiationExpr& instantiationExpr) {
 	Value::Ptr klass = Value::makePtr<Klass>(m_currentContext->getCustomType(instantiationExpr.getName()));
 	if(instantiationExpr.getArguments().size() != Value::as<Klass>(klass)->getArity())
-		throw RuntimeException(
-				"The Class needs to be constructed with " + std::to_string(Value::as<Klass>(klass)->getArity()) +
-						" arguments. You provided " + std::to_string(instantiationExpr.getArguments().size()));
+		throw RuntimeException("The Class needs to be constructed with " +
+							   std::to_string(Value::as<Klass>(klass)->getArity()) + " arguments. You provided " +
+							   std::to_string(instantiationExpr.getArguments().size()));
 	std::vector<Value::Ptr> values;
-	for(const auto& argument: instantiationExpr.getArguments()) {
+	for(const auto& argument : instantiationExpr.getArguments()) {
 		EXPR_ACCEPT(argument, *this, Value::Ptr res);
 		values.emplace_back(res);
 	}
@@ -159,9 +155,7 @@ void Interpreter::visitInstantiationExpr(InstantiationExpr& instantiationExpr) {
 	EXPR_RETURN_FROM_VISIT(klass);
 }
 
-void Interpreter::visitLiteral(LiteralExpr& literalExpr) {
-	EXPR_RETURN_FROM_VISIT(literalExpr.getValue());
-}
+void Interpreter::visitLiteral(LiteralExpr& literalExpr) { EXPR_RETURN_FROM_VISIT(literalExpr.getValue()); }
 
 void Interpreter::visitUnaryExpr(UnaryExpr& unaryExpr) {
 	EXPR_ACCEPT(unaryExpr.getRhs(), *this, Value::Ptr value);
@@ -195,7 +189,7 @@ void Interpreter::visitDeclarationStmt(DeclarationStmt& declarationStmt) {
 					"Given type " + res->getType() + " does not match expected type " + declarationStmt.getType());
 		m_currentContext->declareVar(declarationStmt.getIdentifier().getValue().asString(), res,
 				declarationStmt.getType(), declarationStmt.isMutable());
-	}else
+	} else
 		m_currentContext->declareVar(declarationStmt.getIdentifier().getValue().asString(), Value::makePtr<Nothing>(),
 				declarationStmt.getType(), declarationStmt.isMutable());
 }
@@ -206,9 +200,7 @@ void Interpreter::visitClassDeclarationStmt(ClassDeclarationStmt& classDeclarati
 		throw RuntimeException("Class " + name + " is already declared");
 }
 
-void Interpreter::visitExpressionStmt(ExpressionStmt& expressionStmt) {
-	expressionStmt.getExpr()->accept(*this);
-}
+void Interpreter::visitExpressionStmt(ExpressionStmt& expressionStmt) { expressionStmt.getExpr()->accept(*this); }
 
 void Interpreter::visitPrintStmt(PrintStmt& printStmt) {
 	EXPR_ACCEPT(printStmt.getExpr(), *this, Value::Ptr value);
@@ -220,14 +212,14 @@ void Interpreter::visitReturnStmt(ReturnStmt& returnStmt) {
 	throw ReturnException(returnVal);
 }
 
-void Interpreter::executeStatementsOnContext(const std::vector<Statement::Ptr>& statements,
-		const Context::Ptr& context) {
+void Interpreter::executeStatementsOnContext(
+		const std::vector<Statement::Ptr>& statements, const Context::Ptr& context) {
 	Context::Ptr prev = m_currentContext;
 	m_currentContext = context;
 	try {
-		for(const auto& statement: statements)
+		for(const auto& statement : statements)
 			statement->accept(*this);
-	}catch(ReturnException& exception) {
+	} catch(ReturnException& exception) {
 		m_currentContext = prev;
 		throw ReturnException(exception);
 	}

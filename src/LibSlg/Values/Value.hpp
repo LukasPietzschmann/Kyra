@@ -2,9 +2,10 @@
 
 #include <memory>
 #include <ostream>
-#include "iostream"
-#include "Forward.hpp"
+
 #include "../Exceptions.hpp"
+#include "Forward.hpp"
+#include "iostream"
 
 namespace LibSlg {
 class Value {
@@ -40,34 +41,21 @@ public:
 	virtual bool operator<(const Value::Ptr&) const = 0;
 	virtual bool operator>(const Value::Ptr&) const = 0;
 
-	virtual bool operator!=(const Value::Ptr& other) const {
-		return !operator==(other);
-	};
+	virtual bool operator!=(const Value::Ptr& other) const { return !operator==(other); };
 
-	virtual bool operator<=(const Value::Ptr& other) const {
-		return operator<(other) || operator==(other);
-	};
+	virtual bool operator<=(const Value::Ptr& other) const { return operator<(other) || operator==(other); };
 
-	virtual bool operator>=(const Value::Ptr& other) const {
-		return operator>(other) || operator==(other);
-	};
+	virtual bool operator>=(const Value::Ptr& other) const { return operator>(other) || operator==(other); };
 
-	virtual Value::Ptr operator+(const Value::Ptr&) const {
-		throw ParserException("Operator + can't be used here");
-	}
+	virtual Value::Ptr operator+(const Value::Ptr&) const { throw ParserException("Operator + can't be used here"); }
 
-	virtual Value::Ptr operator-(const Value::Ptr&) const {
-		throw ParserException("Operator - can't be used here");
-	}
+	virtual Value::Ptr operator-(const Value::Ptr&) const { throw ParserException("Operator - can't be used here"); }
 
-	virtual Value::Ptr operator*(const Value::Ptr&) const {
-		throw ParserException("Operator * can't be used here");
-	}
+	virtual Value::Ptr operator*(const Value::Ptr&) const { throw ParserException("Operator * can't be used here"); }
 
-	virtual Value::Ptr operator/(const Value::Ptr&) const {
-		throw ParserException("Operator / can't be used here");
-	}
+	virtual Value::Ptr operator/(const Value::Ptr&) const { throw ParserException("Operator / can't be used here"); }
+
 protected:
-	virtual ~Value() {};
+	virtual ~Value(){};
 };
 }

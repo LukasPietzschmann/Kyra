@@ -1,8 +1,9 @@
 #pragma once
 
 #include <string>
-#include "Value.hpp"
+
 #include "Nothing.hpp"
+#include "Value.hpp"
 
 namespace LibSlg {
 class String : public Value {
@@ -42,6 +43,7 @@ public:
 			output += m_string;
 		return Value::makePtr<String>(output);
 	}
+
 private:
 	std::string m_string;
 };

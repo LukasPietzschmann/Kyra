@@ -1,6 +1,7 @@
 #pragma once
 
 #include <ostream>
+
 #include "Value.hpp"
 
 namespace LibSlg {
@@ -51,6 +52,7 @@ public:
 		assert(other->getType() == Value::NativeTypes::Number);
 		return Value::makePtr<Number>(m_number / Value::as<Number>(other)->m_number);
 	}
+
 private:
 	int m_number;
 };

@@ -2,8 +2,8 @@
 
 #include "../src/LibSlg/Interpreter.hpp"
 
-using ::testing::internal::GetCapturedStdout;
 using ::testing::internal::CaptureStdout;
+using ::testing::internal::GetCapturedStdout;
 
 class InterpreterTest : public ::testing::Test {
 protected:
@@ -38,10 +38,8 @@ TEST_F(InterpreterTest, VarDeclAndAssignment) {
 			LibSlg::RuntimeException);
 
 	// immutable vals
-	EXPECT_THROW(m_interpreter->execute("val immutable = 1; immutable = 2;", false, true),
-			LibSlg::RuntimeException);
-	EXPECT_THROW(m_interpreter->execute("val immutableTwo; immutableTwo = 2;", false, true),
-			LibSlg::RuntimeException);
+	EXPECT_THROW(m_interpreter->execute("val immutable = 1; immutable = 2;", false, true), LibSlg::RuntimeException);
+	EXPECT_THROW(m_interpreter->execute("val immutableTwo; immutableTwo = 2;", false, true), LibSlg::RuntimeException);
 }
 
 TEST_F(InterpreterTest, SimpleBooleanComparison) {

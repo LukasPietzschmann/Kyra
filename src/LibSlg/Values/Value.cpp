@@ -1,4 +1,5 @@
 #include "Value.hpp"
+
 #include "Nothing.hpp"
 
 namespace LibSlg {

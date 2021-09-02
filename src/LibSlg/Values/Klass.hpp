@@ -1,13 +1,14 @@
 #pragma once
 
-#include "Value.hpp"
 #include "../Statements/ClassDeclarationStmt.hpp"
+#include "Value.hpp"
 
 namespace LibSlg {
 class Context;
 
 class Klass : public Value {
-EXPR_NEEDS_VISIT_RETURN_OF_TYPE(Value::Ptr);
+	EXPR_NEEDS_VISIT_RETURN_OF_TYPE(Value::Ptr);
+
 public:
 	explicit Klass(const ClassDeclarationStmt& declarationStmt) : m_declarationStmt(declarationStmt) {}
 
@@ -22,6 +23,7 @@ public:
 	bool operator==(const Value::Ptr&) const override { return false; }
 	bool operator<(const Value::Ptr&) const override { return false; }
 	bool operator>(const Value::Ptr&) const override { return false; }
+
 private:
 	ClassDeclarationStmt m_declarationStmt;
 	std::shared_ptr<Context> m_instanceContext;

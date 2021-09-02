@@ -1,4 +1,5 @@
 #include "Function.hpp"
+
 #include "../Interpreter.hpp"
 
 namespace LibSlg {
@@ -11,9 +12,7 @@ Value::Ptr Function::exec(std::vector<Value::Ptr> arguments) {
 	auto block = std::dynamic_pointer_cast<BlockStmt>(m_functionExpr.getImplementation());
 	try {
 		Interpreter::getInstance().executeStatementsOnContext(block->getStatements(), runtimeContext);
-	}catch(ReturnException& exception) {
-		return exception.getReturnVal();
-	}
+	} catch(ReturnException& exception) { return exception.getReturnVal(); }
 	return Value::makePtr<Nothing>();
 }
 }

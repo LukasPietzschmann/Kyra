@@ -5,6 +5,7 @@
 #include <unordered_map>
 #include <utility>
 #include <vector>
+
 #include "Exceptions.hpp"
 #include "Token.hpp"
 
@@ -13,24 +14,17 @@ class Lexer {
 public:
 	explicit Lexer(std::string source) : m_source(std::move(source)) {}
 	std::vector<Token> scanTokens();
+
 private:
-	const std::unordered_map<std::string, TokenType> keywords {
-			{"var", TokenType::VAR},
-			{"val", TokenType::VAL},
-			{"fun", TokenType::FUN},
-			{"class", TokenType::CLASS},
-			{"print", TokenType::PRINT},
-			{"nothing", TokenType::NOTHING},
-			{"true", TokenType::TRUE},
-			{"false", TokenType::FALSE},
-			{"return", TokenType::RETURN},
-			{"instantiate", TokenType::INSTANTIATE}
-	};
+	const std::unordered_map<std::string, TokenType> keywords{ { "var", TokenType::VAR }, { "val", TokenType::VAL },
+		{ "fun", TokenType::FUN }, { "class", TokenType::CLASS }, { "print", TokenType::PRINT },
+		{ "nothing", TokenType::NOTHING }, { "true", TokenType::TRUE }, { "false", TokenType::FALSE },
+		{ "return", TokenType::RETURN }, { "instantiate", TokenType::INSTANTIATE } };
 	const std::string m_source;
 	std::vector<Token> m_tokens;
-	int m_current {};
-	int m_start {};
-	int m_line {};
+	int m_current{};
+	int m_start{};
+	int m_line{};
 
 	void scanToken();
 	void comment();

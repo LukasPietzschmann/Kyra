@@ -1,8 +1,9 @@
 #pragma once
 
+#include <iostream>
 #include <utility>
 #include <vector>
-#include <iostream>
+
 #include "Exceptions.hpp"
 #include "Expressions/AccessExpr.hpp"
 #include "Expressions/AssignmentExpr.hpp"
@@ -32,15 +33,14 @@
 namespace LibSlg {
 class Parser {
 public:
-	explicit Parser(std::vector<Token> tokens) : m_tokens(std::move(tokens)) {
-		m_statements.reserve(m_tokens.size());
-	}
+	explicit Parser(std::vector<Token> tokens) : m_tokens(std::move(tokens)) { m_statements.reserve(m_tokens.size()); }
 
 	std::vector<Statement::Ptr> parse();
+
 private:
 	const std::vector<Token> m_tokens;
 	std::vector<Statement::Ptr> m_statements;
-	int m_current {};
+	int m_current{};
 
 	Statement::Ptr declaration();
 	Statement::Ptr varDeclaration();

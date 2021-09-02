@@ -11,17 +11,10 @@ public:
 	Type getType() const override { return Value::NativeTypes::Bool; }
 	std::string toString() const override { return m_bool ? "true" : "false"; }
 
-	bool operator==(const Value::Ptr& other) const override {
-		return m_bool == other->isImplicitlyTrue();
-	}
+	bool operator==(const Value::Ptr& other) const override { return m_bool == other->isImplicitlyTrue(); }
+	bool operator<(const Value::Ptr& other) const override { return !m_bool && other->isImplicitlyTrue(); }
+	bool operator>(const Value::Ptr& other) const override { return m_bool && !other->isImplicitlyTrue(); }
 
-	bool operator<(const Value::Ptr& other) const override {
-		return m_bool == false && other->isImplicitlyTrue();
-	}
-
-	bool operator>(const Value::Ptr& other) const override {
-		return m_bool == true && !other->isImplicitlyTrue();
-	}
 private:
 	bool m_bool;
 };

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <ostream>
+
 #include "Value.hpp"
 
 namespace LibSlg {

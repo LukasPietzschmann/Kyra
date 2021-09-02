@@ -1,7 +1,9 @@
-#include <iostream>
-#include <fstream>
-#include <cxxopts.hpp>
 #include <config.h>
+
+#include <cxxopts.hpp>
+#include <fstream>
+#include <iostream>
+
 #include "LibSlg/Interpreter.hpp"
 
 #ifdef HAS_READLINE
@@ -19,12 +21,10 @@ int main(int argc, char** argv) {
 	std::ostream::sync_with_stdio(false);
 	std::string desc("The Slanguage programming language");
 	cxxopts::Options options(argv[0], desc + " - Version " + PROJECT_VERSION);
-	options.add_options()
-			("f,file", "The file to execute", cxxopts::value<std::string>())
-			("verbose", "Prints as much information as available", cxxopts::value<bool>(verbose))
-			("v,version", "Prints the version number")
-			("h,help", "Prints this message");
-	options.parse_positional({"file"});
+	options.add_options()("f,file", "The file to execute", cxxopts::value<std::string>())("verbose",
+			"Prints as much information as available",
+			cxxopts::value<bool>(verbose))("v,version", "Prints the version number")("h,help", "Prints this message");
+	options.parse_positional({ "file" });
 	options.positional_help("[FILE]").show_positional_help();
 
 	try {
@@ -41,14 +41,15 @@ int main(int argc, char** argv) {
 		}
 
 		if(!result.count("file")) {
-			std::cout << "Slanguage " << PROJECT_VERSION << " by Lukas Pietzschmann" << "\n";
+			std::cout << "Slanguage " << PROJECT_VERSION << " by Lukas Pietzschmann"
+					  << "\n";
 			std::cout << R"(Type "exit" or press "CTRL-C" to exit the REPL)" << std::endl;
 #ifdef HAS_READLINE
 			niceRepl();
 #else
 			simpleRepl();
 #endif
-		}else {
+		} else {
 			// File
 			std::stringstream fileContent;
 			std::string line;
@@ -59,7 +60,7 @@ int main(int argc, char** argv) {
 
 			LibSlg::Interpreter::getInstance().execute(fileContent.str(), verbose);
 		}
-	}catch(cxxopts::OptionException& exception) {
+	} catch(cxxopts::OptionException& exception) {
 		std::cout << exception.what() << "\n" << options.help() << std::endl;
 		return 1;
 	}
@@ -103,7 +104,7 @@ void niceRepl() {
 		if(unfinished) {
 			prompt = ".... ";
 			completeCode += "\n";
-		}else {
+		} else {
 			add_history(completeCode.c_str());
 			LibSlg::Interpreter::getInstance().execute(completeCode, verbose);
 			completeCode.clear();

@@ -1,24 +1,26 @@
 #pragma once
 
 #include <string>
+
 #include "AstLogger.hpp"
 #include "Context.hpp"
 #include "Expressions/Expression.hpp"
-#include "Values/Function.hpp"
-#include "Values/Klass.hpp"
 #include "Lexer.hpp"
 #include "Parser.hpp"
 #include "Statements/Statement.hpp"
+#include "Values/Function.hpp"
+#include "Values/Klass.hpp"
 
 namespace LibSlg {
 class Interpreter : public ExpressionVisitor, public StatementVisitor {
-EXPR_NEEDS_VISIT_RETURN_OF_TYPE(Value::Ptr);
+	EXPR_NEEDS_VISIT_RETURN_OF_TYPE(Value::Ptr);
+
 public:
 	static Interpreter& getInstance();
 	Interpreter(Interpreter const&) = delete;
 	void operator=(Interpreter const&) = delete;
 
-	void execute(const std::string& code, bool verboseLogging=false, bool passThroughExceptions=false);
+	void execute(const std::string& code, bool verboseLogging = false, bool passThroughExceptions = false);
 	void executeStatementsOnContext(const std::vector<Statement::Ptr>& statements, const Context::Ptr& context);
 	bool isIncompleteStatement(const std::string& code);
 
@@ -38,8 +40,10 @@ public:
 	void visitExpressionStmt(ExpressionStmt& expressionStmt) override;
 	void visitPrintStmt(PrintStmt& printStmt) override;
 	void visitReturnStmt(ReturnStmt& returnStmt) override;
-private:
-	Interpreter() : m_currentContext(Context::makePtr()) {};
 
-	Context::Ptr m_currentContext;};
+private:
+	Interpreter() : m_currentContext(Context::makePtr()){};
+
+	Context::Ptr m_currentContext;
+};
 }
