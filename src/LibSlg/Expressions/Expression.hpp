@@ -11,8 +11,10 @@ public:
 private:                                      \
 	type m_exprVisitorResult
 #define EXPR_RETURN_FROM_VISIT(value) \
-	m_exprVisitorResult = value;      \
-	return
+	do {                              \
+		m_exprVisitorResult = value;  \
+		return;                       \
+	} while(0)
 #define EXPR_GET_FROM_VISIT(dest) dest = m_exprVisitorResult
 #define EXPR_ACCEPT(visitee, visitor, dest) \
 	visitee->accept(visitor);               \

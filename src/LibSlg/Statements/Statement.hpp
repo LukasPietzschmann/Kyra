@@ -10,8 +10,10 @@ public:
 private:                                      \
 	type m_stmtVisitorResult
 #define STMT_RETURN_FROM_VISIT(value) \
-	m_stmtVisitorResult = value;      \
-	return
+	do {                              \
+		m_stmtVisitorResult = value;  \
+		return;                       \
+	} while(0)
 #define STMT_GET_FROM_VISIT(dest) dest = m_stmtVisitorResult
 #define STMT_ACCEPT(visitee, visitor, dest) \
 	visitee->accept(visitor);               \
