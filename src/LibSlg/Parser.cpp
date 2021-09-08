@@ -44,10 +44,10 @@ Statement::Ptr Parser::classDeclaration() {
 		do {
 			matchAndAdvance({ TokenType::VAR, TokenType::VAL });
 			bool isMutable = previous().getType() == TokenType::VAR;
-			Token name = consume(TokenType::NAME);
+			Token paramName = consume(TokenType::NAME);
 			consume(TokenType::COLON);
 			Value::Type type = consume(TokenType::NAME).getValue().asString();
-			constructorParameter.emplace_back(name, isMutable, type);
+			constructorParameter.emplace_back(paramName, isMutable, type);
 		} while(matchAndAdvance(TokenType::COMMA));
 	}
 	consume(TokenType::RIGHT_PAREN);

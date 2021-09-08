@@ -2,6 +2,7 @@
 
 #include <memory>
 #include <ostream>
+#include <vector>
 
 #include "../Exceptions.hpp"
 #include "Forward.hpp"
@@ -18,6 +19,7 @@ public:
 		static const Type Bool;
 		static const Type String;
 		static const Type Function;
+		static const std::vector<Type> All;
 	} NativeTypes;
 
 	virtual bool isImplicitlyTrue() const = 0;
@@ -56,6 +58,6 @@ public:
 	virtual Value::Ptr operator/(const Value::Ptr&) const { throw ParserException("Operator / can't be used here"); }
 
 protected:
-	virtual ~Value(){};
+	virtual ~Value() = default;
 };
 }

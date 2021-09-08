@@ -38,6 +38,6 @@ public:
 	}
 
 protected:
-	virtual ~Statement() {}
+	virtual ~Statement() = default;
 };
 }

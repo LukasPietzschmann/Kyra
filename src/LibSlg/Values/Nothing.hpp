@@ -8,7 +8,7 @@ namespace LibSlg {
 class Nothing : public Value {
 public:
 	Nothing() = default;
-	~Nothing() override {}
+	~Nothing() override = default;
 	bool isImplicitlyTrue() const override { return false; }
 	Type getType() const override { return Value::NativeTypes::Nothing; }
 	bool hasCorrectTypeForAssignment(const Value::Type&) const override { return true; }

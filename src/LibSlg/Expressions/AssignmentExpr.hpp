@@ -10,7 +10,7 @@ class AssignmentExpr : public Expression {
 public:
 	AssignmentExpr(Expression::Ptr owner, Token name, Expression::Ptr newValue) :
 		m_owner(std::move(owner)), m_name(std::move(name)), m_newValue(std::move(newValue)) {}
-	~AssignmentExpr() override {}
+	~AssignmentExpr() override = default;
 	void accept(ExpressionVisitor& visitor) override { return visitor.visitAssignmentExpr(*this); }
 	const Expression::Ptr& getOwner() const { return m_owner; }
 	const Token& getName() const { return m_name; }

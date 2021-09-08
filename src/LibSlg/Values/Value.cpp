@@ -1,7 +1,5 @@
 #include "Value.hpp"
 
-#include "Nothing.hpp"
-
 namespace LibSlg {
 const Value::Type Value::NativeTypes::Nothing = "Nothing";
 const Value::Type Value::NativeTypes::Number = "Number";

@@ -9,7 +9,7 @@ namespace LibSlg {
 class String : public Value {
 public:
 	explicit String(std::string string) : m_string(std::move(string)) {}
-	~String() override {}
+	~String() override = default;
 	bool isImplicitlyTrue() const override { return true; }
 	Type getType() const override { return Value::NativeTypes::String; }
 	std::string toString() const override { return m_string; }
@@ -17,7 +17,7 @@ public:
 	bool operator==(const Value::Ptr& other) const override {
 		if(getType() != other->getType())
 			return false;
-		return m_string.compare(Value::as<String>(other)->m_string) == 0;
+		return m_string == Value::as<String>(other)->m_string;
 	}
 
 	bool operator<(const Value::Ptr& other) const override {

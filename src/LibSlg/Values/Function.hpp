@@ -1,5 +1,7 @@
 #pragma once
 
+#include <utility>
+
 #include "../Context.hpp"
 #include "../Expressions/FunctionExpr.hpp"
 #include "Nothing.hpp"
@@ -8,9 +10,9 @@
 namespace LibSlg {
 class Function : public Value {
 public:
-	Function(const FunctionExpr& functionExpr, const Context::Ptr& definitionContext) :
-		m_functionExpr(functionExpr), m_definitionContext(definitionContext) {}
-	~Function() override {}
+	Function(const FunctionExpr& functionExpr, Context::Ptr definitionContext) :
+		m_functionExpr(functionExpr), m_definitionContext(std::move(definitionContext)) {}
+	~Function() override = default;
 
 	unsigned int getArity() const { return m_functionExpr.getParameters().size(); }
 	Value::Ptr exec(std::vector<Value::Ptr> arguments);

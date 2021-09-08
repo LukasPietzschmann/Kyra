@@ -59,7 +59,7 @@ public:
 		std::stringstream parameter;
 		for(const auto& param : classDeclarationStmt.getConstructorParameters())
 			parameter << param.name.getValue().asString() << " ";
-		if(classDeclarationStmt.getConstructorParameters().size() > 0)
+		if(!classDeclarationStmt.getConstructorParameters().empty())
 			COUT << parameter.str() << "\n";
 		--m_indent;
 		std::cout << "Declarations" << std::endl;

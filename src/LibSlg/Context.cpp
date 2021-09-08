@@ -21,10 +21,10 @@ const Klass& Context::getCustomType(const Value::Type& type) const {
 	throw RuntimeException("Undefined type " + type);
 }
 
-void Context::declareVar(const std::string& name, Value::Ptr value, Value::Type type, bool isMutable) {
+void Context::declareVar(const std::string& name, const Value::Ptr& value, Value::Type type, bool isMutable) {
 	if(m_variables.contains(name))
 		throw RuntimeException("Variable " + name + " already declared");
-	m_variables.emplace(std::make_pair(name, Context::ContextValue(std::move(value), std::move(type), isMutable)));
+	m_variables.emplace(std::make_pair(name, Context::ContextValue(value, std::move(type), isMutable)));
 }
 
 void Context::mutate(const std::string& name, Value::Ptr value) {
@@ -46,7 +46,7 @@ bool Context::isTypeKnown(const Value::Type& type) {
 	return false;
 }
 
-bool Context::declareType(const Value::Type& type, Klass klass) {
+bool Context::declareType(const Value::Type& type, const Klass& klass) {
 	if(isTypeKnown(type))
 		return false;
 	m_customTypes.emplace(type, klass);

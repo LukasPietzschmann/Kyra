@@ -8,7 +8,7 @@ namespace LibSlg {
 class GroupExpr : public Expression {
 public:
 	explicit GroupExpr(Expression::Ptr expr) : m_expr(std::move(expr)) {}
-	~GroupExpr() override {}
+	~GroupExpr() override = default;
 	const Expression::Ptr& getExpr() const { return m_expr; }
 	void accept(ExpressionVisitor& visitor) override { return visitor.visitGroupExpr(*this); }
 

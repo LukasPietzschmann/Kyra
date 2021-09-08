@@ -6,7 +6,7 @@ namespace LibSlg {
 class Bool : public Value {
 public:
 	explicit Bool(bool boolean) : m_bool(boolean) {}
-	~Bool() override {}
+	~Bool() override = default;
 	bool isImplicitlyTrue() const override { return m_bool; }
 	Type getType() const override { return Value::NativeTypes::Bool; }
 	std::string toString() const override { return m_bool ? "true" : "false"; }

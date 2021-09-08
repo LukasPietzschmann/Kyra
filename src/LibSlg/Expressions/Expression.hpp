@@ -43,6 +43,6 @@ public:
 	}
 
 protected:
-	virtual ~Expression(){};
+	virtual ~Expression() = default;
 };
 }

@@ -24,7 +24,7 @@ TEST(lexer, AllTokens) {
 	auto actual = lexer.scanTokens();
 	ASSERT_EQ(expected.size(), actual.size())
 			<< "The number of parsed Tokens does not match the number of expected Tokens";
-	for(int i = 0; i < actual.size(); ++i)
+	for(unsigned long i = 0; i < actual.size(); ++i)
 		EXPECT_EQ(actual[i], expected[i]);
 }
 

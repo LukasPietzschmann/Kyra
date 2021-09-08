@@ -16,7 +16,7 @@ public:
 	std::vector<Token> scanTokens();
 
 private:
-	const std::unordered_map<std::string, TokenType> keywords{ { "var", TokenType::VAR }, { "val", TokenType::VAL },
+	const std::unordered_map<std::string, TokenType> m_keywords{ { "var", TokenType::VAR }, { "val", TokenType::VAL },
 		{ "fun", TokenType::FUN }, { "class", TokenType::CLASS }, { "print", TokenType::PRINT },
 		{ "nothing", TokenType::NOTHING }, { "true", TokenType::TRUE }, { "false", TokenType::FALSE },
 		{ "return", TokenType::RETURN }, { "instantiate", TokenType::INSTANTIATE } };

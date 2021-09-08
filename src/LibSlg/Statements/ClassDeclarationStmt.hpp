@@ -1,5 +1,6 @@
 #pragma once
 
+#include <utility>
 #include <vector>
 
 #include "../Statements/DeclarationStmt.hpp"
@@ -12,24 +13,24 @@ class ClassDeclarationStmt : public Statement {
 public:
 	typedef struct ConstructorParameter {
 		ConstructorParameter(Token name, bool isMutable, Value::Type type) :
-			name(name), isMutable(isMutable), type(type) {}
+			name(std::move(std::move(name))), isMutable(isMutable), type(std::move(std::move(type))) {}
 		Token name;
 		bool isMutable;
 		Value::Type type;
 	} ConstructorParameter;
 
-	ClassDeclarationStmt(const Token& identifier, std::vector<ConstructorParameter> parameters,
+	ClassDeclarationStmt(Token identifier, std::vector<ConstructorParameter> parameters,
 			std::vector<std::shared_ptr<DeclarationStmt>> declarations) :
-		identifier(identifier),
+		m_identifier(std::move(identifier)),
 		m_parameters(std::move(parameters)), m_declarations(std::move(declarations)) {}
-	~ClassDeclarationStmt() override {}
+	~ClassDeclarationStmt() override = default;
 	void accept(StatementVisitor& visitor) override { visitor.visitClassDeclarationStmt(*this); }
-	const Token& getIdentifier() const { return identifier; }
+	const Token& getIdentifier() const { return m_identifier; }
 	const std::vector<ConstructorParameter>& getConstructorParameters() const { return m_parameters; }
 	const std::vector<std::shared_ptr<DeclarationStmt>>& getDeclarations() const { return m_declarations; }
 
 private:
-	Token identifier;
+	Token m_identifier;
 	std::vector<ConstructorParameter> m_parameters;
 	std::vector<std::shared_ptr<DeclarationStmt>> m_declarations;
 };

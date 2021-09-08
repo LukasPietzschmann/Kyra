@@ -13,7 +13,7 @@ public:
 	DeclarationStmt(Token identifier, Expression::Ptr initializer, Value::Type type, bool isMutable = true) :
 		m_identifier(std::move(identifier)), m_initializer(std::move(initializer)), m_type(std::move(type)),
 		m_isMutable(isMutable) {}
-	~DeclarationStmt() override {}
+	~DeclarationStmt() override = default;
 	void accept(StatementVisitor& visitor) override { visitor.visitDeclarationStmt(*this); }
 
 	const Token& getIdentifier() const { return m_identifier; }

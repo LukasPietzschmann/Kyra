@@ -13,21 +13,21 @@ class Context {
 public:
 	typedef std::shared_ptr<Context> Ptr;
 	typedef struct ContextValue {
-		ContextValue(const Value::Ptr& value, Value::Type type, bool isMutable) :
-			value(value), type(type), isMutable(isMutable) {}
+		ContextValue(Value::Ptr value, Value::Type type, bool isMutable) :
+			value(std::move(value)), type(std::move(std::move(type))), isMutable(isMutable) {}
 		Value::Ptr value;
 		Value::Type type;
 		bool isMutable;
 	} ContextValue;
-	explicit Context(Ptr parent = nullptr) : m_parent(parent) {}
+	explicit Context(Ptr parent = nullptr) : m_parent(std::move(std::move(parent))) {}
 
 	const std::shared_ptr<Context>& getParent() const;
 	ContextValue getVar(const std::string& name) const;
 	const Klass& getCustomType(const Value::Type& type) const;
-	void declareVar(const std::string& name, Value::Ptr value, Value::Type type, bool isMutable = true);
+	void declareVar(const std::string& name, const Value::Ptr& value, Value::Type type, bool isMutable = true);
 	void mutate(const std::string& name, Value::Ptr value);
 	bool isTypeKnown(const Value::Type& type);
-	bool declareType(const Value::Type& type, Klass klass);
+	bool declareType(const Value::Type& type, const Klass& klass);
 
 	template <class... Args>
 	static Context::Ptr makePtr(Args... args) {
