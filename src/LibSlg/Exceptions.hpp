@@ -32,6 +32,10 @@ class RuntimeException : public MessageException {
 public:
 	explicit RuntimeException(const std::string& message) : MessageException(message) {}
 };
+
+class TypingException : public MessageException {
+public:
+	explicit TypingException(const std::string& message) : MessageException(message) {}
 };
 
 class Value;

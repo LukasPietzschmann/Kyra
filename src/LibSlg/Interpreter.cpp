@@ -19,6 +19,14 @@ void Interpreter::execute(const std::string& code, bool verboseLogging, bool pas
 			for(const auto& statement : statements)
 				logger.logStatement(statement);
 		}
+		try {
+			TypeChecker::getInstance().check(statements);
+		} catch(TypingException& exception) {
+			if(passThroughExceptions)
+				throw TypingException(exception);
+			std::cout << "[Typing Error] " << exception.what() << std::endl;
+			return;
+		}
 		for(const auto& statement : statements) {
 			try {
 				statement->accept(*this);

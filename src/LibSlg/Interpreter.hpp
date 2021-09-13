@@ -8,6 +8,7 @@
 #include "Lexer.hpp"
 #include "Parser.hpp"
 #include "Statements/Statement.hpp"
+#include "Typing/TypeChecker.hpp"
 #include "Values/Function.hpp"
 #include "Values/Klass.hpp"
 
