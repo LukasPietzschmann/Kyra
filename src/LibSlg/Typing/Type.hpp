@@ -23,9 +23,12 @@ public:
 public:
 	Type(std::string name, bool isMutable) : m_name(std::move(name)), m_isMutable(isMutable) {}
 	virtual Type::Ptr knowsAbout(const std::string&) const { return nullptr; }
+	virtual Type::Ptr duplicate() const = 0;
 
 	bool isMutable() const { return m_isMutable; }
 	const std::string& getName() const { return m_name; }
+
+	void setMutable(bool isMutable) { m_isMutable = isMutable; }
 
 	virtual bool operator==(const Type::Ptr& other) const { return m_name == other->m_name; }
 	virtual bool operator!=(const Type::Ptr& other) const { return !(*this == other); }

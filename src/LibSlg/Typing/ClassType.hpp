@@ -19,6 +19,8 @@ public:
 		return it->second;
 	}
 
+	Type::Ptr duplicate() const override { return Type::makePtr<ClassType>(*this); }
+
 protected:
 	std::unordered_map<std::string, Type::Ptr> m_declarations;
 };
