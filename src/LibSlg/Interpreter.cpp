@@ -33,20 +33,17 @@ void Interpreter::execute(const std::string& code, bool verboseLogging, bool pas
 			} catch(RuntimeException& exception) {
 				if(passThroughExceptions)
 					throw RuntimeException(exception);
-				std::cout << "[ERROR] " << exception.what() << std::endl;
-			} catch(ReturnException& exception) {
-				std::cout << "[ERROR] "
-						  << "Return Statements can only be used in Functions." << std::endl;
+				std::cout << "[Runtime Error] " << exception.what() << std::endl;
 			}
 		}
 	} catch(ParserException& exception) {
 		if(passThroughExceptions)
 			throw ParserException(exception);
-		std::cout << "[ERROR] " << exception.what() << std::endl;
+		std::cout << "[Parser Error] " << exception.what() << std::endl;
 	} catch(LexerException& exception) {
 		if(passThroughExceptions)
 			throw LexerException(exception);
-		std::cout << "[ERROR] " << exception.what() << std::endl;
+		std::cout << "[Lexer Error] " << exception.what() << std::endl;
 	}
 }
 
