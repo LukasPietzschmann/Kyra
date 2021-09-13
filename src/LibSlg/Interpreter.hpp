@@ -21,6 +21,9 @@ public:
 	Interpreter(Interpreter const&) = delete;
 	void operator=(Interpreter const&) = delete;
 
+	// FIXME this is only needed for Klass::instantiate
+	Value::Ptr getVisitorReturn() const { return m_exprVisitorResult; }
+
 	void execute(const std::string& code, bool verboseLogging = false, bool passThroughExceptions = false);
 	void executeStatementsOnContext(const std::vector<Statement::Ptr>& statements, const Context::Ptr& context);
 	bool isIncompleteStatement(const std::string& code);
