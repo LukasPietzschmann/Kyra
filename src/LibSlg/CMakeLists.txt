@@ -7,7 +7,7 @@ add_library(LibSlg AstLogger.hpp Context.hpp Context.cpp Exceptions.hpp
 		Statements/BlockStmt.hpp Statements/DeclarationStmt.hpp Statements/ClassDeclarationStmt.hpp
 		Statements/ExpressionStmt.hpp Statements/PrintStmt.hpp Statements/PrintStmt.hpp Statements/ReturnStmt.hpp
 		Statements/Statement.hpp Statements/Forward.hpp
-		Typing/TypeChecker.hpp Typing/TypeChecker.cpp Typing/Type.hpp Typing/ClassType.hpp Typing/FunctionType.hpp
+		Typing/TypeChecker.hpp Typing/TypeChecker.cpp Typing/Type.hpp Typing/ClassType.hpp Typing/FunctionType.hpp Typing/NativeTypes.hpp
 		Values/Value.hpp Values/Value.cpp Values/Bool.hpp Values/Function.hpp Values/Function.cpp Values/Number.hpp
 		Values/Nothing.hpp Values/String.hpp Values/Klass.hpp Values/Klass.cpp Values/Forward.hpp)
 set_target_properties(LibSlg PROPERTIES LINKER_LANGUAGE CXX)
