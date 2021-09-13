@@ -33,6 +33,10 @@ namespace LibSlg {
 class TypeChecker : public ExpressionVisitor, public StatementVisitor {
 private:
 	struct Scope {
+		Scope() : variables({}), types({}) {
+			for(const auto& nativeType : Value::NativeTypes::All)
+				types.emplace(nativeType, NativeTypes::make(nativeType));
+		}
 		std::unordered_map<std::string, Type::Ptr> variables;
 		std::unordered_map<std::string, Type::Ptr> types;
 	};
