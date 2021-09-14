@@ -38,6 +38,12 @@ public:
 	explicit TypingException(const std::string& message) : MessageException(message) {}
 };
 
+class WrongTypeException : public TypingException {
+public:
+	WrongTypeException(const std::string& expected, const std::string& provided) :
+		TypingException("Expected type " + expected + " does not equal provided type " + provided) {}
+};
+
 class Value;
 
 class ReturnException : std::exception {

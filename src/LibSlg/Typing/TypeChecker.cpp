@@ -54,8 +54,7 @@ void TypeChecker::visitAssignmentExpr(AssignmentExpr& assignmentExpr) {
 		throw TypingException("Asignee is not mutable");
 	EXPR_ACCEPT(assignmentExpr.getNewValue(), *this, Type::Ptr newValueType);
 	if(*newValueType != assignedValueType)
-		throw TypingException("Expected type " + assignedValueType->getName() + " does not equal provided type " +
-							  newValueType->getName());
+		throw WrongTypeException(assignedValueType->getName(), newValueType->getName());
 	EXPR_RETURN_FROM_VISIT(newValueType);
 }
 
@@ -84,8 +83,7 @@ void TypeChecker::visitInstantiationExpr(InstantiationExpr& instantiationExpr) {
 		const Type::Ptr& expected = classType->getConstructorParameter()[i];
 		EXPR_ACCEPT(instantiationExpr.getArguments()[i], *this, Type::Ptr provided);
 		if(*expected != provided)
-			throw TypingException(
-					"Expected type " + expected->getName() + " does not equal provided type " + provided->getName());
+			throw WrongTypeException(expected->getName(), provided->getName());
 	}
 	EXPR_RETURN_FROM_VISIT(it->second);
 }
@@ -124,8 +122,7 @@ void TypeChecker::visitDeclarationStmt(DeclarationStmt& declarationStmt) {
 		if(expectedType == nullptr)
 			throw TypingException("Unknown type " + typeInDecl);
 		if(*expectedType != initType)
-			throw TypingException("Expected type " + expectedType->getName() + " does not match provided type " +
-								  initType->getName());
+			throw WrongTypeException(expectedType->getName(), initType->getName());
 	}
 	Type::Ptr instanceType = m_currentScope.types.at(typeInDecl)->duplicate();
 	instanceType->setMutable(declarationStmt.isMutable());
