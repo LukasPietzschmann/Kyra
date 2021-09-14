@@ -62,8 +62,7 @@ void TypeChecker::visitBinaryExpr(BinaryExpr& binaryExpr) {}
 
 void TypeChecker::visitCallExpr(CallExpr& callExpr) {}
 
-void TypeChecker::visitFunction(FunctionExpr& functionExpr) {
-}
+void TypeChecker::visitFunction(FunctionExpr& functionExpr) {}
 
 void TypeChecker::visitGroupExpr(GroupExpr& groupExpr) {
 	EXPR_ACCEPT(groupExpr.getExpr(), *this, Type::Ptr type);
@@ -92,9 +91,7 @@ void TypeChecker::visitLiteral(LiteralExpr& literalExpr) {
 	EXPR_RETURN_FROM_VISIT(m_currentScope.types.at(literalExpr.getValue()->getType()));
 }
 
-void TypeChecker::visitUnaryExpr(UnaryExpr& unaryExpr) {
-	}
-}
+void TypeChecker::visitUnaryExpr(UnaryExpr& unaryExpr) {}
 
 void TypeChecker::visitVariable(VariableExpr& variableExpr) {
 	const std::string& name = variableExpr.getName().getValue().asString();
@@ -162,6 +159,5 @@ void TypeChecker::visitPrintStmt(PrintStmt& printStmt) {
 	STMT_RETURN_FROM_VISIT(m_currentScope);
 }
 
-void TypeChecker::visitReturnStmt(ReturnStmt& returnStmt) {
-}
+void TypeChecker::visitReturnStmt(ReturnStmt& returnStmt) {}
 }
