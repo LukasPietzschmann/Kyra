@@ -284,8 +284,20 @@ Expression::Ptr Parser::instantiation() {
 }
 
 Expression::Ptr Parser::typeIndicator() {
-	// TODO implement
 	std::string name = consume(TokenType::NAME).getValue().asString();
+	if(name == "Function") {
+		consume(TokenType::LEFT_PAREN);
+		std::vector<Expression::Ptr> paramTypes;
+		if(!match(TokenType::RIGHT_PAREN)) {
+			do {
+				paramTypes.push_back(typeIndicator());
+			} while(matchAndAdvance(TokenType::COMMA));
+		}
+		consume(TokenType::RIGHT_PAREN);
+		consume(TokenType::ARROW);
+		Expression::Ptr returnType = typeIndicator();
+		return Expression::makePtr<TypeExpr>(paramTypes, returnType);
+	}
 	return Expression::makePtr<TypeExpr>(name);
 }
 

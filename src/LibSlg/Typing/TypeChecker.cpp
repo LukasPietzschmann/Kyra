@@ -92,6 +92,15 @@ void TypeChecker::visitLiteral(LiteralExpr& literalExpr) {
 }
 
 void TypeChecker::visitTypeExpr(TypeExpr& typeExpr) {
+	if(typeExpr.isFunction()) {
+		EXPR_ACCEPT(typeExpr.getReturnType(), *this, Type::Ptr returnType);
+		std::vector<Type::Ptr> paramTypes;
+		for(const auto& param : typeExpr.getParameterTypes()) {
+			EXPR_ACCEPT(param, *this, Type::Ptr paramType);
+			paramTypes.push_back(paramType);
+		}
+		EXPR_RETURN_FROM_VISIT(Type::makePtr<FunctionType>(false, returnType, paramTypes));
+	}
 	const auto& it = m_currentScope.types.find(typeExpr.getName());
 	if(it == m_currentScope.types.end())
 		throw TypingException("Unknown type " + typeExpr.getName());
