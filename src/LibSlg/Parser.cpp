@@ -259,10 +259,12 @@ Expression::Ptr Parser::function() {
 		} while(matchAndAdvance(TokenType::COMMA));
 	}
 	consume(TokenType::RIGHT_PAREN);
+	consume(TokenType::ARROW);
 
+	Expression::Ptr returnType = typeIndicator();
 	Statement::Ptr implementation = block();
 
-	return Expression::makePtr<FunctionExpr>(parameters, implementation);
+	return Expression::makePtr<FunctionExpr>(parameters, returnType, implementation);
 }
 
 Expression::Ptr Parser::instantiation() {

@@ -2,6 +2,7 @@
 
 namespace LibSlg {
 enum class TokenType {
+	// clang-format off
 	// Single-character tokens
 	LEFT_PAREN, RIGHT_PAREN, LEFT_CURLY, RIGHT_CURLY,
 	COMMA, SEMICOLON, DOT, COLON, MINUS, PLUS, SLASH, STAR,
@@ -11,6 +12,7 @@ enum class TokenType {
 	BANG, BANG_EQUAL,
 	GREATER, GREATER_EQUAL,
 	LESS, LESS_EQUAL,
+	ARROW,
 
 	//Literals
 	NAME, STRING, NUMBER,
@@ -19,15 +21,16 @@ enum class TokenType {
 	VAR, VAL, FUN, CLASS, PRINT, NOTHING, TRUE, FALSE, RETURN, INSTANTIATE,
 
 	END_OF_FILE
+	// clang-format on
 };
 
 class TokenTypeName {
 public:
 	static std::string getFor(TokenType type) {
-		const std::string names[] = {"LEFT_PAREN", "RIGHT_PAREN", "LEFT_CURLY", "RIGHT_CURLY", "COMMA", "SEMICOLON",
-				"DOT", "COLON", "MINUS", "PLUS", "SLASH", "STAR", "EQUAL", "EQUAL_EQUAL", "BANG", "BANG_EQUAL", "GREATER",
-				"GREATER_EQUAL", "LESS", "LESS_EQUAL", "NAME", "STRING", "NUMBER", "VAR", "VAL", "FUN", "CLASS", "PRINT",
-				"NOTHING", "TRUE", "FALSE", "RETURN", "INSTANTIATE", "EOF"};
+		const std::string names[] = { "LEFT_PAREN", "RIGHT_PAREN", "LEFT_CURLY", "RIGHT_CURLY", "COMMA", "SEMICOLON",
+			"DOT", "COLON", "MINUS", "PLUS", "SLASH", "STAR", "EQUAL", "EQUAL_EQUAL", "BANG", "BANG_EQUAL", "GREATER",
+			"GREATER_EQUAL", "LESS", "LESS_EQUAL", "ARROW", "NAME", "STRING", "NUMBER", "VAR", "VAL", "FUN", "CLASS",
+			"PRINT", "NOTHING", "TRUE", "FALSE", "RETURN", "INSTANTIATE", "EOF" };
 		return names[static_cast<std::underlying_type<TokenType>::type>(type)];
 	}
 };
