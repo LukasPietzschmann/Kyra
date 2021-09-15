@@ -24,14 +24,14 @@ Statement::Ptr Parser::varDeclaration() {
 	Token identifier = consume(TokenType::NAME);
 
 	consume(TokenType::COLON);
-	Value::Type type = consume(TokenType::NAME).getValue().asString();
+	Expression::Ptr expectedType = typeIndicator();
 
 	Expression::Ptr init = nullptr;
 	if(matchAndAdvance(TokenType::EQUAL))
 		init = assignment();
 	consume(TokenType::SEMICOLON);
 
-	return Statement::makePtr<DeclarationStmt>(identifier, init, type, isMutable);
+	return Statement::makePtr<DeclarationStmt>(identifier, init, expectedType, isMutable);
 }
 
 Statement::Ptr Parser::classDeclaration() {
@@ -279,6 +279,12 @@ Expression::Ptr Parser::instantiation() {
 	consume(TokenType::RIGHT_PAREN);
 
 	return Expression::makePtr<InstantiationExpr>(name, parameters);
+}
+
+Expression::Ptr Parser::typeIndicator() {
+	// TODO implement
+	std::string name = consume(TokenType::NAME).getValue().asString();
+	return Expression::makePtr<TypeExpr>(name);
 }
 
 Token Parser::advance() { return m_tokens[m_current++]; }

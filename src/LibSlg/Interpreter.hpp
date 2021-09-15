@@ -36,6 +36,7 @@ public:
 	void visitGroupExpr(GroupExpr& groupExpr) override;
 	void visitInstantiationExpr(InstantiationExpr& instantiationExpr) override;
 	void visitLiteral(LiteralExpr& literalExpr) override;
+	void visitTypeExpr(TypeExpr& typeExpr) override;
 	void visitUnaryExpr(UnaryExpr& unaryExpr) override;
 	void visitVariable(VariableExpr& variableExpr) override;
 	void visitBlockStmt(BlockStmt& blockStmt) override;

@@ -3,7 +3,8 @@ add_library(LibSlg AstLogger.hpp Context.hpp Context.cpp Exceptions.hpp
 		Interpreter.cpp
 		Expressions/AssignmentExpr.hpp Expressions/CallExpr.hpp Expressions/Expression.hpp Expressions/UnaryExpr.hpp
 		Expressions/BinaryExpr.hpp Expressions/LiteralExpr.hpp Expressions/VariableExpr.hpp Expressions/FunctionExpr.hpp
-		Expressions/AccessExpr.hpp Expressions/GroupExpr.hpp Expressions/InstantiationExpr.hpp Expressions/Forward.hpp
+		Expressions/AccessExpr.hpp Expressions/GroupExpr.hpp Expressions/InstantiationExpr.hpp Expressions/TypeExpr.hpp
+		Expressions/Forward.hpp
 		Statements/BlockStmt.hpp Statements/DeclarationStmt.hpp Statements/ClassDeclarationStmt.hpp
 		Statements/ExpressionStmt.hpp Statements/PrintStmt.hpp Statements/PrintStmt.hpp Statements/ReturnStmt.hpp
 		Statements/Statement.hpp Statements/Forward.hpp

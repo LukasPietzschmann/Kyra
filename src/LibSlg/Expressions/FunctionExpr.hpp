@@ -15,15 +15,17 @@ public:
 		Token name;
 		Value::Type type;
 	} Parameter;
-	FunctionExpr(std::vector<Parameter> parameters, Statement::Ptr impl) :
-		m_parameters(std::move(parameters)), m_implementation(std::move(impl)) {}
+	FunctionExpr(std::vector<Parameter> parameters, Expression::Ptr returnType, Statement::Ptr impl) :
+		m_parameters(std::move(parameters)), m_returnType(std::move(returnType)), m_implementation(std::move(impl)) {}
 	~FunctionExpr() override = default;
 	void accept(ExpressionVisitor& visitor) override { return visitor.visitFunction(*this); }
 	const std::vector<Parameter>& getParameters() const { return m_parameters; }
+	const Expression::Ptr& getReturnType() const { return m_returnType; }
 	const Statement::Ptr& getImplementation() const { return m_implementation; }
 
 private:
 	std::vector<Parameter> m_parameters;
+	Expression::Ptr m_returnType;
 	Statement::Ptr m_implementation;
 };
 }

@@ -126,6 +126,9 @@ void Interpreter::visitInstantiationExpr(InstantiationExpr& instantiationExpr) {
 
 void Interpreter::visitLiteral(LiteralExpr& literalExpr) { EXPR_RETURN_FROM_VISIT(literalExpr.getValue()); }
 
+// TypeExpr has no effect during runtime
+void Interpreter::visitTypeExpr(TypeExpr&) {}
+
 void Interpreter::visitUnaryExpr(UnaryExpr& unaryExpr) {
 	EXPR_ACCEPT(unaryExpr.getRhs(), *this, Value::Ptr value);
 	switch(unaryExpr.getOperator().getType()) {

@@ -12,6 +12,7 @@
 #include "Expressions/GroupExpr.hpp"
 #include "Expressions/InstantiationExpr.hpp"
 #include "Expressions/LiteralExpr.hpp"
+#include "Expressions/TypeExpr.hpp"
 #include "Expressions/UnaryExpr.hpp"
 #include "Expressions/VariableExpr.hpp"
 #include "Statements/BlockStmt.hpp"
@@ -159,6 +160,8 @@ public:
 	void visitLiteral(LiteralExpr& literal) override {
 		COUT << "Literal with value of " << literal.getValue()->toString() << std::endl;
 	}
+
+	void visitTypeExpr(TypeExpr& typeExpr) override { COUT << "Type " << typeExpr.getName(); }
 
 	void visitUnaryExpr(UnaryExpr& unaryExpr) override {
 		COUT << "Unary Expr with Operand " << TokenTypeName::getFor(unaryExpr.getOperator().getType()) << std::endl;

@@ -91,6 +91,13 @@ void TypeChecker::visitLiteral(LiteralExpr& literalExpr) {
 	EXPR_RETURN_FROM_VISIT(m_currentScope.types.at(literalExpr.getValue()->getType()));
 }
 
+void TypeChecker::visitTypeExpr(TypeExpr& typeExpr) {
+	const auto& it = m_currentScope.types.find(typeExpr.getName());
+	if(it == m_currentScope.types.end())
+		throw TypingException("Unknown type " + typeExpr.getName());
+	EXPR_RETURN_FROM_VISIT(it->second);	 // TODO implement
+}
+
 void TypeChecker::visitUnaryExpr(UnaryExpr& unaryExpr) {}
 
 void TypeChecker::visitVariable(VariableExpr& variableExpr) {
@@ -112,16 +119,14 @@ void TypeChecker::visitDeclarationStmt(DeclarationStmt& declarationStmt) {
 	const std::string& name = declarationStmt.getIdentifier().getValue().asString();
 	if(m_currentScope.variables.contains(name))
 		throw TypingException("Variable " + name + " already declared");
-	const Value::Type& typeInDecl = declarationStmt.getType();	// FIXME this does not work with custom classes
+	// FIXME this does not work with custom classes
+	EXPR_ACCEPT(declarationStmt.getType(), *this, Type::Ptr expectedType);
 	if(declarationStmt.getInitializer() != nullptr) {
 		EXPR_ACCEPT(declarationStmt.getInitializer(), *this, Type::Ptr initType);
-		Type::Ptr expectedType = m_currentScope.types.at(typeInDecl);
-		if(expectedType == nullptr)
-			throw TypingException("Unknown type " + typeInDecl);
 		if(*expectedType != initType)
 			throw WrongTypeException(expectedType->getName(), initType->getName());
 	}
-	Type::Ptr instanceType = m_currentScope.types.at(typeInDecl)->duplicate();
+	Type::Ptr instanceType = expectedType->duplicate();
 	instanceType->setMutable(declarationStmt.isMutable());
 	m_currentScope.variables.emplace(name, instanceType);
 	STMT_RETURN_FROM_VISIT(m_currentScope);

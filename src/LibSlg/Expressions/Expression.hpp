@@ -28,6 +28,7 @@ private:                                      \
 	virtual void visitGroupExpr(GroupExpr& groupExpr) = 0;
 	virtual void visitInstantiationExpr(InstantiationExpr& instantiationExpr) = 0;
 	virtual void visitLiteral(LiteralExpr& literalExpr) = 0;
+	virtual void visitTypeExpr(TypeExpr& typeExpr) = 0;
 	virtual void visitUnaryExpr(UnaryExpr& unaryExpr) = 0;
 	virtual void visitVariable(VariableExpr& variableExpr) = 0;
 };

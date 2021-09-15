@@ -14,6 +14,7 @@
 #include "Expressions/GroupExpr.hpp"
 #include "Expressions/InstantiationExpr.hpp"
 #include "Expressions/LiteralExpr.hpp"
+#include "Expressions/TypeExpr.hpp"
 #include "Expressions/UnaryExpr.hpp"
 #include "Expressions/VariableExpr.hpp"
 #include "Statements/BlockStmt.hpp"
@@ -61,6 +62,8 @@ private:
 	Expression::Ptr primary();
 	Expression::Ptr function();
 	Expression::Ptr instantiation();
+
+	Expression::Ptr typeIndicator();
 
 	Token advance();
 	Token consume(TokenType expected);
