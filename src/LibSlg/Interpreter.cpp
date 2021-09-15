@@ -59,32 +59,19 @@ bool Interpreter::isIncompleteStatement(const std::string& code) {
 
 void Interpreter::visitAccessExpr(AccessExpr& accessExpr) {
 	EXPR_ACCEPT(accessExpr.getOwner(), *this, Value::Ptr owner);
-	auto klass = Value::as<Klass>(owner);
-	if(klass == nullptr)
-		throw RuntimeException("Variables can only be accessed on classes");
-	if(!klass->knowsIdentifier(accessExpr.getName().getValue().asString()))
-		throw RuntimeException("Class " + owner->getType() + " does not contain a variable named " +
-							   accessExpr.getName().getValue().asString());
-	else
-		EXPR_RETURN_FROM_VISIT(klass->getInstanceContext()->getVar(accessExpr.getName().getValue().asString()).value);
+	const auto& klass = Value::as<Klass>(owner);
+	EXPR_RETURN_FROM_VISIT(klass->getInstanceContext()->getVar(accessExpr.getName().getValue().asString()).value);
 }
 
 void Interpreter::visitAssignmentExpr(AssignmentExpr& assignmentExpr) {
 	Context::Ptr context = m_currentContext;
 	if(assignmentExpr.getOwner() != nullptr) {
 		EXPR_ACCEPT(assignmentExpr.getOwner(), *this, Value::Ptr owner);
-		auto klass = Value::as<Klass>(owner);
-		if(klass == nullptr)
-			throw RuntimeException(assignmentExpr.getName().getValue().asString() + " is not an instance of a class");
-		context = klass->getInstanceContext();
+		context = Value::as<Klass>(owner)->getInstanceContext();
 	}
 
 	const Context::ContextValue& cValue = context->getVar(assignmentExpr.getName().getValue().asString());
-	if(!cValue.isMutable)
-		throw RuntimeException("Variable " + assignmentExpr.getName().getValue().asString() + " can't be rebound");
 	EXPR_ACCEPT(assignmentExpr.getNewValue(), *this, Value::Ptr newValue);
-	// if(!newValue->hasCorrectTypeForAssignment(cValue.type))
-	//	throw ParserException("Given type " + newValue->getType() + " does not match expected type " + cValue.type);
 	context->mutate(assignmentExpr.getName().getValue().asString(), newValue);
 	EXPR_RETURN_FROM_VISIT(newValue);
 }
@@ -99,35 +86,16 @@ void Interpreter::visitBinaryExpr(BinaryExpr& binaryExpr) {
 		case TokenType::GREATER_EQUAL: EXPR_RETURN_FROM_VISIT(Value::makePtr<Bool>(*lhs >= rhs));
 		case TokenType::LESS: EXPR_RETURN_FROM_VISIT(Value::makePtr<Bool>(*lhs < rhs));
 		case TokenType::LESS_EQUAL: EXPR_RETURN_FROM_VISIT(Value::makePtr<Bool>(*lhs <= rhs));
-		case TokenType::MINUS:
-			if(lhs->getType() != Value::NativeTypes::Number || rhs->getType() != Value::NativeTypes::Number)
-				throw RuntimeException("The - Operator can only operate on two numbers");
-			EXPR_RETURN_FROM_VISIT(*lhs - rhs);
-		case TokenType::PLUS:
-			if(!(lhs->getType() == Value::NativeTypes::Number && rhs->getType() == Value::NativeTypes::Number) &&
-					!(lhs->getType() == Value::NativeTypes::String))
-				throw RuntimeException("The + Operator can only operate on a string and two numbers");
-			EXPR_RETURN_FROM_VISIT(*lhs + rhs);
-		case TokenType::STAR:
-			if((lhs->getType() != Value::NativeTypes::Number && lhs->getType() != Value::NativeTypes::String) ||
-					rhs->getType() != Value::NativeTypes::Number)
-				throw RuntimeException("The * Operator can only operate on two numbers or a string and a number");
-			EXPR_RETURN_FROM_VISIT(*lhs * rhs);
-		case TokenType::SLASH:
-			if(lhs->getType() != Value::NativeTypes::Number || rhs->getType() != Value::NativeTypes::Number)
-				throw RuntimeException("The / Operator can only operate on two numbers");
-			EXPR_RETURN_FROM_VISIT(*lhs / rhs);
+		case TokenType::MINUS: EXPR_RETURN_FROM_VISIT(*lhs - rhs);
+		case TokenType::PLUS: EXPR_RETURN_FROM_VISIT(*lhs + rhs);
+		case TokenType::STAR: EXPR_RETURN_FROM_VISIT(*lhs * rhs);
+		case TokenType::SLASH: EXPR_RETURN_FROM_VISIT(*lhs / rhs);
 		default: assert(false);
 	}
 }
 
 void Interpreter::visitCallExpr(CallExpr& callExpr) {
 	EXPR_ACCEPT(callExpr.getFunction(), *this, Value::Ptr fun);
-	unsigned int arity = Value::as<Function>(fun)->getArity();
-
-	if(arity != callExpr.getArguments().size())
-		throw RuntimeException("The Function needs to be called with " + std::to_string(arity) +
-							   " arguments. You provided " + std::to_string(callExpr.getArguments().size()));
 
 	std::vector<Value::Ptr> arguments;
 	for(const auto& arg : callExpr.getArguments()) {
@@ -147,10 +115,6 @@ void Interpreter::visitGroupExpr(GroupExpr& groupExpr) { return groupExpr.getExp
 
 void Interpreter::visitInstantiationExpr(InstantiationExpr& instantiationExpr) {
 	Value::Ptr klass = Value::makePtr<Klass>(m_currentContext->getCustomType(instantiationExpr.getName()));
-	if(instantiationExpr.getArguments().size() != Value::as<Klass>(klass)->getArity())
-		throw RuntimeException("The Class needs to be constructed with " +
-							   std::to_string(Value::as<Klass>(klass)->getArity()) + " arguments. You provided " +
-							   std::to_string(instantiationExpr.getArguments().size()));
 	std::vector<Value::Ptr> values;
 	for(const auto& argument : instantiationExpr.getArguments()) {
 		EXPR_ACCEPT(argument, *this, Value::Ptr res);
@@ -164,14 +128,9 @@ void Interpreter::visitLiteral(LiteralExpr& literalExpr) { EXPR_RETURN_FROM_VISI
 
 void Interpreter::visitUnaryExpr(UnaryExpr& unaryExpr) {
 	EXPR_ACCEPT(unaryExpr.getRhs(), *this, Value::Ptr value);
-	std::stringstream ss;
 	switch(unaryExpr.getOperator().getType()) {
 		case TokenType::BANG: EXPR_RETURN_FROM_VISIT(Value::makePtr<Bool>(!value->isImplicitlyTrue()));
-		case TokenType::MINUS:
-			if(value->getType() == Value::NativeTypes::Number)
-				EXPR_RETURN_FROM_VISIT(*value * Value::makePtr<Number>(-1));
-			ss << value->toString() << " is not a number";
-			throw RuntimeException(ss.str());
+		case TokenType::MINUS: EXPR_RETURN_FROM_VISIT(*value * Value::makePtr<Number>(-1));
 		default: assert(false);
 	}
 }
@@ -185,24 +144,18 @@ void Interpreter::visitBlockStmt(BlockStmt& blockStmt) {
 }
 
 void Interpreter::visitDeclarationStmt(DeclarationStmt& declarationStmt) {
-	if(!m_currentContext->isTypeKnown(declarationStmt.getType()))
-		throw RuntimeException("Unknown Type " + declarationStmt.getType());
 	if(const Expression::Ptr& init = declarationStmt.getInitializer()) {
 		EXPR_ACCEPT(init, *this, Value::Ptr res);
-		// if(!res->hasCorrectTypeForAssignment(declarationStmt.getType()))
-		//	throw ParserException(
-		//			"Given type " + res->getType() + " does not match expected type " + declarationStmt.getType());
-		m_currentContext->declareVar(declarationStmt.getIdentifier().getValue().asString(), res,
-				declarationStmt.getType(), declarationStmt.isMutable());
+		m_currentContext->declareVar(
+				declarationStmt.getIdentifier().getValue().asString(), res, declarationStmt.isMutable());
 	} else
 		m_currentContext->declareVar(declarationStmt.getIdentifier().getValue().asString(), Value::makePtr<Nothing>(),
-				declarationStmt.getType(), declarationStmt.isMutable());
+				declarationStmt.isMutable());
 }
 
 void Interpreter::visitClassDeclarationStmt(ClassDeclarationStmt& classDeclarationStmt) {
 	auto name = classDeclarationStmt.getIdentifier().getValue().asString();
-	if(!m_currentContext->declareType(name, Klass(classDeclarationStmt)))
-		throw RuntimeException("Class " + name + " is already declared");
+	m_currentContext->declareType(name, Klass(classDeclarationStmt));
 }
 
 void Interpreter::visitExpressionStmt(ExpressionStmt& expressionStmt) { expressionStmt.getExpr()->accept(*this); }
