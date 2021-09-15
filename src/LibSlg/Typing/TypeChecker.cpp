@@ -42,7 +42,7 @@ void TypeChecker::visitAssignmentExpr(AssignmentExpr& assignmentExpr) {
 		if(it == m_currentScope.variables.end())
 			throw TypingException("Variable " + name + " is not declared");
 		if(!it->second->isMutable())
-			throw TypingException("Asignee is not mutable");
+			throw TypingException("Asignee " + name + " is not mutable");
 		EXPR_ACCEPT(assignmentExpr.getNewValue(), *this, Type::Ptr type);
 		EXPR_RETURN_FROM_VISIT(type);
 	}
@@ -51,7 +51,7 @@ void TypeChecker::visitAssignmentExpr(AssignmentExpr& assignmentExpr) {
 	if(assignedValueType == nullptr)
 		throw TypingException("No variable named " + name);
 	if(!assignedValueType->isMutable())
-		throw TypingException("Asignee is not mutable");
+		throw TypingException("Asignee " + name + " is not mutable");
 	EXPR_ACCEPT(assignmentExpr.getNewValue(), *this, Type::Ptr newValueType);
 	if(*newValueType != assignedValueType)
 		throw WrongTypeException(assignedValueType->getName(), newValueType->getName());
