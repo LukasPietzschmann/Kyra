@@ -11,18 +11,24 @@ void TypeChecker::check(const std::vector<Statement::Ptr>& statements) {
 		check(statement);
 }
 
-TypeChecker::Scope TypeChecker::check(const Statement::Ptr& statement) {
-	STMT_ACCEPT(statement, *this, Scope result);
+TypeChecker::Scope::Ptr TypeChecker::check(const Statement::Ptr& statement) {
+	STMT_ACCEPT(statement, *this, Scope::Ptr result);
 	return result;
 }
 
-TypeChecker::Scope TypeChecker::runInNewScope(const std::function<void()>& function) {
-	Scope globalScopeCopy = m_currentScope;
-	Scope newGlobalScope;
+TypeChecker::Scope::Ptr TypeChecker::runInNewScope(
+		const std::function<void()>& function, const Scope::Ptr& parent, const Scope* valuesToCopy) {
+	Scope::Ptr globalScopeCopy = std::make_shared<Scope>(m_currentScope);
+	Scope::Ptr newGlobalScope(parent);
+	if(valuesToCopy != nullptr) {
+		for(const auto& var : valuesToCopy->getVariables())
+			newGlobalScope->setVar(var.first, var.second);
+		for(const auto& type : valuesToCopy->getTypes())
+			newGlobalScope->setType(type.first, type.second);
+	}
 	m_currentScope = newGlobalScope;
 	function();
-	newGlobalScope = m_currentScope;
-	m_currentScope = globalScopeCopy;
+	m_currentScope = std::move(globalScopeCopy);
 	return newGlobalScope;
 }
 
@@ -70,10 +76,10 @@ void TypeChecker::visitGroupExpr(GroupExpr& groupExpr) {
 }
 
 void TypeChecker::visitInstantiationExpr(InstantiationExpr& instantiationExpr) {
-	auto it = m_currentScope.types.find(instantiationExpr.getName());
-	if(it == m_currentScope.types.end())
+	Type::Ptr type = m_currentScope->getType(instantiationExpr.getName());
+	if(type == nullptr)
 		throw TypingException("Class " + instantiationExpr.getName() + " not known");
-	auto classType = std::dynamic_pointer_cast<ClassType>(it->second);
+	auto classType = std::dynamic_pointer_cast<ClassType>(type);
 	if(instantiationExpr.getArguments().size() != classType->getArity())
 		throw TypingException("Constructor of class " + instantiationExpr.getName() + " has to be instantiated with " +
 							  std::to_string(classType->getArity()) + " argument, but you provided " +
@@ -84,11 +90,11 @@ void TypeChecker::visitInstantiationExpr(InstantiationExpr& instantiationExpr) {
 		if(*expected != provided)
 			throw WrongTypeException(expected->getName(), provided->getName());
 	}
-	EXPR_RETURN_FROM_VISIT(it->second);
+	EXPR_RETURN_FROM_VISIT(type);
 }
 
 void TypeChecker::visitLiteral(LiteralExpr& literalExpr) {
-	EXPR_RETURN_FROM_VISIT(m_currentScope.types.at(literalExpr.getValue()->getType()));
+	EXPR_RETURN_FROM_VISIT(m_currentScope->getType(literalExpr.getValue()->getType()));
 }
 
 void TypeChecker::visitTypeExpr(TypeExpr& typeExpr) {
@@ -101,33 +107,34 @@ void TypeChecker::visitTypeExpr(TypeExpr& typeExpr) {
 		}
 		EXPR_RETURN_FROM_VISIT(Type::makePtr<FunctionType>(false, returnType, paramTypes));
 	}
-	const auto& it = m_currentScope.types.find(typeExpr.getName());
-	if(it == m_currentScope.types.end())
+	Type::Ptr type = m_currentScope->getType(typeExpr.getName());
+	if(type == nullptr)
 		throw TypingException("Unknown type " + typeExpr.getName());
-	EXPR_RETURN_FROM_VISIT(it->second);	 // TODO implement
+	EXPR_RETURN_FROM_VISIT(type);
 }
 
 void TypeChecker::visitUnaryExpr(UnaryExpr& unaryExpr) {}
 
 void TypeChecker::visitVariable(VariableExpr& variableExpr) {
 	const std::string& name = variableExpr.getName().getValue().asString();
-	if(!m_currentScope.variables.contains(name))
+	Type::Ptr type = m_currentScope->getVar(name);
+	if(type == nullptr)
 		throw TypingException("Variable " + name + " is not declared");
-	EXPR_RETURN_FROM_VISIT(m_currentScope.variables.at(name));
+	EXPR_RETURN_FROM_VISIT(type);
 }
 
 void TypeChecker::visitBlockStmt(BlockStmt& blockStmt) {
-	Scope scope = runInNewScope([&]() {
-		for(const auto& statement : blockStmt.getStatements())
-			statement->accept(*this);
-	});
+	Scope::Ptr scope = runInNewScope(
+			[&]() {
+				for(const auto& statement : blockStmt.getStatements())
+					statement->accept(*this);
+			},
+			m_currentScope);
 	STMT_RETURN_FROM_VISIT(scope);
 }
 
 void TypeChecker::visitDeclarationStmt(DeclarationStmt& declarationStmt) {
 	const std::string& name = declarationStmt.getIdentifier().getValue().asString();
-	if(m_currentScope.variables.contains(name))
-		throw TypingException("Variable " + name + " already declared");
 	// FIXME this does not work with custom classes
 	EXPR_ACCEPT(declarationStmt.getType(), *this, Type::Ptr expectedType);
 	if(declarationStmt.getInitializer() != nullptr) {
@@ -137,29 +144,32 @@ void TypeChecker::visitDeclarationStmt(DeclarationStmt& declarationStmt) {
 	}
 	Type::Ptr instanceType = expectedType->duplicate();
 	instanceType->setMutable(declarationStmt.isMutable());
-	m_currentScope.variables.emplace(name, instanceType);
+	if(!m_currentScope->setVar(name, instanceType))
+		throw TypingException("Variable " + name + " already declared");
 	STMT_RETURN_FROM_VISIT(m_currentScope);
 }
 
 void TypeChecker::visitClassDeclarationStmt(ClassDeclarationStmt& classDeclarationStmt) {
 	const std::string& name = classDeclarationStmt.getIdentifier().getValue().asString();
-	if(m_currentScope.types.contains(name))
+	if(m_currentScope->getType(name))
 		throw TypingException("Class " + name + " already declared");
 
-	Scope declScope = runInNewScope([&classDeclarationStmt, this]() {
-		for(const auto& decl : classDeclarationStmt.getDeclarations())
-			decl->accept(*this);
-	});
+	Scope::Ptr declScope = runInNewScope(
+			[&classDeclarationStmt, this]() {
+				for(const auto& decl : classDeclarationStmt.getDeclarations())
+					decl->accept(*this);
+			},
+			m_currentScope);
 
 	std::vector<Type::Ptr> constructorParams;
 	for(const auto& param : classDeclarationStmt.getConstructorParameters()) {
-		Type::Ptr type = m_currentScope.types.at(param.type)->duplicate();
+		Type::Ptr type = m_currentScope->getType(param.type)->duplicate();
 		type->setMutable(param.isMutable);
 		constructorParams.push_back(type);
-		declScope.variables.emplace(param.name.getValue().asString(), type);
+		if(!declScope->setVar(param.name.getValue().asString(), type))
+			throw TypingException("Mich gibts schon");
 	}
-	Type::Ptr klass = Type::makePtr<ClassType>(name, false, declScope.variables, constructorParams);
-	m_currentScope.types.emplace(name, klass);
+	m_currentScope->setType(name, Type::makePtr<ClassType>(name, false, declScope->getVariables(), constructorParams));
 	STMT_RETURN_FROM_VISIT(m_currentScope);
 }
 

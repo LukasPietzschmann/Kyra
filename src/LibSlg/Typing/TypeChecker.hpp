@@ -1,7 +1,9 @@
 #pragma once
 
 #include <functional>
+#include <memory>
 #include <unordered_map>
+#include <utility>
 #include <vector>
 
 #include "../Exceptions.hpp"
@@ -33,16 +35,59 @@
 namespace LibSlg {
 class TypeChecker : public ExpressionVisitor, public StatementVisitor {
 private:
-	struct Scope {
-		Scope() : variables({}), types({}) {
+	class Scope {
+	public:
+		typedef std::shared_ptr<Scope> Ptr;
+		explicit Scope(Scope::Ptr parent) : m_parent(std::move(parent)), m_variables({}), m_types({}) {
 			for(const auto& nativeType : Value::NativeTypes::All)
-				types.emplace(nativeType, NativeTypes::make(nativeType));
+				m_types.emplace(nativeType, NativeTypes::make(nativeType));
 		}
-		std::unordered_map<std::string, Type::Ptr> variables;
-		std::unordered_map<std::string, Type::Ptr> types;
+
+		Scope() : Scope(nullptr) {}
+
+		Type::Ptr getType(const std::string& name) {
+			const auto& it = m_types.find(name);
+			if(it != m_types.end())
+				return it->second;
+			if(m_parent != nullptr)
+				return m_parent->getType(name);
+			return nullptr;
+		}
+
+		Type::Ptr getVar(const std::string& name) {
+			const auto& it = m_variables.find(name);
+			if(it != m_variables.end())
+				return it->second;
+			if(m_parent != nullptr)
+				return m_parent->getVar(name);
+			return nullptr;
+		}
+
+		bool setType(const std::string& name, const Type::Ptr& type) {
+			if(m_types.contains(name))
+				return false;
+			m_types.emplace(name, type);
+			return true;
+		}
+
+		bool setVar(const std::string& name, const Type::Ptr& var) {
+			if(m_variables.contains(name))
+				return false;
+			m_variables.emplace(name, var);
+			return true;
+		}
+
+		const std::unordered_map<std::string, Type::Ptr>& getVariables() const { return m_variables; }
+		const std::unordered_map<std::string, Type::Ptr>& getTypes() const { return m_types; }
+
+	private:
+		Scope::Ptr m_parent;
+		std::unordered_map<std::string, Type::Ptr> m_variables;
+		std::unordered_map<std::string, Type::Ptr> m_types;
 	};
+
 	EXPR_NEEDS_VISIT_RETURN_OF_TYPE(Type::Ptr);
-	STMT_NEEDS_VISIT_RETURN_OF_TYPE(Scope);
+	STMT_NEEDS_VISIT_RETURN_OF_TYPE(Scope::Ptr);
 
 public:
 	static TypeChecker& getInstance();
@@ -71,12 +116,13 @@ public:
 	void visitReturnStmt(ReturnStmt& returnStmt) override;
 
 private:
-	TypeChecker() = default;
+	TypeChecker() : m_currentScope(std::make_shared<Scope>(nullptr)){};
 
-	Scope m_currentScope;
-	FunctionType* m_currentFunction;
+	Scope::Ptr m_currentScope;
+	FunctionType* m_currentFunction{};
 
-	Scope check(const Statement::Ptr& statement);
-	Scope runInNewScope(const std::function<void()>& function);
+	Scope::Ptr check(const Statement::Ptr& statement);
+	Scope::Ptr runInNewScope(
+			const std::function<void()>& function, const Scope::Ptr& parent, const Scope* valuesToCopy = nullptr);
 };
 }
