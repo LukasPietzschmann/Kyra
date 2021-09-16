@@ -68,7 +68,31 @@ void TypeChecker::visitBinaryExpr(BinaryExpr& binaryExpr) {}
 
 void TypeChecker::visitCallExpr(CallExpr& callExpr) {}
 
-void TypeChecker::visitFunction(FunctionExpr& functionExpr) {}
+void TypeChecker::visitFunction(FunctionExpr& functionExpr) {
+	EXPR_ACCEPT(functionExpr.getReturnType(), *this, Type::Ptr returnType);
+	std::vector<Type::Ptr> parameters;
+	Scope::Ptr paramScope = runInNewScope(
+			[&functionExpr, &parameters, this]() {
+				for(const auto& param : functionExpr.getParameters()) {
+					Type::Ptr paramType = m_currentScope->getType(param.type);
+					if(paramType == nullptr)
+						throw TypingException("Unknown type " + param.type);
+					parameters.push_back(paramType);
+					if(!m_currentScope->setVar(param.name.getValue().asString(), paramType))
+						throw TypingException("Dat gibts schon " + param.name.getValue().asString());
+				}
+			},
+			m_currentScope);
+
+	Type::Ptr functionType = Type::makePtr<FunctionType>(false, returnType, parameters);
+	m_currentFunction = std::dynamic_pointer_cast<FunctionType>(functionType).get();
+
+	runInNewScope([&functionExpr, this]() { functionExpr.getImplementation()->accept(*this); }, m_currentScope,
+			paramScope.get());
+
+	m_currentFunction = nullptr;
+	EXPR_RETURN_FROM_VISIT(functionType);
+}
 
 void TypeChecker::visitGroupExpr(GroupExpr& groupExpr) {
 	EXPR_ACCEPT(groupExpr.getExpr(), *this, Type::Ptr type);
