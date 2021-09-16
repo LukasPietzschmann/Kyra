@@ -25,9 +25,9 @@ public:
 	Type::Ptr duplicate() const override { return Type::makePtr<FunctionType>(*this); }
 
 	bool operator==(const Type::Ptr& other) const override {
-		if(other->getName() != "Function")
-			return false;
 		const auto& castedOther = std::dynamic_pointer_cast<FunctionType>(other);
+		if(castedOther == nullptr)
+			return false;
 		bool areParamsEqual = true;
 		if(m_parameters.size() != castedOther->getParameters().size())
 			areParamsEqual = false;
