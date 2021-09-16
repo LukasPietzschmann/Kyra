@@ -177,7 +177,7 @@ void TypeChecker::visitReturnStmt(ReturnStmt& returnStmt) {
 	if(m_currentFunction == nullptr)
 		throw TypingException("You can only return from a function context");
 	EXPR_ACCEPT(returnStmt.getExpr(), *this, Type::Ptr returnedType);
-	if(returnedType != m_currentFunction->getReturnType())
+	if(*returnedType != m_currentFunction->getReturnType())
 		throw WrongTypeException(m_currentFunction->getReturnType()->getName(), returnedType->getName());
 	STMT_RETURN_FROM_VISIT(m_currentScope);
 }
