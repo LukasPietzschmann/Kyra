@@ -42,18 +42,15 @@ void TypeChecker::visitAccessExpr(AccessExpr& accessExpr) {
 }
 
 void TypeChecker::visitAssignmentExpr(AssignmentExpr& assignmentExpr) {
+	Type::Ptr assignedValueType;
 	const std::string& name = assignmentExpr.getName().getValue().asString();
-	if(assignmentExpr.getOwner() == nullptr) {
-		auto it = m_currentScope.variables.find(name);
-		if(it == m_currentScope.variables.end())
-			throw TypingException("Variable " + name + " is not declared");
-		if(!it->second->isMutable())
-			throw TypingException("Asignee " + name + " is not mutable");
-		EXPR_ACCEPT(assignmentExpr.getNewValue(), *this, Type::Ptr type);
-		EXPR_RETURN_FROM_VISIT(type);
-	}
-	EXPR_ACCEPT(assignmentExpr.getOwner(), *this, Type::Ptr ownerType);
-	Type::Ptr assignedValueType = ownerType->knowsAbout(name);
+
+	if(assignmentExpr.getOwner() != nullptr) {
+		EXPR_ACCEPT(assignmentExpr.getOwner(), *this, Type::Ptr ownerType);
+		assignedValueType = ownerType->knowsAbout(name);
+	} else
+		assignedValueType = m_currentScope->getVar(name);
+
 	if(assignedValueType == nullptr)
 		throw TypingException("No variable named " + name);
 	if(!assignedValueType->isMutable())

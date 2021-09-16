@@ -70,7 +70,6 @@ void Interpreter::visitAssignmentExpr(AssignmentExpr& assignmentExpr) {
 		context = Value::as<Klass>(owner)->getInstanceContext();
 	}
 
-	const Context::ContextValue& cValue = context->getVar(assignmentExpr.getName().getValue().asString());
 	EXPR_ACCEPT(assignmentExpr.getNewValue(), *this, Value::Ptr newValue);
 	context->mutate(assignmentExpr.getName().getValue().asString(), newValue);
 	EXPR_RETURN_FROM_VISIT(newValue);
