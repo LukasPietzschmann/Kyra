@@ -1,5 +1,6 @@
 #pragma once
 
+#include <numeric>
 #include <utility>
 
 #include "Type.hpp"
@@ -8,7 +9,16 @@ namespace LibSlg {
 class FunctionType : public Type {
 public:
 	FunctionType(bool isMutable, Type::Ptr returnType, std::vector<Type::Ptr> parameters) :
-		Type("Function", isMutable), m_returnType(std::move(returnType)), m_parameters(std::move(parameters)) {}
+		Type("", isMutable), m_returnType(std::move(returnType)), m_parameters(std::move(parameters)) {
+		std::string params = std::transform_reduce(
+				m_parameters.begin(), m_parameters.end(), std::string(""),
+				[](const std::string& a, const std::string& b) { return a + ", " + b; },
+				[](const Type::Ptr& type) {
+					return type->getName();
+				}).erase(0, 2);
+
+		m_name = "Function(" + params + ")->" + m_returnType->getName();
+	}
 	~FunctionType() override = default;
 	const Type::Ptr& getReturnType() const { return m_returnType; }
 	std::vector<Type::Ptr> getParameters() const { return m_parameters; }
