@@ -22,6 +22,7 @@ public:
 	~FunctionType() override = default;
 	const Type::Ptr& getReturnType() const { return m_returnType; }
 	std::vector<Type::Ptr> getParameters() const { return m_parameters; }
+	unsigned long getArity() const { return m_parameters.size(); }
 	Type::Ptr duplicate() const override { return Type::makePtr<FunctionType>(*this); }
 
 	bool operator==(const Type::Ptr& other) const override {

@@ -63,7 +63,23 @@ void TypeChecker::visitAssignmentExpr(AssignmentExpr& assignmentExpr) {
 
 void TypeChecker::visitBinaryExpr(BinaryExpr& binaryExpr) {}
 
-void TypeChecker::visitCallExpr(CallExpr& callExpr) {}
+void TypeChecker::visitCallExpr(CallExpr& callExpr) {
+	EXPR_ACCEPT(callExpr.getFunction(), *this, Type::Ptr gFunction);
+	const auto& function = std::dynamic_pointer_cast<FunctionType>(gFunction);
+	if(function == nullptr)
+		throw TypingException(gFunction->getName() + " is not a function");
+	if(function->getParameters().size() != callExpr.getArguments().size())
+		throw TypingException("The function has to be called with " + std::to_string(function->getArity()) +
+							  " argument, but you provided " + std::to_string(callExpr.getArguments().size()));
+	for(unsigned long i = 0; i < function->getParameters().size(); ++i) {
+		const Type& param = *function->getParameters()[i];
+		EXPR_ACCEPT(callExpr.getArguments()[i], *this, Type::Ptr arg);
+		if(param != arg)
+			throw WrongTypeException(param.getName(), arg->getName());
+	}
+
+	EXPR_RETURN_FROM_VISIT(function->getReturnType());
+}
 
 void TypeChecker::visitFunction(FunctionExpr& functionExpr) {
 	EXPR_ACCEPT(functionExpr.getReturnType(), *this, Type::Ptr returnType);
