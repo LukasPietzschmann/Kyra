@@ -37,7 +37,7 @@ void TypeChecker::visitAccessExpr(AccessExpr& accessExpr) {
 	const std::string& name = accessExpr.getName().getValue().asString();
 	Type::Ptr accessedValueType = ownerType->knowsAbout(name);
 	if(accessedValueType == nullptr)
-		throw TypingException("Type " + ownerType->getName() + " does not contain a variable named " + name);
+		throw UndefinedMemberException(name, ownerType->getName());
 	EXPR_RETURN_FROM_VISIT(accessedValueType);
 }
 
@@ -52,9 +52,9 @@ void TypeChecker::visitAssignmentExpr(AssignmentExpr& assignmentExpr) {
 		assignedValueType = m_currentScope->getVar(name);
 
 	if(assignedValueType == nullptr)
-		throw TypingException("No variable named " + name);
+		throw UndefinedVariableException(name);
 	if(!assignedValueType->isMutable())
-		throw TypingException("Asignee " + name + " is not mutable");
+		throw AssignmentToConstException(name);
 	EXPR_ACCEPT(assignmentExpr.getNewValue(), *this, Type::Ptr newValueType);
 	if(*newValueType != assignedValueType)
 		throw WrongTypeException(assignedValueType->getName(), newValueType->getName());
@@ -67,10 +67,9 @@ void TypeChecker::visitCallExpr(CallExpr& callExpr) {
 	EXPR_ACCEPT(callExpr.getFunction(), *this, Type::Ptr gFunction);
 	const auto& function = std::dynamic_pointer_cast<FunctionType>(gFunction);
 	if(function == nullptr)
-		throw TypingException(gFunction->getName() + " is not a function");
+		throw WrongTypeException(Value::NativeTypes::Function, gFunction->getName());
 	if(function->getParameters().size() != callExpr.getArguments().size())
-		throw TypingException("The function has to be called with " + std::to_string(function->getArity()) +
-							  " argument, but you provided " + std::to_string(callExpr.getArguments().size()));
+		throw ArityException(function->getArity(), callExpr.getArguments().size(), function->getName());
 	for(unsigned long i = 0; i < function->getParameters().size(); ++i) {
 		const Type& param = *function->getParameters()[i];
 		EXPR_ACCEPT(callExpr.getArguments()[i], *this, Type::Ptr arg);
@@ -82,6 +81,7 @@ void TypeChecker::visitCallExpr(CallExpr& callExpr) {
 }
 
 void TypeChecker::visitFunction(FunctionExpr& functionExpr) {
+	// TODO check if function returns something
 	EXPR_ACCEPT(functionExpr.getReturnType(), *this, Type::Ptr returnType);
 	std::vector<Type::Ptr> parameters;
 	Scope::Ptr paramScope = runInNewScope(
@@ -89,10 +89,10 @@ void TypeChecker::visitFunction(FunctionExpr& functionExpr) {
 				for(const auto& param : functionExpr.getParameters()) {
 					Type::Ptr paramType = m_currentScope->getType(param.type);
 					if(paramType == nullptr)
-						throw TypingException("Unknown type " + param.type);
+						throw UndefinedTypeException(param.type);
 					parameters.push_back(paramType);
 					if(!m_currentScope->setVar(param.name.getValue().asString(), paramType))
-						throw TypingException("Dat gibts schon " + param.name.getValue().asString());
+						throw AlreadyDefinedVariableException(param.name.getValue().asString());
 				}
 			},
 			m_currentScope);
@@ -115,12 +115,11 @@ void TypeChecker::visitGroupExpr(GroupExpr& groupExpr) {
 void TypeChecker::visitInstantiationExpr(InstantiationExpr& instantiationExpr) {
 	Type::Ptr type = m_currentScope->getType(instantiationExpr.getName());
 	if(type == nullptr)
-		throw TypingException("Class " + instantiationExpr.getName() + " not known");
+		throw UndefinedTypeException(instantiationExpr.getName());
 	auto classType = std::dynamic_pointer_cast<ClassType>(type);
 	if(instantiationExpr.getArguments().size() != classType->getArity())
-		throw TypingException("Constructor of class " + instantiationExpr.getName() + " has to be instantiated with " +
-							  std::to_string(classType->getArity()) + " argument, but you provided " +
-							  std::to_string(instantiationExpr.getArguments().size()));
+		throw ArityException(classType->getArity(), instantiationExpr.getArguments().size(),
+				"Constructor of class " + instantiationExpr.getName());
 	for(unsigned long i = 0; i < classType->getArity(); ++i) {
 		const Type::Ptr& expected = classType->getConstructorParameter()[i];
 		EXPR_ACCEPT(instantiationExpr.getArguments()[i], *this, Type::Ptr provided);
@@ -146,7 +145,7 @@ void TypeChecker::visitTypeExpr(TypeExpr& typeExpr) {
 	}
 	Type::Ptr type = m_currentScope->getType(typeExpr.getName());
 	if(type == nullptr)
-		throw TypingException("Unknown type " + typeExpr.getName());
+		throw UndefinedTypeException(typeExpr.getName());
 	EXPR_RETURN_FROM_VISIT(type);
 }
 
@@ -155,8 +154,12 @@ void TypeChecker::visitUnaryExpr(UnaryExpr& unaryExpr) {}
 void TypeChecker::visitVariable(VariableExpr& variableExpr) {
 	const std::string& name = variableExpr.getName().getValue().asString();
 	Type::Ptr type = m_currentScope->getVar(name);
-	if(type == nullptr)
-		throw TypingException("Variable " + name + " is not declared");
+	if(type == nullptr) {
+		if(m_currentClassName != nullptr)
+			throw UndefinedMemberException(std::string(m_currentClassName), name);
+		else
+			throw UndefinedVariableException(name);
+	}
 	EXPR_RETURN_FROM_VISIT(type);
 }
 
@@ -172,7 +175,6 @@ void TypeChecker::visitBlockStmt(BlockStmt& blockStmt) {
 
 void TypeChecker::visitDeclarationStmt(DeclarationStmt& declarationStmt) {
 	const std::string& name = declarationStmt.getIdentifier().getValue().asString();
-	// FIXME this does not work with custom classes
 	EXPR_ACCEPT(declarationStmt.getType(), *this, Type::Ptr expectedType);
 	if(declarationStmt.getInitializer() != nullptr) {
 		EXPR_ACCEPT(declarationStmt.getInitializer(), *this, Type::Ptr initType);
@@ -181,15 +183,20 @@ void TypeChecker::visitDeclarationStmt(DeclarationStmt& declarationStmt) {
 	}
 	Type::Ptr instanceType = expectedType->duplicate();
 	instanceType->setMutable(declarationStmt.isMutable());
-	if(!m_currentScope->setVar(name, instanceType))
-		throw TypingException("Variable " + name + " already declared");
+	if(!m_currentScope->setVar(name, instanceType)) {
+		if(m_currentClassName != nullptr)
+			throw AlreadyDefinedMemberException(std::string(m_currentClassName), name);
+		else
+			throw AlreadyDefinedVariableException(name);
+	}
 	STMT_RETURN_FROM_VISIT(m_currentScope);
 }
 
 void TypeChecker::visitClassDeclarationStmt(ClassDeclarationStmt& classDeclarationStmt) {
+	m_currentClassName = classDeclarationStmt.getIdentifier().getValue().asString().data();
 	const std::string& name = classDeclarationStmt.getIdentifier().getValue().asString();
 	if(m_currentScope->getType(name))
-		throw TypingException("Class " + name + " already declared");
+		throw AlreadyDefinedTypeException(name);
 
 	Scope::Ptr declScope = runInNewScope(
 			[&classDeclarationStmt, this]() {
@@ -204,9 +211,10 @@ void TypeChecker::visitClassDeclarationStmt(ClassDeclarationStmt& classDeclarati
 		type->setMutable(param.isMutable);
 		constructorParams.push_back(type);
 		if(!declScope->setVar(param.name.getValue().asString(), type))
-			throw TypingException("Mich gibts schon");
+			throw AlreadyDefinedVariableException(param.name.getValue().asString());
 	}
 	m_currentScope->setType(name, Type::makePtr<ClassType>(name, false, declScope->getVariables(), constructorParams));
+	m_currentClassName = nullptr;
 	STMT_RETURN_FROM_VISIT(m_currentScope);
 }
 
@@ -222,7 +230,7 @@ void TypeChecker::visitPrintStmt(PrintStmt& printStmt) {
 
 void TypeChecker::visitReturnStmt(ReturnStmt& returnStmt) {
 	if(m_currentFunction == nullptr)
-		throw TypingException("You can only return from a function context");
+		throw InvalidReturnException();
 	EXPR_ACCEPT(returnStmt.getExpr(), *this, Type::Ptr returnedType);
 	if(*returnedType != m_currentFunction->getReturnType())
 		throw WrongTypeException(m_currentFunction->getReturnType()->getName(), returnedType->getName());

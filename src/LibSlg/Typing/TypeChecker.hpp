@@ -120,6 +120,7 @@ private:
 
 	Scope::Ptr m_currentScope;
 	FunctionType* m_currentFunction{};
+	char* m_currentClassName{};
 
 	Scope::Ptr check(const Statement::Ptr& statement);
 	Scope::Ptr runInNewScope(
