@@ -158,7 +158,20 @@ void TypeChecker::visitTypeExpr(TypeExpr& typeExpr) {
 	EXPR_RETURN_FROM_VISIT(type);
 }
 
-void TypeChecker::visitUnaryExpr(UnaryExpr& unaryExpr) {}
+void TypeChecker::visitUnaryExpr(UnaryExpr& unaryExpr) {
+	// TODO check for function in type. This allows for overriding those functions
+	const TokenType& oper = unaryExpr.getOperator().getType();
+	EXPR_ACCEPT(unaryExpr.getRhs(), *this, Type::Ptr rhs);
+	switch(oper) {
+		case TokenType::BANG: EXPR_RETURN_FROM_VISIT(m_currentScope->getType(Value::NativeTypes::Bool));
+		case TokenType::MINUS:
+			if(rhs->getName() == Value::NativeTypes::Number)
+				EXPR_RETURN_FROM_VISIT(NativeTypes::make(Value::NativeTypes::Number));
+			else
+				throw WrongTypeException(Value::NativeTypes::Number, rhs->getName());
+		default: assert(false);
+	}
+}
 
 void TypeChecker::visitVariable(VariableExpr& variableExpr) {
 	const std::string& name = variableExpr.getName().getValue().asString();
