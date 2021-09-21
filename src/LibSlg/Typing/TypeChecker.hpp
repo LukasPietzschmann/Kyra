@@ -135,6 +135,7 @@ private:
 
 	Scope::Ptr m_currentScope;
 	FunctionType* m_currentFunction{};
+	bool m_doesCurrentFunctionReturn{};
 	char* m_currentClassName{};
 
 	Scope::Ptr check(const Statement::Ptr& statement);

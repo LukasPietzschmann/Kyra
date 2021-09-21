@@ -91,7 +91,6 @@ void TypeChecker::visitCallExpr(CallExpr& callExpr) {
 
 void TypeChecker::visitFunction(FunctionExpr& functionExpr) {
 	FunctionType* enclosingFunctionType = m_currentFunction;
-	// TODO check if function returns something
 	EXPR_ACCEPT(functionExpr.getReturnType(), *this, Type::Ptr returnType);
 	std::vector<Type::Ptr> parameters;
 	Scope::Ptr paramScope = runInNewScope(
@@ -113,6 +112,10 @@ void TypeChecker::visitFunction(FunctionExpr& functionExpr) {
 	runInNewScope([&functionExpr, this]() { functionExpr.getImplementation()->accept(*this); }, m_currentScope,
 			paramScope.get());
 
+	if(!m_doesCurrentFunctionReturn && m_currentFunction->getReturnType()->getName() != Value::NativeTypes::Nothing)
+		throw WrongTypeException(m_currentFunction->getReturnType()->getName(), Value::NativeTypes::Nothing);
+
+	m_doesCurrentFunctionReturn = false;
 	m_currentFunction = enclosingFunctionType;
 	EXPR_RETURN_FROM_VISIT(functionType);
 }
@@ -257,6 +260,7 @@ void TypeChecker::visitReturnStmt(ReturnStmt& returnStmt) {
 	EXPR_ACCEPT(returnStmt.getExpr(), *this, Type::Ptr returnedType);
 	if(*returnedType != m_currentFunction->getReturnType())
 		throw WrongTypeException(m_currentFunction->getReturnType()->getName(), returnedType->getName());
+	m_doesCurrentFunctionReturn = true;
 	STMT_RETURN_FROM_VISIT(m_currentScope);
 }
 }
