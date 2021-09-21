@@ -90,6 +90,7 @@ void TypeChecker::visitCallExpr(CallExpr& callExpr) {
 }
 
 void TypeChecker::visitFunction(FunctionExpr& functionExpr) {
+	FunctionType* enclosingFunctionType = m_currentFunction;
 	// TODO check if function returns something
 	EXPR_ACCEPT(functionExpr.getReturnType(), *this, Type::Ptr returnType);
 	std::vector<Type::Ptr> parameters;
@@ -112,7 +113,7 @@ void TypeChecker::visitFunction(FunctionExpr& functionExpr) {
 	runInNewScope([&functionExpr, this]() { functionExpr.getImplementation()->accept(*this); }, m_currentScope,
 			paramScope.get());
 
-	m_currentFunction = nullptr;
+	m_currentFunction = enclosingFunctionType;
 	EXPR_RETURN_FROM_VISIT(functionType);
 }
 
