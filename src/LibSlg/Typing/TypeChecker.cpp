@@ -6,9 +6,18 @@ TypeChecker& TypeChecker::getInstance() {
 	return instance;
 }
 
-void TypeChecker::check(const std::vector<Statement::Ptr>& statements) {
-	for(const auto& statement : statements)
-		check(statement);
+TypeChecker::Result TypeChecker::check(const std::vector<Statement::Ptr>& statements, bool passThroughExceptions) {
+	TypeChecker::Result result;
+	for(const auto& statement : statements) {
+		try {
+			check(statement);
+		} catch(TypingException& exception) {
+			if(passThroughExceptions)
+				throw exception;
+			result.insertError(exception.what());
+		}
+	}
+	return result;
 }
 
 TypeChecker::Scope::Ptr TypeChecker::check(const Statement::Ptr& statement) {

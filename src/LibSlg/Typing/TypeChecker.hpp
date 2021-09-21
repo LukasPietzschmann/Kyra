@@ -90,11 +90,26 @@ private:
 	STMT_NEEDS_VISIT_RETURN_OF_TYPE(Scope::Ptr);
 
 public:
+	class Result {
+	public:
+		bool hasErrors() const { return m_errors.has_value(); }
+		void insertError(std::string message) {
+			if(!m_errors.has_value())
+				m_errors = std::make_optional<std::vector<std::string>>({ std::move(message) });
+			else
+				m_errors->push_back(std::move(message));
+		}
+		std::vector<std::string> getErrors() const { return m_errors.value_or(std::vector<std::string>()); }
+
+	private:
+		std::optional<std::vector<std::string>> m_errors{ std::nullopt };
+	};
+
 	static TypeChecker& getInstance();
 	TypeChecker(TypeChecker const&) = delete;
 	void operator=(TypeChecker const&) = delete;
 
-	void check(const std::vector<Statement::Ptr>& statements);
+	TypeChecker::Result check(const std::vector<Statement::Ptr>& statements, bool passThroughExceptions = false);
 
 	void visitAccessExpr(AccessExpr& accessExpr) override;
 	void visitAssignmentExpr(AssignmentExpr& assignmentExpr) override;
