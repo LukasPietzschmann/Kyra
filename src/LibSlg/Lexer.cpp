@@ -4,7 +4,8 @@ namespace LibSlg {
 std::vector<Token> Lexer::scanTokens() {
 	while(!isAtEnd()) {
 		scanToken();
-		m_start = m_current;
+		m_startCharacter = m_currentCharacter;
+		m_startLine = m_currentLine;
 	}
 	addToken(TokenType::END_OF_FILE);
 	return m_tokens;
@@ -16,7 +17,7 @@ void Lexer::scanToken() {
 		case ' ':
 		case '\t':
 		case '\r': break;
-		case '\n': ++m_line; break;
+		case '\n': ++m_currentCharacter; break;
 		case '#': comment(); break;
 		case '(': addToken(TokenType::LEFT_PAREN); break;
 		case ')': addToken(TokenType::RIGHT_PAREN); break;
@@ -42,7 +43,8 @@ void Lexer::scanToken() {
 				nameOrKeyword();
 			else
 				throw LexerException(
-						"Unexpected Character \"" + std::string(1, current) + "\" at Line " + std::to_string(m_line));
+						"Unexpected Character \"" + std::string(1, current) + "\" " +
+						Position(m_startLine, m_startCharacter, m_currentLine, m_currentCharacter).toString());
 	}
 }
 
@@ -54,22 +56,23 @@ void Lexer::comment() {
 void Lexer::number() {
 	while(isDigit(peek()))
 		advance();
-	addToken(TokenType::NUMBER, m_source.substr(m_start, m_current - m_start));
+	addToken(TokenType::NUMBER, m_source.substr(m_startCharacter, m_currentCharacter - m_startCharacter));
 }
 
 void Lexer::string() {
 	while(!match('"') && !isAtEnd()) {
 		if(match('\n'))
-			++m_line;
+			++m_currentLine;
 		advance();
 	}
 
 	if(isAtEnd())
-		throw LexerException("Unterminated String " + m_source.substr(m_start + 1, m_current - m_start - 1));
+		throw LexerException("Unterminated String " +
+							 m_source.substr(m_startCharacter + 1, m_currentCharacter - m_startCharacter - 1));
 
 	advance();
 
-	const std::string& string = m_source.substr(m_start + 1, m_current - m_start - 2);
+	const std::string& string = m_source.substr(m_startCharacter + 1, m_currentCharacter - m_startCharacter - 2);
 	addToken(TokenType::STRING, string);
 }
 
@@ -77,23 +80,23 @@ void Lexer::nameOrKeyword() {
 	while(isAlpha(peek()) || isDigit(peek()))
 		advance();
 
-	std::string string = m_source.substr(m_start, m_current - m_start);
+	std::string string = m_source.substr(m_startCharacter, m_currentCharacter - m_startCharacter);
 	std::string literal;
 	TokenType type = TokenType::NAME;
 	if(m_keywords.find(string) != m_keywords.end())
 		type = m_keywords.at(string);
 	else
-		literal = m_source.substr(m_start, m_current - m_start);
+		literal = m_source.substr(m_startCharacter, m_currentCharacter - m_startCharacter);
 
 	addToken(type, literal);
 }
 
-char Lexer::advance() { return m_source[m_current++]; }
+char Lexer::advance() { return m_source[m_currentCharacter++]; }
 
 char Lexer::peek() const {
 	if(isAtEnd())
 		return '\0';
-	return m_source[m_current];
+	return m_source[m_currentCharacter];
 }
 
 bool Lexer::match(char expected) const { return peek() == expected; }
@@ -106,8 +109,9 @@ bool Lexer::matchAndAdvance(char expected) {
 }
 
 void Lexer::addToken(TokenType type, const std::string& literal) {
-	const std::string& lexeme = m_source.substr(m_start, m_current - m_start);
-	m_tokens.emplace_back(type, m_line, lexeme, literal);
+	const std::string& lexeme = m_source.substr(m_startCharacter, m_currentCharacter - m_startCharacter);
+	m_tokens.emplace_back(
+			type, Position(m_startLine, m_startCharacter, m_currentLine, m_currentCharacter), lexeme, literal);
 }
 
 bool Lexer::isDigit(char character) { return character >= '0' && character <= '9'; }
@@ -116,5 +120,5 @@ bool Lexer::isAlpha(char character) {
 	return (character >= 'a' && character <= 'z') || (character >= 'A' && character <= 'Z');
 }
 
-bool Lexer::isAtEnd() const { return (unsigned long)m_current >= m_source.size(); }
+bool Lexer::isAtEnd() const { return (unsigned long)m_currentCharacter >= m_source.size(); }
 }

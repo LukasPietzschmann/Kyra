@@ -1,6 +1,6 @@
 add_library(LibSlg AstLogger.hpp Context.hpp Context.cpp Exceptions.hpp
 		TokenType.hpp Token.hpp Lexer.cpp Lexer.hpp Parser.cpp Parser.hpp Interpreter.hpp
-		Interpreter.cpp
+		Interpreter.cpp Position.hpp
 		Expressions/AssignmentExpr.hpp Expressions/CallExpr.hpp Expressions/Expression.hpp Expressions/UnaryExpr.hpp
 		Expressions/BinaryExpr.hpp Expressions/LiteralExpr.hpp Expressions/VariableExpr.hpp Expressions/FunctionExpr.hpp
 		Expressions/AccessExpr.hpp Expressions/GroupExpr.hpp Expressions/InstantiationExpr.hpp Expressions/TypeExpr.hpp

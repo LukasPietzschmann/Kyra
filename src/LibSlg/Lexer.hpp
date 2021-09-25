@@ -22,9 +22,10 @@ private:
 		{ "return", TokenType::RETURN }, { "instantiate", TokenType::INSTANTIATE } };
 	const std::string m_source;
 	std::vector<Token> m_tokens;
-	int m_current{};
-	int m_start{};
-	int m_line{};
+	int m_currentCharacter{};
+	int m_startCharacter{};
+	int m_currentLine{};
+	int m_startLine{};
 
 	void scanToken();
 	void comment();
