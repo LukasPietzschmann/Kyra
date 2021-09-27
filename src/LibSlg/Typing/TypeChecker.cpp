@@ -13,7 +13,7 @@ TypeChecker::Result TypeChecker::check(const std::vector<Statement::Ptr>& statem
 			check(statement);
 		} catch(TypingException& exception) {
 			if(passThroughExceptions)
-				throw exception;
+				throw TypingException(exception);
 			result.insertError(exception.what());
 		}
 	}
@@ -46,7 +46,7 @@ void TypeChecker::visitAccessExpr(AccessExpr& accessExpr) {
 	const std::string& name = accessExpr.getName().getValue().asString();
 	Type::Ptr accessedValueType = ownerType->knowsAbout(name);
 	if(accessedValueType == nullptr)
-		throw UndefinedMemberException(name, ownerType->getName());
+		throw UndefinedMemberException(accessExpr.getPosition(), name, ownerType->getName());
 	EXPR_RETURN_FROM_VISIT(accessedValueType);
 }
 
@@ -61,12 +61,12 @@ void TypeChecker::visitAssignmentExpr(AssignmentExpr& assignmentExpr) {
 		assignedValueType = m_currentScope->getVar(name);
 
 	if(assignedValueType == nullptr)
-		throw UndefinedVariableException(name);
+		throw UndefinedVariableException(assignmentExpr.getPosition(), name);
 	if(!assignedValueType->isMutable())
-		throw AssignmentToConstException(name);
+		throw AssignmentToConstException(assignmentExpr.getPosition(), name);
 	EXPR_ACCEPT(assignmentExpr.getNewValue(), *this, Type::Ptr newValueType);
 	if(*newValueType != assignedValueType)
-		throw WrongTypeException(assignedValueType->getName(), newValueType->getName());
+		throw WrongTypeException(assignmentExpr.getPosition(), assignedValueType->getName(), newValueType->getName());
 	EXPR_RETURN_FROM_VISIT(newValueType);
 }
 
@@ -76,14 +76,15 @@ void TypeChecker::visitCallExpr(CallExpr& callExpr) {
 	EXPR_ACCEPT(callExpr.getFunction(), *this, Type::Ptr gFunction);
 	const auto& function = std::dynamic_pointer_cast<FunctionType>(gFunction);
 	if(function == nullptr)
-		throw WrongTypeException(Value::NativeTypes::Function, gFunction->getName());
+		throw WrongTypeException(callExpr.getPosition(), Value::NativeTypes::Function, gFunction->getName());
 	if(function->getParameters().size() != callExpr.getArguments().size())
-		throw ArityException(function->getArity(), callExpr.getArguments().size(), function->getName());
+		throw ArityException(
+				callExpr.getPosition(), function->getArity(), callExpr.getArguments().size(), function->getName());
 	for(unsigned long i = 0; i < function->getParameters().size(); ++i) {
 		const Type& param = *function->getParameters()[i];
 		EXPR_ACCEPT(callExpr.getArguments()[i], *this, Type::Ptr arg);
 		if(param != arg)
-			throw WrongTypeException(param.getName(), arg->getName());
+			throw WrongTypeException(callExpr.getPosition(), param.getName(), arg->getName());
 	}
 
 	EXPR_RETURN_FROM_VISIT(function->getReturnType());
@@ -98,10 +99,11 @@ void TypeChecker::visitFunction(FunctionExpr& functionExpr) {
 				for(const auto& param : functionExpr.getParameters()) {
 					Type::Ptr paramType = m_currentScope->getType(param.type);
 					if(paramType == nullptr)
-						throw UndefinedTypeException(param.type);
+						throw UndefinedTypeException(functionExpr.getPosition(), param.type);
 					parameters.push_back(paramType);
 					if(!m_currentScope->setVar(param.name.getValue().asString(), paramType))
-						throw AlreadyDefinedVariableException(param.name.getValue().asString());
+						throw AlreadyDefinedVariableException(
+								functionExpr.getPosition(), param.name.getValue().asString());
 				}
 			},
 			m_currentScope);
@@ -113,7 +115,8 @@ void TypeChecker::visitFunction(FunctionExpr& functionExpr) {
 			paramScope.get());
 
 	if(!m_doesCurrentFunctionReturn && m_currentFunction->getReturnType()->getName() != Value::NativeTypes::Nothing)
-		throw WrongTypeException(m_currentFunction->getReturnType()->getName(), Value::NativeTypes::Nothing);
+		throw WrongTypeException(
+				functionExpr.getPosition(), m_currentFunction->getReturnType()->getName(), Value::NativeTypes::Nothing);
 
 	m_doesCurrentFunctionReturn = false;
 	m_currentFunction = enclosingFunctionType;
@@ -128,16 +131,16 @@ void TypeChecker::visitGroupExpr(GroupExpr& groupExpr) {
 void TypeChecker::visitInstantiationExpr(InstantiationExpr& instantiationExpr) {
 	Type::Ptr type = m_currentScope->getType(instantiationExpr.getName());
 	if(type == nullptr)
-		throw UndefinedTypeException(instantiationExpr.getName());
+		throw UndefinedTypeException(instantiationExpr.getPosition(), instantiationExpr.getName());
 	auto classType = std::dynamic_pointer_cast<ClassType>(type);
 	if(instantiationExpr.getArguments().size() != classType->getArity())
-		throw ArityException(classType->getArity(), instantiationExpr.getArguments().size(),
-				"Constructor of class " + instantiationExpr.getName());
+		throw ArityException(instantiationExpr.getPosition(), classType->getArity(),
+				instantiationExpr.getArguments().size(), "Constructor of class " + instantiationExpr.getName());
 	for(unsigned long i = 0; i < classType->getArity(); ++i) {
 		const Type::Ptr& expected = classType->getConstructorParameter()[i];
 		EXPR_ACCEPT(instantiationExpr.getArguments()[i], *this, Type::Ptr provided);
 		if(*expected != provided)
-			throw WrongTypeException(expected->getName(), provided->getName());
+			throw WrongTypeException(instantiationExpr.getPosition(), expected->getName(), provided->getName());
 	}
 	EXPR_RETURN_FROM_VISIT(type);
 }
@@ -158,7 +161,7 @@ void TypeChecker::visitTypeExpr(TypeExpr& typeExpr) {
 	}
 	Type::Ptr type = m_currentScope->getType(typeExpr.getName());
 	if(type == nullptr)
-		throw UndefinedTypeException(typeExpr.getName());
+		throw UndefinedTypeException(typeExpr.getPosition(), typeExpr.getName());
 	EXPR_RETURN_FROM_VISIT(type);
 }
 
@@ -172,7 +175,7 @@ void TypeChecker::visitUnaryExpr(UnaryExpr& unaryExpr) {
 			if(rhs->getName() == Value::NativeTypes::Number)
 				EXPR_RETURN_FROM_VISIT(NativeTypes::make(Value::NativeTypes::Number));
 			else
-				throw WrongTypeException(Value::NativeTypes::Number, rhs->getName());
+				throw WrongTypeException(unaryExpr.getPosition(), Value::NativeTypes::Number, rhs->getName());
 		default: assert(false);
 	}
 }
@@ -182,9 +185,9 @@ void TypeChecker::visitVariable(VariableExpr& variableExpr) {
 	Type::Ptr type = m_currentScope->getVar(name);
 	if(type == nullptr) {
 		if(m_currentClassName != nullptr)
-			throw UndefinedMemberException(std::string(m_currentClassName), name);
+			throw UndefinedMemberException(variableExpr.getPosition(), std::string(m_currentClassName), name);
 		else
-			throw UndefinedVariableException(name);
+			throw UndefinedVariableException(variableExpr.getPosition(), name);
 	}
 	EXPR_RETURN_FROM_VISIT(type);
 }
@@ -205,15 +208,15 @@ void TypeChecker::visitDeclarationStmt(DeclarationStmt& declarationStmt) {
 	if(declarationStmt.getInitializer() != nullptr) {
 		EXPR_ACCEPT(declarationStmt.getInitializer(), *this, Type::Ptr initType);
 		if(*expectedType != initType)
-			throw WrongTypeException(expectedType->getName(), initType->getName());
+			throw WrongTypeException(declarationStmt.getPosition(), expectedType->getName(), initType->getName());
 	}
 	Type::Ptr instanceType = expectedType->duplicate();
 	instanceType->setMutable(declarationStmt.isMutable());
 	if(!m_currentScope->setVar(name, instanceType)) {
 		if(m_currentClassName != nullptr)
-			throw AlreadyDefinedMemberException(std::string(m_currentClassName), name);
+			throw AlreadyDefinedMemberException(declarationStmt.getPosition(), std::string(m_currentClassName), name);
 		else
-			throw AlreadyDefinedVariableException(name);
+			throw AlreadyDefinedVariableException(declarationStmt.getPosition(), name);
 	}
 	STMT_RETURN_FROM_VISIT(m_currentScope);
 }
@@ -222,7 +225,7 @@ void TypeChecker::visitClassDeclarationStmt(ClassDeclarationStmt& classDeclarati
 	m_currentClassName = classDeclarationStmt.getIdentifier().getValue().asString().data();
 	const std::string& name = classDeclarationStmt.getIdentifier().getValue().asString();
 	if(m_currentScope->getType(name))
-		throw AlreadyDefinedTypeException(name);
+		throw AlreadyDefinedTypeException(classDeclarationStmt.getPosition(), name);
 
 	Scope::Ptr declScope = runInNewScope(
 			[&classDeclarationStmt, this]() {
@@ -237,7 +240,7 @@ void TypeChecker::visitClassDeclarationStmt(ClassDeclarationStmt& classDeclarati
 		type->setMutable(param.isMutable);
 		constructorParams.push_back(type);
 		if(!declScope->setVar(param.name.getValue().asString(), type))
-			throw AlreadyDefinedVariableException(param.name.getValue().asString());
+			throw AlreadyDefinedVariableException(classDeclarationStmt.getPosition(), param.name.getValue().asString());
 	}
 	m_currentScope->setType(name, Type::makePtr<ClassType>(name, false, declScope->getVariables(), constructorParams));
 	m_currentClassName = nullptr;
@@ -256,10 +259,11 @@ void TypeChecker::visitPrintStmt(PrintStmt& printStmt) {
 
 void TypeChecker::visitReturnStmt(ReturnStmt& returnStmt) {
 	if(m_currentFunction == nullptr)
-		throw InvalidReturnException();
+		throw InvalidReturnException(returnStmt.getPosition());
 	EXPR_ACCEPT(returnStmt.getExpr(), *this, Type::Ptr returnedType);
 	if(*returnedType != m_currentFunction->getReturnType())
-		throw WrongTypeException(m_currentFunction->getReturnType()->getName(), returnedType->getName());
+		throw WrongTypeException(
+				returnStmt.getPosition(), m_currentFunction->getReturnType()->getName(), returnedType->getName());
 	m_doesCurrentFunctionReturn = true;
 	STMT_RETURN_FROM_VISIT(m_currentScope);
 }

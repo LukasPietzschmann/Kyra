@@ -67,6 +67,7 @@ private:
 
 	Token advance();
 	Token consume(TokenType expected);
+	Token consume(std::initializer_list<TokenType> expected);
 	Token peek() const;
 	bool match(TokenType expected) const;
 	bool matchAndAdvance(TokenType expected);

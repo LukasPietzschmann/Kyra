@@ -49,13 +49,21 @@ public:
 
 	virtual bool operator>=(const Value::Ptr& other) const { return operator>(other) || operator==(other); };
 
-	virtual Value::Ptr operator+(const Value::Ptr&) const { throw ParserException("Operator + can't be used here"); }
+	virtual Value::Ptr operator+(const Value::Ptr&) const {
+		throw ParserException(Position(0, 0, 0, 0), "Operator + can't be used here");
+	}
 
-	virtual Value::Ptr operator-(const Value::Ptr&) const { throw ParserException("Operator - can't be used here"); }
+	virtual Value::Ptr operator-(const Value::Ptr&) const {
+		throw ParserException(Position(0, 0, 0, 0), "Operator - can't be used here");
+	}
 
-	virtual Value::Ptr operator*(const Value::Ptr&) const { throw ParserException("Operator * can't be used here"); }
+	virtual Value::Ptr operator*(const Value::Ptr&) const {
+		throw ParserException(Position(0, 0, 0, 0), "Operator * can't be used here");
+	}
 
-	virtual Value::Ptr operator/(const Value::Ptr&) const { throw ParserException("Operator / can't be used here"); }
+	virtual Value::Ptr operator/(const Value::Ptr&) const {
+		throw ParserException(Position(0, 0, 0, 0), "Operator / can't be used here");
+	}
 
 protected:
 	virtual ~Value() = default;

@@ -29,11 +29,12 @@ public:
 	}
 
 	friend std::ostream& operator<<(std::ostream& os, const Token& token) {
-		os << "Type " << TokenTypeName::getFor(token.m_type) << " at line " << token.m_position;
+		os << "Type " << TokenTypeName::getFor(token.m_type);
 		if(!token.m_lexeme.empty())
 			os << " with lexeme " << token.m_lexeme;
 		if(!token.m_value.value.empty())
 			os << " and a value of " << token.m_value.value;
+		os << " from " << token.m_position.start << " to " << token.m_position.end;
 		return os;
 	}
 

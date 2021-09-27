@@ -42,9 +42,8 @@ void Lexer::scanToken() {
 			else if(isAlpha(current))
 				nameOrKeyword();
 			else
-				throw LexerException(
-						"Unexpected Character \"" + std::string(1, current) + "\" " +
-						Position(m_startLine, m_startCharacter, m_currentLine, m_currentCharacter).toString());
+				throw LexerException(Position(m_startLine, m_startCharacter, m_currentLine, m_currentCharacter),
+						"Unexpected Character \"" + std::string(1, current) + "\" ");
 	}
 }
 
@@ -67,8 +66,9 @@ void Lexer::string() {
 	}
 
 	if(isAtEnd())
-		throw LexerException("Unterminated String " +
-							 m_source.substr(m_startCharacter + 1, m_currentCharacter - m_startCharacter - 1));
+		throw LexerException(Position(m_startLine, m_startCharacter, m_currentLine, m_currentCharacter),
+				"Unterminated String " +
+						m_source.substr(m_startCharacter + 1, m_currentCharacter - m_startCharacter - 1));
 
 	advance();
 
