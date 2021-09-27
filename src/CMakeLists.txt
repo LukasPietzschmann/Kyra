@@ -13,10 +13,24 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(cxxopts)
 
-add_executable(Slanguage main.cpp ${PROJECT_SOURCE_DIR}/include/config.h)
+string(TOUPPER "${CMAKE_BUILD_TYPE}" NORMALIZED_BUILD_TYPE)
+if (NORMALIZED_BUILD_TYPE STREQUAL "DEBUG")
+	FetchContent_Declare(
+			backward-cpp
+			GIT_REPOSITORY https://github.com/bombela/backward-cpp.git
+			GIT_TAG 3bb9240cb15459768adb3e7d963a20e1523a6294 # v1.6
+	)
+	FetchContent_MakeAvailable(backward-cpp)
+endif (NORMALIZED_BUILD_TYPE STREQUAL "DEBUG")
+
+add_executable(Slanguage main.cpp ${PROJECT_SOURCE_DIR}/include/config.h ${BACKWARD_ENABLE})
 
 target_include_directories(Slanguage PRIVATE ${PROJECT_SOURCE_DIR}/include)
 target_link_libraries(Slanguage LibSlg cxxopts)
+
+if (CMAKE_BUILD_TYPE MATCHES DEBUG)
+	add_backward(Slanguage)
+endif (CMAKE_BUILD_TYPE MATCHES DEBUG)
 
 if (READLINE_FOUND)
 	target_link_libraries(Slanguage ${Readline_LIBRARY})
