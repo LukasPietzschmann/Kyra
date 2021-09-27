@@ -15,7 +15,9 @@ public:
 		Token name;
 		Value::Type type;
 	} Parameter;
-	FunctionExpr(std::vector<Parameter> parameters, Expression::Ptr returnType, Statement::Ptr impl) :
+	FunctionExpr(const Position& position, std::vector<Parameter> parameters, Expression::Ptr returnType,
+			Statement::Ptr impl) :
+		Expression(position),
 		m_parameters(std::move(parameters)), m_returnType(std::move(returnType)), m_implementation(std::move(impl)) {}
 	~FunctionExpr() override = default;
 	void accept(ExpressionVisitor& visitor) override { return visitor.visitFunction(*this); }

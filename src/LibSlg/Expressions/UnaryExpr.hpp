@@ -8,7 +8,8 @@
 namespace LibSlg {
 class UnaryExpr : public Expression {
 public:
-	UnaryExpr(Token oper, Expression::Ptr rhs) : m_operator(std::move(oper)), m_rhs(std::move(rhs)) {}
+	UnaryExpr(const Position& position, Token oper, Expression::Ptr rhs) :
+		Expression(position), m_operator(std::move(oper)), m_rhs(std::move(rhs)) {}
 	~UnaryExpr() override = default;
 	void accept(ExpressionVisitor& visitor) override { return visitor.visitUnaryExpr(*this); }
 	const Token& getOperator() const { return m_operator; }

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "../Position.hpp"
 #include "../Values/Value.hpp"
 #include "Forward.hpp"
 
@@ -36,6 +37,7 @@ private:                                      \
 class Expression {
 public:
 	typedef std::shared_ptr<Expression> Ptr;
+	explicit Expression(const Position& position) : m_position(position) {}
 	virtual void accept(ExpressionVisitor& visitor) = 0;
 	template <typename T, class... Args>
 	static Ptr makePtr(Args... args) {
@@ -43,7 +45,10 @@ public:
 		return std::make_shared<T>(args...);
 	}
 
+	const Position& getPosition() const { return m_position; }
+
 protected:
 	virtual ~Expression() = default;
+	Position m_position;
 };
 }

@@ -10,7 +10,9 @@
 namespace LibSlg {
 class DeclarationStmt : public Statement {
 public:
-	DeclarationStmt(Token identifier, Expression::Ptr initializer, Expression::Ptr type, bool isMutable = true) :
+	DeclarationStmt(const Position& position, Token identifier, Expression::Ptr initializer, Expression::Ptr type,
+			bool isMutable = true) :
+		Statement(position),
 		m_identifier(std::move(identifier)), m_initializer(std::move(initializer)), m_type(std::move(type)),
 		m_isMutable(isMutable) {}
 	~DeclarationStmt() override = default;

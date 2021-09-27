@@ -7,9 +7,11 @@
 namespace LibSlg {
 class TypeExpr : public Expression {
 public:
-	explicit TypeExpr(std::string name) : m_name(std::move(name)), m_typesForFunctions(nullptr) {}
-	TypeExpr(std::vector<Expression::Ptr> parameterTypes, Expression::Ptr returnType) :
-		m_name("Function"), m_typesForFunctions(std::make_shared<TypesForFunctions>(parameterTypes, returnType)) {}
+	TypeExpr(const Position& position, std::string name) :
+		Expression(position), m_name(std::move(name)), m_typesForFunctions(nullptr) {}
+	TypeExpr(const Position& position, std::vector<Expression::Ptr> parameterTypes, Expression::Ptr returnType) :
+		Expression(position), m_name("Function"),
+		m_typesForFunctions(std::make_shared<TypesForFunctions>(parameterTypes, returnType)) {}
 	~TypeExpr() override = default;
 	void accept(ExpressionVisitor& visitor) override { visitor.visitTypeExpr(*this); }
 

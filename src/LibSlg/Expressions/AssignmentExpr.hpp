@@ -8,8 +8,8 @@
 namespace LibSlg {
 class AssignmentExpr : public Expression {
 public:
-	AssignmentExpr(Expression::Ptr owner, Token name, Expression::Ptr newValue) :
-		m_owner(std::move(owner)), m_name(std::move(name)), m_newValue(std::move(newValue)) {}
+	AssignmentExpr(const Position& position, Expression::Ptr owner, Token name, Expression::Ptr newValue) :
+		Expression(position), m_owner(std::move(owner)), m_name(std::move(name)), m_newValue(std::move(newValue)) {}
 	~AssignmentExpr() override = default;
 	void accept(ExpressionVisitor& visitor) override { return visitor.visitAssignmentExpr(*this); }
 	const Expression::Ptr& getOwner() const { return m_owner; }

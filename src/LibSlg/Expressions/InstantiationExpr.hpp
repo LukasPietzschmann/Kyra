@@ -7,8 +7,8 @@
 namespace LibSlg {
 class InstantiationExpr : public Expression {
 public:
-	InstantiationExpr(Value::Type name, std::vector<Expression::Ptr> arguments) :
-		m_name(std::move(name)), m_arguments(std::move(arguments)) {}
+	InstantiationExpr(const Position& position, Value::Type name, std::vector<Expression::Ptr> arguments) :
+		Expression(position), m_name(std::move(name)), m_arguments(std::move(arguments)) {}
 	~InstantiationExpr() override = default;
 	void accept(ExpressionVisitor& visitor) override { return visitor.visitInstantiationExpr(*this); }
 

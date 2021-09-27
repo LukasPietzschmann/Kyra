@@ -8,7 +8,8 @@
 namespace LibSlg {
 class AccessExpr : public Expression {
 public:
-	AccessExpr(Expression::Ptr owner, Token name) : m_owner(std::move(owner)), m_name(std::move(name)) {}
+	AccessExpr(const Position& position, Expression::Ptr owner, Token name) :
+		Expression(position), m_owner(std::move(owner)), m_name(std::move(name)) {}
 	~AccessExpr() override = default;
 	void accept(ExpressionVisitor& visitor) override { return visitor.visitAccessExpr(*this); }
 	const Expression::Ptr& getOwner() const { return m_owner; }

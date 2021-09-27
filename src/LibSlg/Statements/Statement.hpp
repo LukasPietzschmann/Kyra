@@ -1,5 +1,6 @@
 #pragma once
 
+#include "../Position.hpp"
 #include "Forward.hpp"
 
 namespace LibSlg {
@@ -30,6 +31,7 @@ private:                                      \
 class Statement {
 public:
 	typedef std::shared_ptr<Statement> Ptr;
+	explicit Statement(const Position& position) : m_position(position) {}
 	virtual void accept(StatementVisitor& visitor) = 0;
 	template <typename T, class... Args>
 	static Ptr makePtr(Args... args) {
@@ -37,7 +39,10 @@ public:
 		return std::make_shared<T>(args...);
 	}
 
+	const Position& getPosition() const { return m_position; }
+
 protected:
 	virtual ~Statement() = default;
+	Position m_position;
 };
 }
