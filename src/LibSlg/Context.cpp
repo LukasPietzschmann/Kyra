@@ -9,7 +9,7 @@ Context::ContextValue Context::getVar(const std::string& name) const {
 		return pos->second;
 	if(m_parent != nullptr)
 		return m_parent->getVar(name);
-	throw RuntimeException("Undefined variable " + name);
+	assert(false);
 }
 
 const Klass& Context::getCustomType(const Value::Type& type) const {
@@ -18,7 +18,7 @@ const Klass& Context::getCustomType(const Value::Type& type) const {
 		return it->second;
 	if(m_parent != nullptr)
 		return m_parent->getCustomType(type);
-	throw RuntimeException("Undefined type " + type);
+	assert(false);
 }
 
 void Context::declareVar(const std::string& name, const Value::Ptr& value, bool isMutable) {
@@ -32,7 +32,7 @@ void Context::mutate(const std::string& name, Value::Ptr value) {
 	else if(m_parent)
 		m_parent->mutate(name, value);
 	else
-		throw RuntimeException("Undefined variable " + name);
+		assert(false);
 }
 
 void Context::declareType(const Value::Type& type, const Klass& klass) { m_customTypes.emplace(type, klass); }
