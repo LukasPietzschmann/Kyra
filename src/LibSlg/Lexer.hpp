@@ -24,8 +24,8 @@ private:
 	std::vector<Token> m_tokens;
 	int m_currentCharacter{};
 	int m_startCharacter{};
-	int m_currentLine{};
-	int m_startLine{};
+	int m_currentLine{ 1 };
+	int m_startLine{ 1 };
 
 	void scanToken();
 	void comment();
