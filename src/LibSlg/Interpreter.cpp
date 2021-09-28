@@ -26,7 +26,8 @@ void Interpreter::execute(const std::string& code, bool verboseLogging, bool pas
 			for(const auto& error : result.getErrors())
 				std::cout << "[Typing Error] " << error << "\n";
 			std::cout << std::flush;
-			return;
+			if(result.hasErrors())
+				return;
 		}
 
 		for(const auto& statement : statements) {
