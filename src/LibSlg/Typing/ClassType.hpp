@@ -10,15 +10,16 @@
 namespace LibSlg {
 class ClassType : public Type {
 public:
-	ClassType(const std::string& name, bool isMutable, std::unordered_map<std::string, Type::Ptr> declarations = {},
+	ClassType(const std::string& name, std::unordered_map<std::string, Variable> declarations = {},
 			std::vector<Type::Ptr> constructorParams = {}) :
-		Type(name, isMutable),
+		Type(name),
 		m_declarations(std::move(declarations)), m_constructorParameter(std::move(constructorParams)) {}
 	~ClassType() override = default;
-	Type::Ptr knowsAbout(const std::string& name) const override {
+
+	std::optional<Variable> knowsAbout(const std::string& name) const override {
 		auto it = m_declarations.find(name);
 		if(it == m_declarations.end())
-			return nullptr;
+			return {};
 		return it->second;
 	}
 
@@ -28,7 +29,7 @@ public:
 	unsigned int getArity() const { return m_constructorParameter.size(); }
 
 protected:
-	std::unordered_map<std::string, Type::Ptr> m_declarations;
+	std::unordered_map<std::string, Variable> m_declarations;
 	std::vector<Type::Ptr> m_constructorParameter;
 };
 }

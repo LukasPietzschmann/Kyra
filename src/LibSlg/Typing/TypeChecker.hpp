@@ -2,6 +2,7 @@
 
 #include <functional>
 #include <memory>
+#include <optional>
 #include <unordered_map>
 #include <utility>
 #include <vector>
@@ -40,27 +41,27 @@ private:
 		typedef std::shared_ptr<Scope> Ptr;
 		explicit Scope(Scope::Ptr parent) : m_parent(std::move(parent)), m_variables({}), m_types({}) {
 			for(const auto& nativeType : Value::NativeTypes::All)
-				m_types.emplace(nativeType, NativeTypes::make(nativeType));
+				m_types.emplace(nativeType, NativeTypes::makeNativeType(nativeType));
 		}
 
 		Scope() : Scope(nullptr) {}
 
-		Type::Ptr getType(const std::string& name) {
+		std::optional<Type::Ptr> getType(const std::string& name) {
 			const auto& it = m_types.find(name);
 			if(it != m_types.end())
 				return it->second;
 			if(m_parent != nullptr)
 				return m_parent->getType(name);
-			return nullptr;
+			return {};
 		}
 
-		Type::Ptr getVar(const std::string& name) {
+		std::optional<Variable> getVar(const std::string& name) {
 			const auto& it = m_variables.find(name);
 			if(it != m_variables.end())
 				return it->second;
 			if(m_parent != nullptr)
 				return m_parent->getVar(name);
-			return nullptr;
+			return {};
 		}
 
 		bool setType(const std::string& name, const Type::Ptr& type) {
@@ -70,19 +71,23 @@ private:
 			return true;
 		}
 
-		bool setVar(const std::string& name, const Type::Ptr& var) {
+		bool setVar(const std::string& name, const Type::Ptr& varType, bool isMutable) {
+			return setVar(name, Variable(varType, isMutable));
+		}
+
+		bool setVar(const std::string& name, const Variable& var) {
 			if(m_variables.contains(name))
 				return false;
 			m_variables.emplace(name, var);
 			return true;
 		}
 
-		const std::unordered_map<std::string, Type::Ptr>& getVariables() const { return m_variables; }
+		const std::unordered_map<std::string, Variable>& getVariables() const { return m_variables; }
 		const std::unordered_map<std::string, Type::Ptr>& getTypes() const { return m_types; }
 
 	private:
 		Scope::Ptr m_parent;
-		std::unordered_map<std::string, Type::Ptr> m_variables;
+		std::unordered_map<std::string, Variable> m_variables;
 		std::unordered_map<std::string, Type::Ptr> m_types;
 	};
 

@@ -8,8 +8,8 @@
 namespace LibSlg {
 class FunctionType : public Type {
 public:
-	FunctionType(bool isMutable, Type::Ptr returnType, std::vector<Type::Ptr> parameters) :
-		Type("", isMutable), m_returnType(std::move(returnType)), m_parameters(std::move(parameters)) {
+	FunctionType(Type::Ptr returnType, std::vector<Type::Ptr> parameters) :
+		Type(""), m_returnType(std::move(returnType)), m_parameters(std::move(parameters)) {
 		std::string params = std::transform_reduce(
 				m_parameters.begin(), m_parameters.end(), std::string(""),
 				[](const std::string& a, const std::string& b) { return a + ", " + b; },

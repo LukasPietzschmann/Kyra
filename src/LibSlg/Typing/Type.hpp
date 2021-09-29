@@ -9,6 +9,13 @@
 #include "../Values/Value.hpp"
 
 namespace LibSlg {
+class Type;
+struct Variable {
+	Variable(const std::shared_ptr<Type>& type, bool isMutable) : type(type), isMutable(isMutable) {}
+	std::shared_ptr<Type> type;
+	bool isMutable;
+};
+
 class Type {
 public:
 	typedef std::shared_ptr<Type> Ptr;
@@ -21,20 +28,17 @@ public:
 	}
 
 public:
-	Type(std::string name, bool isMutable) : m_name(std::move(name)), m_isMutable(isMutable) {}
-	virtual Type::Ptr knowsAbout(const std::string&) const { return nullptr; }
+	Type(std::string name) : m_name(std::move(name)) {}
+	virtual std::optional<Variable> knowsAbout(const std::string&) const { return {}; }
 	virtual Type::Ptr duplicate() const = 0;
+	virtual bool canBeCalledWith(std::vector<Type::Ptr>) const { return false; };
 
-	bool isMutable() const { return m_isMutable; }
 	const std::string& getName() const { return m_name; }
-
-	void setMutable(bool isMutable) { m_isMutable = isMutable; }
 
 	virtual bool operator==(const Type::Ptr& other) const { return m_name == other->m_name; }
 	virtual bool operator!=(const Type::Ptr& other) const { return !(*this == other); }
 
 protected:
 	std::string m_name;
-	bool m_isMutable;
 };
 }
