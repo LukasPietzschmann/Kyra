@@ -17,7 +17,10 @@ void Lexer::scanToken() {
 		case ' ':
 		case '\t':
 		case '\r': break;
-		case '\n': ++m_currentCharacter; break;
+		case '\n':
+			++m_currentLine;
+			m_characterAtLineStart = m_currentCharacter;
+			break;
 		case '#': comment(); break;
 		case '(': addToken(TokenType::LEFT_PAREN); break;
 		case ')': addToken(TokenType::RIGHT_PAREN); break;
@@ -109,9 +112,12 @@ bool Lexer::matchAndAdvance(char expected) {
 }
 
 void Lexer::addToken(TokenType type, const std::string& literal) {
-	const std::string& lexeme = m_source.substr(m_startCharacter, m_currentCharacter - m_startCharacter);
-	m_tokens.emplace_back(
-			type, Position(m_startLine, m_startCharacter, m_currentLine, m_currentCharacter), lexeme, literal);
+	std::string lexeme;
+	if(type != TokenType::END_OF_FILE)
+		lexeme = m_source.substr(m_startCharacter, m_currentCharacter - m_startCharacter);
+	int currentColumn = m_currentCharacter - m_characterAtLineStart + 1;
+	int startColumn = m_startCharacter - m_characterAtLineStart + 1;
+	m_tokens.emplace_back(type, Position(m_startLine, startColumn, m_currentLine, currentColumn), lexeme, literal);
 }
 
 bool Lexer::isDigit(char character) { return character >= '0' && character <= '9'; }

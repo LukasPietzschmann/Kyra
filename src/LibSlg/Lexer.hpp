@@ -26,6 +26,7 @@ private:
 	int m_startCharacter{};
 	int m_currentLine{ 1 };
 	int m_startLine{ 1 };
+	int m_characterAtLineStart{};
 
 	void scanToken();
 	void comment();
