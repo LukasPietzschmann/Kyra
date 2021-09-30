@@ -46,7 +46,7 @@ private:
 	public:
 		explicit Scope(Scope* parent) : m_parent(parent), m_variables({}), m_types({}) {
 			for(const auto& nativeType : Value::NativeTypes::All)
-				m_types.emplace(nativeType, NativeTypes::makeNativeType(nativeType));
+				m_types.emplace(nativeType, NativeTypes::make(nativeType));
 		}
 		~Scope() { delete m_parent; }
 

@@ -10,13 +10,13 @@ class NativeTypes {
 public:
 	static Type::Ptr make(const Value::Type& type) {
 		if(type == Value::NativeTypes::Bool)
-			return Type::makePtr<ClassType>("Bool", false);
+			return Type::makePtr<ClassType>("Bool");
 		if(type == Value::NativeTypes::Number)
-			return Type::makePtr<ClassType>("Number", false);
+			return Type::makePtr<ClassType>("Number");
 		if(type == Value::NativeTypes::String)
-			return Type::makePtr<ClassType>("String", false);
+			return Type::makePtr<ClassType>("String");
 		if(type == Value::NativeTypes::Nothing)
-			return Type::makePtr<ClassType>("Nothing", false);
+			return Type::makePtr<ClassType>("Nothing");
 		else
 			assert(false);
 	}

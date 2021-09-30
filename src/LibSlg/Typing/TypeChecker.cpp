@@ -169,7 +169,7 @@ void TypeChecker::visitUnaryExpr(UnaryExpr& unaryExpr) {
 		case TokenType::BANG: EXPR_RETURN_FROM_VISIT(m_currentScope->getType(Value::NativeTypes::Bool).value());
 		case TokenType::MINUS:
 			if(rhs->getName() == Value::NativeTypes::Number)
-				EXPR_RETURN_FROM_VISIT(NativeTypes::makeNativeType(Value::NativeTypes::Number));
+				EXPR_RETURN_FROM_VISIT(NativeTypes::make(Value::NativeTypes::Number));
 			else
 				THROW_TYPING_ERROR(WrongTypeError(unaryExpr.getPosition(), Value::NativeTypes::Number, rhs->getName()));
 		default: assert(false);
