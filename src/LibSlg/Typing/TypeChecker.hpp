@@ -38,11 +38,11 @@ class TypeChecker : public ExpressionVisitor, public StatementVisitor {
 private:
 	class Scope {
 	public:
-		typedef std::shared_ptr<Scope> Ptr;
-		explicit Scope(Scope::Ptr parent) : m_parent(std::move(parent)), m_variables({}), m_types({}) {
+		explicit Scope(Scope* parent) : m_parent(parent), m_variables({}), m_types({}) {
 			for(const auto& nativeType : Value::NativeTypes::All)
 				m_types.emplace(nativeType, NativeTypes::makeNativeType(nativeType));
 		}
+		~Scope() { delete m_parent; }
 
 		Scope() : Scope(nullptr) {}
 
@@ -86,13 +86,13 @@ private:
 		const std::unordered_map<std::string, Type::Ptr>& getTypes() const { return m_types; }
 
 	private:
-		Scope::Ptr m_parent;
+		Scope* m_parent;
 		std::unordered_map<std::string, Variable> m_variables;
 		std::unordered_map<std::string, Type::Ptr> m_types;
 	};
 
 	EXPR_NEEDS_VISIT_RETURN_OF_TYPE(Type::Ptr);
-	STMT_NEEDS_VISIT_RETURN_OF_TYPE(Scope::Ptr);
+	STMT_NEEDS_VISIT_RETURN_OF_TYPE(Scope*);
 
 public:
 	class Result {
@@ -111,6 +111,7 @@ public:
 	};
 
 	static TypeChecker& getInstance();
+	~TypeChecker() { delete m_currentScope; }
 	TypeChecker(TypeChecker const&) = delete;
 	void operator=(TypeChecker const&) = delete;
 
@@ -136,15 +137,14 @@ public:
 	void visitReturnStmt(ReturnStmt& returnStmt) override;
 
 private:
-	TypeChecker() : m_currentScope(std::make_shared<Scope>(nullptr)){};
+	TypeChecker() : m_currentScope(new Scope(nullptr)){};
 
-	Scope::Ptr m_currentScope;
+	Scope* m_currentScope;
 	FunctionType* m_currentFunction{};
 	bool m_doesCurrentFunctionReturn{};
 	char* m_currentClassName{};
 
-	Scope::Ptr check(const Statement::Ptr& statement);
-	Scope::Ptr runInNewScope(
-			const std::function<void()>& function, const Scope::Ptr& parent, const Scope* valuesToCopy = nullptr);
+	void check(const Statement::Ptr& statement);
+	Scope* runInNewScope(const std::function<void()>& function, Scope* parent, Scope* valuesToCopy = nullptr);
 };
 }

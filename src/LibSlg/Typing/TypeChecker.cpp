@@ -20,15 +20,15 @@ TypeChecker::Result TypeChecker::check(const std::vector<Statement::Ptr>& statem
 	return result;
 }
 
-TypeChecker::Scope::Ptr TypeChecker::check(const Statement::Ptr& statement) {
-	STMT_ACCEPT(statement, *this, Scope::Ptr result);
 	return result;
 }
 
-TypeChecker::Scope::Ptr TypeChecker::runInNewScope(
-		const std::function<void()>& function, const Scope::Ptr& parent, const Scope* valuesToCopy) {
-	Scope::Ptr globalScopeCopy = std::make_shared<Scope>(m_currentScope);
-	Scope::Ptr newGlobalScope(parent);
+void TypeChecker::check(const Statement::Ptr& statement) { statement->accept(*this); }
+
+TypeChecker::Scope* TypeChecker::runInNewScope(
+		const std::function<void()>& function, Scope* parent, Scope* valuesToCopy) {
+	Scope* globalScopeCopy = m_currentScope;
+	auto* newGlobalScope = new Scope(parent);
 	if(valuesToCopy != nullptr) {
 		for(const auto& var : valuesToCopy->getVariables())
 			newGlobalScope->setVar(var.first, var.second);
@@ -37,7 +37,7 @@ TypeChecker::Scope::Ptr TypeChecker::runInNewScope(
 	}
 	m_currentScope = newGlobalScope;
 	function();
-	m_currentScope = std::move(globalScopeCopy);
+	m_currentScope = globalScopeCopy;
 	return newGlobalScope;
 }
 
@@ -94,7 +94,7 @@ void TypeChecker::visitFunction(FunctionExpr& functionExpr) {
 	FunctionType* enclosingFunctionType = m_currentFunction;
 	EXPR_ACCEPT(functionExpr.getReturnType(), *this, Type::Ptr returnType);
 	std::vector<Type::Ptr> parameters;
-	Scope::Ptr paramScope = runInNewScope(
+	Scope* paramScope = runInNewScope(
 			[&functionExpr, &parameters, this]() {
 				for(const auto& param : functionExpr.getParameters()) {
 					const auto& result = m_currentScope->getType(param.type);
@@ -111,8 +111,8 @@ void TypeChecker::visitFunction(FunctionExpr& functionExpr) {
 	Type::Ptr functionType = Type::makePtr<FunctionType>(returnType, parameters);
 	m_currentFunction = std::dynamic_pointer_cast<FunctionType>(functionType).get();
 
-	runInNewScope([&functionExpr, this]() { functionExpr.getImplementation()->accept(*this); }, m_currentScope,
-			paramScope.get());
+	runInNewScope(
+			[&functionExpr, this]() { functionExpr.getImplementation()->accept(*this); }, m_currentScope, paramScope);
 
 	if(!m_doesCurrentFunctionReturn && m_currentFunction->getReturnType()->getName() != Value::NativeTypes::Nothing)
 		throw WrongTypeException(
@@ -193,7 +193,7 @@ void TypeChecker::visitVariable(VariableExpr& variableExpr) {
 }
 
 void TypeChecker::visitBlockStmt(BlockStmt& blockStmt) {
-	Scope::Ptr scope = runInNewScope(
+	Scope* scope = runInNewScope(
 			[&]() {
 				for(const auto& statement : blockStmt.getStatements())
 					statement->accept(*this);
@@ -204,7 +204,6 @@ void TypeChecker::visitBlockStmt(BlockStmt& blockStmt) {
 
 void TypeChecker::visitDeclarationStmt(DeclarationStmt& declarationStmt) {
 	const std::string& name = declarationStmt.getIdentifier().getValue().asString();
-	std::cout << "Declaration of " << name << " in Context " << m_currentScope.get() << std::endl;
 	EXPR_ACCEPT(declarationStmt.getType(), *this, Type::Ptr expectedType);
 	if(declarationStmt.getInitializer() != nullptr) {
 		EXPR_ACCEPT(declarationStmt.getInitializer(), *this, Type::Ptr initType);
@@ -227,10 +226,11 @@ void TypeChecker::visitClassDeclarationStmt(ClassDeclarationStmt& classDeclarati
 	if(m_currentScope->getType(name).has_value())
 		throw AlreadyDefinedTypeException(classDeclarationStmt.getPosition(), name);
 
-	Scope::Ptr declScope = runInNewScope(
+	Scope* declScope = runInNewScope(
 			[&classDeclarationStmt, this]() {
 				for(const auto& decl : classDeclarationStmt.getDeclarations())
-					decl->accept(*this);
+					decl->accept(*this);  // TODO print throwt hier drin, deswegen wird die klasse nicht
+										  // deklariert.nicht throwen sindern einer liste anfügen
 			},
 			m_currentScope);
 
