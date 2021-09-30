@@ -19,16 +19,13 @@ void Interpreter::execute(const std::string& code, bool verboseLogging, bool pas
 			for(const auto& statement : statements)
 				logger.logStatement(statement);
 		}
-		if(passThroughExceptions)
-			TypeChecker::getInstance().check(statements, true);
-		else {
-			TypeChecker::Result result = TypeChecker::getInstance().check(statements, false);
-			for(const auto& error : result.getErrors())
-				std::cout << "[Typing Error] " << error << "\n";
-			std::cout << std::flush;
-			if(result.hasErrors())
-				return;
-		}
+
+		TypeChecker::Result result = TypeChecker::getInstance().check(statements);
+		for(const auto& error : result.getErrors())
+			std::cout << "[Typing Error] " << error << "\n";
+		std::cout << std::flush;
+		if(result.hasErrors())
+			return;
 
 		for(const auto& statement : statements) {
 			try {

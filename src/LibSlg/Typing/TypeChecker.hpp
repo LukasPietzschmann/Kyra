@@ -32,9 +32,15 @@
 #include "FunctionType.hpp"
 #include "NativeTypes.hpp"
 #include "Type.hpp"
+#include "TypingErrors.hpp"
 
 namespace LibSlg {
 class TypeChecker : public ExpressionVisitor, public StatementVisitor {
+#define THROW_TYPING_ERROR(error)               \
+	do {                                        \
+		m_errors.push_back((error).getCause()); \
+		return;                                 \
+	} while(0)
 private:
 	class Scope {
 	public:
@@ -115,7 +121,7 @@ public:
 	TypeChecker(TypeChecker const&) = delete;
 	void operator=(TypeChecker const&) = delete;
 
-	TypeChecker::Result check(const std::vector<Statement::Ptr>& statements, bool passThroughExceptions = false);
+	TypeChecker::Result check(const std::vector<Statement::Ptr>& statements);
 
 	void visitAccessExpr(AccessExpr& accessExpr) override;
 	void visitAssignmentExpr(AssignmentExpr& assignmentExpr) override;
@@ -139,6 +145,7 @@ public:
 private:
 	TypeChecker() : m_currentScope(new Scope(nullptr)){};
 
+	std::vector<std::string> m_errors;
 	Scope* m_currentScope;
 	FunctionType* m_currentFunction{};
 	bool m_doesCurrentFunctionReturn{};
