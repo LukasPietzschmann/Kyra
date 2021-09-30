@@ -9,14 +9,19 @@ namespace LibSlg {
 class NativeTypes {
 public:
 	static Type::Ptr make(const Value::Type& type) {
+		static Type::Ptr boolType = Type::makePtr<ClassType>("Bool");
+		static Type::Ptr numberType = Type::makePtr<ClassType>("Number");
+		static Type::Ptr stringType = Type::makePtr<ClassType>("String");
+		static Type::Ptr nothingType = Type::makePtr<ClassType>("Nothing");
+
 		if(type == Value::NativeTypes::Bool)
-			return Type::makePtr<ClassType>("Bool");
+			return boolType;
 		if(type == Value::NativeTypes::Number)
-			return Type::makePtr<ClassType>("Number");
+			return numberType;
 		if(type == Value::NativeTypes::String)
-			return Type::makePtr<ClassType>("String");
+			return stringType;
 		if(type == Value::NativeTypes::Nothing)
-			return Type::makePtr<ClassType>("Nothing");
+			return nothingType;
 		else
 			assert(false);
 	}
