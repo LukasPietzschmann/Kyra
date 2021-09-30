@@ -35,8 +35,11 @@ public:
 private:
 	const std::shared_ptr<Context> m_parent;
 	std::unordered_map<std::string, ContextValue> m_variables;
-	std::vector<Value::Type> m_nativeTypes{ Value::NativeTypes::Nothing, Value::NativeTypes::Number,
-		Value::NativeTypes::Bool, Value::NativeTypes::String, Value::NativeTypes::Function };
+	std::vector<Value::Type> m_nativeTypes{Value::NativeTypes::Nothing,
+			Value::NativeTypes::Number,
+			Value::NativeTypes::Bool,
+			Value::NativeTypes::String,
+			Value::NativeTypes::Function};
 	std::unordered_map<Value::Type, Klass> m_customTypes;
 };
 }

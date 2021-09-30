@@ -27,10 +27,41 @@ enum class TokenType {
 class TokenTypeName {
 public:
 	static std::string getFor(TokenType type) {
-		const std::string names[] = { "LEFT_PAREN", "RIGHT_PAREN", "LEFT_CURLY", "RIGHT_CURLY", "COMMA", "SEMICOLON",
-			"DOT", "COLON", "MINUS", "PLUS", "SLASH", "STAR", "EQUAL", "EQUAL_EQUAL", "BANG", "BANG_EQUAL", "GREATER",
-			"GREATER_EQUAL", "LESS", "LESS_EQUAL", "ARROW", "NAME", "STRING", "NUMBER", "VAR", "VAL", "FUN", "CLASS",
-			"PRINT", "NOTHING", "TRUE", "FALSE", "RETURN", "INSTANTIATE", "EOF" };
+		const std::string names[] = {"LEFT_PAREN",
+				"RIGHT_PAREN",
+				"LEFT_CURLY",
+				"RIGHT_CURLY",
+				"COMMA",
+				"SEMICOLON",
+				"DOT",
+				"COLON",
+				"MINUS",
+				"PLUS",
+				"SLASH",
+				"STAR",
+				"EQUAL",
+				"EQUAL_EQUAL",
+				"BANG",
+				"BANG_EQUAL",
+				"GREATER",
+				"GREATER_EQUAL",
+				"LESS",
+				"LESS_EQUAL",
+				"ARROW",
+				"NAME",
+				"STRING",
+				"NUMBER",
+				"VAR",
+				"VAL",
+				"FUN",
+				"CLASS",
+				"PRINT",
+				"NOTHING",
+				"TRUE",
+				"FALSE",
+				"RETURN",
+				"INSTANTIATE",
+				"EOF"};
 		return names[static_cast<std::underlying_type<TokenType>::type>(type)];
 	}
 };

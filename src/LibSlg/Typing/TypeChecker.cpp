@@ -1,5 +1,7 @@
 #include "TypeChecker.hpp"
 
+#include <utility>
+
 namespace LibSlg {
 TypeChecker& TypeChecker::getInstance() {
 	static TypeChecker instance;
@@ -19,8 +21,9 @@ TypeChecker::Result TypeChecker::check(const std::vector<Statement::Ptr>& statem
 
 void TypeChecker::check(const Statement::Ptr& statement) { statement->accept(*this); }
 
-TypeChecker::Scope* TypeChecker::runInNewScope(
-		const std::function<void()>& function, Scope* parent, Scope* valuesToCopy) {
+TypeChecker::Scope* TypeChecker::runInNewScope(const std::function<void()>& function,
+		Scope* parent,
+		Scope* valuesToCopy) {
 	Scope* globalScopeCopy = m_currentScope;
 	auto* newGlobalScope = new Scope(parent);
 	if(valuesToCopy != nullptr) {
@@ -73,8 +76,10 @@ void TypeChecker::visitCallExpr(CallExpr& callExpr) {
 	if(function == nullptr)
 		THROW_TYPING_ERROR(WrongTypeError(callExpr.getPosition(), Value::NativeTypes::Function, gFunction->getName()));
 	if(function->getParameters().size() != callExpr.getArguments().size())
-		THROW_TYPING_ERROR(ArityError(
-				callExpr.getPosition(), function->getArity(), callExpr.getArguments().size(), function->getName()));
+		THROW_TYPING_ERROR(ArityError(callExpr.getPosition(),
+				function->getArity(),
+				callExpr.getArguments().size(),
+				function->getName()));
 	for(unsigned long i = 0; i < function->getParameters().size(); ++i) {
 		const Type& param = *function->getParameters()[i];
 		EXPR_ACCEPT(callExpr.getArguments()[i], *this, Type::Ptr arg);
@@ -97,8 +102,8 @@ void TypeChecker::visitFunction(FunctionExpr& functionExpr) {
 						THROW_TYPING_ERROR(UndefinedTypeError(functionExpr.getPosition(), param.type));
 					parameters.push_back(result.value());
 					if(!m_currentScope->setVar(param.name.getValue().asString(), result.value(), true))
-						THROW_TYPING_ERROR(AlreadyDefinedVariableError(
-								functionExpr.getPosition(), param.name.getValue().asString()));
+						THROW_TYPING_ERROR(AlreadyDefinedVariableError(functionExpr.getPosition(),
+								param.name.getValue().asString()));
 				}
 			},
 			m_currentScope);
@@ -106,11 +111,13 @@ void TypeChecker::visitFunction(FunctionExpr& functionExpr) {
 	Type::Ptr functionType = Type::makePtr<FunctionType>(returnType, parameters);
 	m_currentFunction = std::dynamic_pointer_cast<FunctionType>(functionType).get();
 
-	runInNewScope(
-			[&functionExpr, this]() { functionExpr.getImplementation()->accept(*this); }, m_currentScope, paramScope);
+	runInNewScope([&functionExpr, this]() { functionExpr.getImplementation()->accept(*this); },
+			m_currentScope,
+			paramScope);
 
 	if(!m_doesCurrentFunctionReturn && m_currentFunction->getReturnType()->getName() != Value::NativeTypes::Nothing)
-		THROW_TYPING_ERROR(WrongTypeError(functionExpr.getPosition(), m_currentFunction->getReturnType()->getName(),
+		THROW_TYPING_ERROR(WrongTypeError(functionExpr.getPosition(),
+				m_currentFunction->getReturnType()->getName(),
 				Value::NativeTypes::Nothing));
 
 	m_doesCurrentFunctionReturn = false;
@@ -129,8 +136,10 @@ void TypeChecker::visitInstantiationExpr(InstantiationExpr& instantiationExpr) {
 		THROW_TYPING_ERROR(UndefinedTypeError(instantiationExpr.getPosition(), instantiationExpr.getName()));
 	auto classType = std::dynamic_pointer_cast<ClassType>(result.value());
 	if(instantiationExpr.getArguments().size() != classType->getArity())
-		THROW_TYPING_ERROR(ArityError(instantiationExpr.getPosition(), classType->getArity(),
-				instantiationExpr.getArguments().size(), "Constructor of class " + instantiationExpr.getName()));
+		THROW_TYPING_ERROR(ArityError(instantiationExpr.getPosition(),
+				classType->getArity(),
+				instantiationExpr.getArguments().size(),
+				"Constructor of class " + instantiationExpr.getName()));
 	for(unsigned long i = 0; i < classType->getArity(); ++i) {
 		const Type::Ptr& expected = classType->getConstructorParameter()[i];
 		EXPR_ACCEPT(instantiationExpr.getArguments()[i], *this, Type::Ptr provided);
@@ -171,7 +180,9 @@ void TypeChecker::visitUnaryExpr(UnaryExpr& unaryExpr) {
 			if(rhs->getName() == Value::NativeTypes::Number)
 				EXPR_RETURN_FROM_VISIT(NativeTypes::make(Value::NativeTypes::Number));
 			else
-				THROW_TYPING_ERROR(WrongTypeError(unaryExpr.getPosition(), Value::NativeTypes::Number, rhs->getName()));
+				THROW_TYPING_ERROR(UnsupportedOperand(unaryExpr.getPosition(),
+						unaryExpr.getOperator().getValue().asString(),
+						rhs->getName()));
 		default: assert(false);
 	}
 }
@@ -260,8 +271,9 @@ void TypeChecker::visitReturnStmt(ReturnStmt& returnStmt) {
 		THROW_TYPING_ERROR(InvalidReturnError(returnStmt.getPosition()));
 	EXPR_ACCEPT(returnStmt.getExpr(), *this, Type::Ptr returnedType);
 	if(*returnedType != m_currentFunction->getReturnType())
-		THROW_TYPING_ERROR(WrongTypeError(
-				returnStmt.getPosition(), m_currentFunction->getReturnType()->getName(), returnedType->getName()));
+		THROW_TYPING_ERROR(WrongTypeError(returnStmt.getPosition(),
+				m_currentFunction->getReturnType()->getName(),
+				returnedType->getName()));
 	m_doesCurrentFunctionReturn = true;
 	STMT_RETURN_FROM_VISIT(m_currentScope);
 }

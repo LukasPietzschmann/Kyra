@@ -28,6 +28,19 @@ public:
 		TypingError(position, "Expected type " + expected + " does not equal provided type " + provided) {}
 };
 
+class UnsupportedOperand : public TypingError {
+public:
+	UnsupportedOperand(const Position& position, const std::string& unaryOper, const std::string& type) :
+		TypingError(position, "Unsupported operator " + unaryOper + " on type " + type) {}
+
+	UnsupportedOperand(const Position& position,
+			const std::string& lhsType,
+			const std::string& binaryOper,
+			const std::string& rhsType) :
+		TypingError(position,
+				"Unsupported operator " + binaryOper + " on left type " + lhsType + "with right type " + rhsType) {}
+};
+
 class UndefinedTypeError : public TypingError {
 public:
 	explicit UndefinedTypeError(const Position& position, const std::string& type) :
@@ -73,8 +86,9 @@ public:
 class ArityError : public TypingError {
 public:
 	ArityError(const Position& position, unsigned int expected, unsigned int provided, const std::string& name) :
-		TypingError(position, "The function " + name + " requires " + std::to_string(expected) +
-									  " arguments, but you provided " + std::to_string(provided)) {}
+		TypingError(position,
+				"The function " + name + " requires " + std::to_string(expected) + " arguments, but you provided " +
+						std::to_string(provided)) {}
 };
 
 class InvalidReturnError : public TypingError {

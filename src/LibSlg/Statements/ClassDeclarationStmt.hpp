@@ -19,7 +19,9 @@ public:
 		Value::Type type;
 	} ConstructorParameter;
 
-	ClassDeclarationStmt(const Position& position, Token identifier, std::vector<ConstructorParameter> parameters,
+	ClassDeclarationStmt(const Position& position,
+			Token identifier,
+			std::vector<ConstructorParameter> parameters,
 			std::vector<std::shared_ptr<DeclarationStmt>> declarations) :
 		Statement(position),
 		m_identifier(std::move(identifier)), m_parameters(std::move(parameters)),

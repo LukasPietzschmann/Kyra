@@ -10,7 +10,8 @@
 namespace LibSlg {
 class ClassType : public Type {
 public:
-	ClassType(const std::string& name, std::unordered_map<std::string, Variable> declarations = {},
+	ClassType(const std::string& name,
+			std::unordered_map<std::string, Variable> declarations = {},
 			std::vector<Type::Ptr> constructorParams = {}) :
 		Type(name),
 		m_declarations(std::move(declarations)), m_constructorParameter(std::move(constructorParams)) {}

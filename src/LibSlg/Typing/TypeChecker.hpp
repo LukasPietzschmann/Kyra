@@ -3,6 +3,7 @@
 #include <functional>
 #include <memory>
 #include <optional>
+#include <tuple>
 #include <unordered_map>
 #include <utility>
 #include <vector>
@@ -106,14 +107,14 @@ public:
 		bool hasErrors() const { return m_errors.has_value(); }
 		void insertError(std::string message) {
 			if(!m_errors.has_value())
-				m_errors = std::make_optional<std::vector<std::string>>({ std::move(message) });
+				m_errors = std::make_optional<std::vector<std::string>>({std::move(message)});
 			else
 				m_errors->push_back(std::move(message));
 		}
 		std::vector<std::string> getErrors() const { return m_errors.value_or(std::vector<std::string>()); }
 
 	private:
-		std::optional<std::vector<std::string>> m_errors{ std::nullopt };
+		std::optional<std::vector<std::string>> m_errors{std::nullopt};
 	};
 
 	static TypeChecker& getInstance();

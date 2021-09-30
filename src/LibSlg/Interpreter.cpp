@@ -148,10 +148,12 @@ void Interpreter::visitBlockStmt(BlockStmt& blockStmt) {
 void Interpreter::visitDeclarationStmt(DeclarationStmt& declarationStmt) {
 	if(const Expression::Ptr& init = declarationStmt.getInitializer()) {
 		EXPR_ACCEPT(init, *this, Value::Ptr res);
-		m_currentContext->declareVar(
-				declarationStmt.getIdentifier().getValue().asString(), res, declarationStmt.isMutable());
+		m_currentContext->declareVar(declarationStmt.getIdentifier().getValue().asString(),
+				res,
+				declarationStmt.isMutable());
 	} else
-		m_currentContext->declareVar(declarationStmt.getIdentifier().getValue().asString(), Value::makePtr<Nothing>(),
+		m_currentContext->declareVar(declarationStmt.getIdentifier().getValue().asString(),
+				Value::makePtr<Nothing>(),
 				declarationStmt.isMutable());
 }
 
@@ -172,8 +174,8 @@ void Interpreter::visitReturnStmt(ReturnStmt& returnStmt) {
 	throw ReturnException(returnVal);
 }
 
-void Interpreter::executeStatementsOnContext(
-		const std::vector<Statement::Ptr>& statements, const Context::Ptr& context) {
+void Interpreter::executeStatementsOnContext(const std::vector<Statement::Ptr>& statements,
+		const Context::Ptr& context) {
 	Context::Ptr prev = m_currentContext;
 	m_currentContext = context;
 	try {

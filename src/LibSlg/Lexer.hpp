@@ -16,16 +16,22 @@ public:
 	std::vector<Token> scanTokens();
 
 private:
-	const std::unordered_map<std::string, TokenType> m_keywords{ { "var", TokenType::VAR }, { "val", TokenType::VAL },
-		{ "fun", TokenType::FUN }, { "class", TokenType::CLASS }, { "print", TokenType::PRINT },
-		{ "nothing", TokenType::NOTHING }, { "true", TokenType::TRUE }, { "false", TokenType::FALSE },
-		{ "return", TokenType::RETURN }, { "instantiate", TokenType::INSTANTIATE } };
+	const std::unordered_map<std::string, TokenType> m_keywords{{"var", TokenType::VAR},
+			{"val", TokenType::VAL},
+			{"fun", TokenType::FUN},
+			{"class", TokenType::CLASS},
+			{"print", TokenType::PRINT},
+			{"nothing", TokenType::NOTHING},
+			{"true", TokenType::TRUE},
+			{"false", TokenType::FALSE},
+			{"return", TokenType::RETURN},
+			{"instantiate", TokenType::INSTANTIATE}};
 	const std::string m_source;
 	std::vector<Token> m_tokens;
 	int m_currentCharacter{};
 	int m_startCharacter{};
-	int m_currentLine{ 1 };
-	int m_startLine{ 1 };
+	int m_currentLine{1};
+	int m_startLine{1};
 	int m_characterAtLineStart{};
 
 	void scanToken();

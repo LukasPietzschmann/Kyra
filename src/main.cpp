@@ -24,7 +24,7 @@ int main(int argc, char** argv) {
 	options.add_options()("f,file", "The file to execute", cxxopts::value<std::string>())("verbose",
 			"Prints as much information as available",
 			cxxopts::value<bool>(verbose))("v,version", "Prints the version number")("h,help", "Prints this message");
-	options.parse_positional({ "file" });
+	options.parse_positional({"file"});
 	options.positional_help("[FILE]").show_positional_help();
 
 	try {
