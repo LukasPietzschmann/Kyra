@@ -30,7 +30,6 @@ public:
 public:
 	Type(std::string name) : m_name(std::move(name)) {}
 	virtual std::optional<Variable> knowsAbout(const std::string&) const { return {}; }
-	virtual Type::Ptr duplicate() const = 0;
 	virtual bool canBeCalledWith(std::vector<Type::Ptr>) const { return false; };
 
 	const std::string& getName() const { return m_name; }

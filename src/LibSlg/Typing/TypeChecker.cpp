@@ -207,8 +207,7 @@ void TypeChecker::visitDeclarationStmt(DeclarationStmt& declarationStmt) {
 			THROW_TYPING_ERROR(
 					WrongTypeError(declarationStmt.getPosition(), expectedType->getName(), initType->getName()));
 	}
-	Type::Ptr instanceType = expectedType->duplicate();
-	if(!m_currentScope->setVar(name, instanceType, declarationStmt.isMutable())) {
+	if(!m_currentScope->setVar(name, expectedType, declarationStmt.isMutable())) {
 		if(m_currentClassName != nullptr)
 			THROW_TYPING_ERROR(
 					AlreadyDefinedMemberError(declarationStmt.getPosition(), std::string(m_currentClassName), name));
@@ -227,8 +226,7 @@ void TypeChecker::visitClassDeclarationStmt(ClassDeclarationStmt& classDeclarati
 	Scope* declScope = runInNewScope(
 			[&classDeclarationStmt, this]() {
 				for(const auto& decl : classDeclarationStmt.getDeclarations())
-					decl->accept(*this);  // TODO print throwt hier drin, deswegen wird die klasse nicht
-										  // deklariert.nicht throwen sindern einer liste anfügen
+					decl->accept(*this);
 			},
 			m_currentScope);
 
@@ -237,9 +235,8 @@ void TypeChecker::visitClassDeclarationStmt(ClassDeclarationStmt& classDeclarati
 		const auto& result = m_currentScope->getType(param.type);
 		if(!result.has_value())
 			assert(false);	// TODO throw error
-		Type::Ptr type = result.value()->duplicate();
-		constructorParams.push_back(type);
-		if(!declScope->setVar(param.name.getValue().asString(), type, param.isMutable))
+		constructorParams.push_back(result.value());
+		if(!declScope->setVar(param.name.getValue().asString(), result.value(), param.isMutable))
 			THROW_TYPING_ERROR(
 					AlreadyDefinedVariableError(classDeclarationStmt.getPosition(), param.name.getValue().asString()));
 	}

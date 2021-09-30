@@ -23,8 +23,6 @@ public:
 		return it->second;
 	}
 
-	Type::Ptr duplicate() const override { return Type::makePtr<ClassType>(*this); }
-
 	const std::vector<Type::Ptr>& getConstructorParameter() const { return m_constructorParameter; }
 	unsigned int getArity() const { return m_constructorParameter.size(); }
 
