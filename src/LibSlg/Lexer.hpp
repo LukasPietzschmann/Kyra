@@ -44,8 +44,8 @@ private:
 	bool match(char expected) const;
 	bool matchAndAdvance(char expected);
 	void addToken(TokenType type, const std::string& literal = "");
-	bool isDigit(char character);
-	bool isAlpha(char character);
+	bool isDigit(char character) const;
+	bool isAlpha(char character) const;
 	bool isAtEnd() const;
 };
 }

@@ -14,8 +14,8 @@ public:
 		m_functionExpr(functionExpr), m_definitionContext(std::move(definitionContext)) {}
 	~Function() override = default;
 
-	unsigned int getArity() const { return m_functionExpr.getParameters().size(); }
-	Value::Ptr exec(std::vector<Value::Ptr> arguments);
+	unsigned long getArity() const { return m_functionExpr.getParameters().size(); }
+	Value::Ptr exec(std::vector<Value::Ptr> arguments) const;
 
 	bool isImplicitlyTrue() const override { return true; }
 	Type getType() const override { return Value::NativeTypes::Function; }

@@ -62,7 +62,7 @@ public:
 				"RETURN",
 				"INSTANTIATE",
 				"EOF"};
-		return names[static_cast<std::underlying_type<TokenType>::type>(type)];
+		return names[static_cast<std::underlying_type_t<TokenType>>(type)];
 	}
 };
 

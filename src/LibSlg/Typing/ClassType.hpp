@@ -25,9 +25,9 @@ public:
 	}
 
 	const std::vector<Type::Ptr>& getConstructorParameter() const { return m_constructorParameter; }
-	unsigned int getArity() const { return m_constructorParameter.size(); }
+	unsigned long getArity() const { return m_constructorParameter.size(); }
 
-protected:
+private:
 	std::unordered_map<std::string, Variable> m_declarations;
 	std::vector<Type::Ptr> m_constructorParameter;
 };

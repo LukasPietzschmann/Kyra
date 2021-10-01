@@ -20,13 +20,14 @@ public:
 	static Interpreter& getInstance();
 	Interpreter(Interpreter const&) = delete;
 	void operator=(Interpreter const&) = delete;
+	virtual ~Interpreter() = default;
 
 	// FIXME this is only needed for Klass::instantiate
 	Value::Ptr getVisitorReturn() const { return m_exprVisitorResult; }
 
 	void execute(const std::string& code, bool verboseLogging = false, bool passThroughExceptions = false);
 	void executeStatementsOnContext(const std::vector<Statement::Ptr>& statements, const Context::Ptr& context);
-	bool isIncompleteStatement(const std::string& code);
+	bool isIncompleteStatement(const std::string& code) const;
 
 	void visitAccessExpr(AccessExpr& accessExpr) override;
 	void visitAssignmentExpr(AssignmentExpr& assignmentExpr) override;
@@ -47,8 +48,8 @@ public:
 	void visitReturnStmt(ReturnStmt& returnStmt) override;
 
 private:
-	Interpreter() : m_currentContext(Context::makePtr()){};
+	Interpreter() = default;
 
-	Context::Ptr m_currentContext;
+	Context::Ptr m_currentContext{Context::makePtr()};
 };
 }

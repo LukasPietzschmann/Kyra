@@ -203,7 +203,9 @@ Expression::Ptr Parser::call() {
 		if(matchAndAdvance(TokenType::DOT)) {
 			Token name = consume(TokenType::NAME);
 			expr = Expression::makePtr<AccessExpr>(Position(expr->getPosition(), name.getPosition()), expr, name);
-		} else if(matchAndAdvance(TokenType::LEFT_PAREN)) {
+			continue;
+		}
+		if(matchAndAdvance(TokenType::LEFT_PAREN)) {
 			bool needsComma = false;
 			std::vector<Expression::Ptr> arguments;
 			while(!match(TokenType::RIGHT_PAREN)) {
@@ -216,8 +218,9 @@ Expression::Ptr Parser::call() {
 			expr = Expression::makePtr<CallExpr>(Position(expr->getPosition(), rightParen.getPosition()),
 					expr,
 					arguments);
-		} else
-			break;
+			continue;
+		}
+		break;
 	}
 
 	return expr;

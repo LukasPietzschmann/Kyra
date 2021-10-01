@@ -38,17 +38,18 @@ class Expression {
 public:
 	typedef std::shared_ptr<Expression> Ptr;
 	explicit Expression(const Position& position) : m_position(position) {}
+	virtual ~Expression() = default;
+
 	virtual void accept(ExpressionVisitor& visitor) = 0;
 	template <typename T, class... Args>
 	static Ptr makePtr(Args... args) {
-		static_assert(std::is_constructible<T, Args...>::value, "Cannot construct object in Expression::makePtr");
+		static_assert(std::is_constructible_v<T, Args...>, "Cannot construct object in Expression::makePtr");
 		return std::make_shared<T>(args...);
 	}
 
 	const Position& getPosition() const { return m_position; }
 
 protected:
-	virtual ~Expression() = default;
 	Position m_position;
 };
 }

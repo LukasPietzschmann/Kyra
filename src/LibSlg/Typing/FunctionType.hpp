@@ -43,7 +43,7 @@ public:
 		return *m_returnType == castedOther->m_returnType && areParamsEqual;
 	}
 
-protected:
+private:
 	Type::Ptr m_returnType;
 	std::vector<Type::Ptr> m_parameters;
 };

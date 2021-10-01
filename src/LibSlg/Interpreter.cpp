@@ -27,31 +27,28 @@ void Interpreter::execute(const std::string& code, bool verboseLogging, bool pas
 		if(result.hasErrors())
 			return;
 
-		for(const auto& statement : statements) {
-			try {
-				statement->accept(*this);
-			} catch(RuntimeException& exception) {
-				if(passThroughExceptions)
-					throw RuntimeException(exception);
-				std::cout << "[Runtime Error] " << exception.what() << std::endl;
-			}
-		}
-	} catch(ParserException& exception) {
+		for(const auto& statement : statements)
+			statement->accept(*this);
+	} catch(const RuntimeException& exception) {
+		if(passThroughExceptions)
+			throw RuntimeException(exception);
+		std::cout << "[Runtime Error] " << exception.what() << std::endl;
+	} catch(const ParserException& exception) {
 		if(passThroughExceptions)
 			throw ParserException(exception);
 		std::cout << "[Parser Error] " << exception.what() << std::endl;
-	} catch(LexerException& exception) {
+	} catch(const LexerException& exception) {
 		if(passThroughExceptions)
 			throw LexerException(exception);
 		std::cout << "[Lexer Error] " << exception.what() << std::endl;
 	}
 }
 
-bool Interpreter::isIncompleteStatement(const std::string& code) {
+bool Interpreter::isIncompleteStatement(const std::string& code) const {
 	try {
 		Parser parser(Lexer(code).scanTokens());
 		parser.parse();
-	} catch(ParserException& exception) { return exception.isUnfinished(); } catch(...) {
+	} catch(const ParserException& exception) { return exception.isUnfinished(); } catch(...) {
 		return false;
 	}
 	return false;
@@ -125,8 +122,9 @@ void Interpreter::visitInstantiationExpr(InstantiationExpr& instantiationExpr) {
 
 void Interpreter::visitLiteral(LiteralExpr& literalExpr) { EXPR_RETURN_FROM_VISIT(literalExpr.getValue()); }
 
-// TypeExpr has no effect during runtime
-void Interpreter::visitTypeExpr(TypeExpr&) {}
+void Interpreter::visitTypeExpr(TypeExpr&) {
+	// TypeExpr has no effect during runtime
+}
 
 void Interpreter::visitUnaryExpr(UnaryExpr& unaryExpr) {
 	EXPR_ACCEPT(unaryExpr.getRhs(), *this, Value::Ptr value);
@@ -181,7 +179,7 @@ void Interpreter::executeStatementsOnContext(const std::vector<Statement::Ptr>& 
 	try {
 		for(const auto& statement : statements)
 			statement->accept(*this);
-	} catch(ReturnException& exception) {
+	} catch(const ReturnException& exception) {
 		m_currentContext = prev;
 		throw ReturnException(exception);
 	}

@@ -3,6 +3,40 @@
 #include <utility>
 
 namespace LibSlg {
+bool TypeChecker::Scope::setVar(const std::string& name, const Variable& var) {
+	if(m_variables.contains(name))
+		return false;
+	m_variables.try_emplace(name, var);
+	return true;
+}
+
+bool TypeChecker::Scope::setVar(const std::string& name, const Type::Ptr& varType, bool isMutable) {
+	return setVar(name, Variable(varType, isMutable));
+}
+
+bool TypeChecker::Scope::setType(const std::string& name, const Type::Ptr& type) {
+	if(m_types.contains(name))
+		return false;
+	m_types.try_emplace(name, type);
+	return true;
+}
+
+std::optional<Variable> TypeChecker::Scope::getVar(const std::string& name) const {
+	if(const auto& it = m_variables.find(name); it != m_variables.end())
+		return it->second;
+	if(m_parent != nullptr)
+		return m_parent->getVar(name);
+	return {};
+}
+
+std::optional<Type::Ptr> TypeChecker::Scope::getType(const std::string& name) const {
+	if(const auto& it = m_types.find(name); it != m_types.end())
+		return it->second;
+	if(m_parent != nullptr)
+		return m_parent->getType(name);
+	return {};
+}
+
 TypeChecker& TypeChecker::getInstance() {
 	static TypeChecker instance;
 	return instance;
@@ -22,16 +56,15 @@ TypeChecker::Result TypeChecker::check(const std::vector<Statement::Ptr>& statem
 
 void TypeChecker::check(const Statement::Ptr& statement) { statement->accept(*this); }
 
-TypeChecker::Scope* TypeChecker::runInNewScope(const std::function<void()>& function,
-		Scope* parent,
-		Scope* valuesToCopy) {
+template <class Callback>
+TypeChecker::Scope* TypeChecker::runInNewScope(const Callback& function, Scope* parent, const Scope* valuesToCopy) {
 	Scope* globalScopeCopy = m_currentScope;
 	auto* newGlobalScope = new Scope(parent);
 	if(valuesToCopy != nullptr) {
-		for(const auto& var : valuesToCopy->getVariables())
-			newGlobalScope->setVar(var.first, var.second);
-		for(const auto& type : valuesToCopy->getTypes())
-			newGlobalScope->setType(type.first, type.second);
+		for(const auto& [name, variable] : valuesToCopy->getVariables())
+			newGlobalScope->setVar(name, variable);
+		for(const auto& [typeName, type] : valuesToCopy->getTypes())
+			newGlobalScope->setType(typeName, type);
 	}
 	m_currentScope = newGlobalScope;
 	function();
@@ -202,7 +235,7 @@ void TypeChecker::visitVariable(VariableExpr& variableExpr) {
 
 void TypeChecker::visitBlockStmt(BlockStmt& blockStmt) {
 	Scope* scope = runInNewScope(
-			[&]() {
+			[this, &blockStmt]() {
 				for(const auto& statement : blockStmt.getStatements())
 					statement->accept(*this);
 			},

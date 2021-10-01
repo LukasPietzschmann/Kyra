@@ -45,7 +45,7 @@ class TypeChecker : public ExpressionVisitor, public StatementVisitor {
 private:
 	class Scope {
 	public:
-		explicit Scope(Scope* parent) : m_parent(parent), m_variables({}), m_types({}) {
+		explicit Scope(Scope* parent) : m_parent(parent) {
 			for(const auto& nativeType : Value::NativeTypes::All)
 				m_types.emplace(nativeType, NativeTypes::make(nativeType));
 		}
@@ -53,49 +53,48 @@ private:
 
 		Scope() : Scope(nullptr) {}
 
-		std::optional<Type::Ptr> getType(const std::string& name) {
-			const auto& it = m_types.find(name);
-			if(it != m_types.end())
-				return it->second;
-			if(m_parent != nullptr)
-				return m_parent->getType(name);
-			return {};
+		Scope(const Scope& other) {
+			m_parent = new Scope(*other.m_parent);
+			m_variables = other.m_variables;
+			m_types = other.m_types;
 		}
 
-		std::optional<Variable> getVar(const std::string& name) {
-			const auto& it = m_variables.find(name);
-			if(it != m_variables.end())
-				return it->second;
-			if(m_parent != nullptr)
-				return m_parent->getVar(name);
-			return {};
+		Scope(Scope&& other) {
+			m_parent = other.m_parent;
+			other.m_parent = nullptr;
+			m_variables = std::move(other.m_variables);
+			m_types = std::move(other.m_types);
 		}
 
-		bool setType(const std::string& name, const Type::Ptr& type) {
-			if(m_types.contains(name))
-				return false;
-			m_types.emplace(name, type);
-			return true;
+		Scope& operator=(const Scope& other) {
+			if(this == &other)
+				return *this;
+			m_parent = new Scope(*other.m_parent);
+			m_variables = other.m_variables;
+			m_types = other.m_types;
 		}
 
-		bool setVar(const std::string& name, const Type::Ptr& varType, bool isMutable) {
-			return setVar(name, Variable(varType, isMutable));
+		Scope& operator=(Scope&& other) {
+			if(this == &other)
+				return *this;
+			m_parent = other.m_parent;
+			other.m_parent = nullptr;
+			m_variables = std::move(other.m_variables);
+			m_types = std::move(other.m_types);
 		}
 
-		bool setVar(const std::string& name, const Variable& var) {
-			if(m_variables.contains(name))
-				return false;
-			m_variables.emplace(name, var);
-			return true;
-		}
-
+		bool setType(const std::string& name, const Type::Ptr& type);
+		bool setVar(const std::string& name, const Type::Ptr& varType, bool isMutable);
+		bool setVar(const std::string& name, const Variable& var);
+		std::optional<Type::Ptr> getType(const std::string& name) const;
+		std::optional<Variable> getVar(const std::string& name) const;
 		const std::unordered_map<std::string, Variable>& getVariables() const { return m_variables; }
 		const std::unordered_map<std::string, Type::Ptr>& getTypes() const { return m_types; }
 
 	private:
 		Scope* m_parent;
-		std::unordered_map<std::string, Variable> m_variables;
-		std::unordered_map<std::string, Type::Ptr> m_types;
+		std::unordered_map<std::string, Variable> m_variables{};
+		std::unordered_map<std::string, Type::Ptr> m_types{};
 	};
 
 	EXPR_NEEDS_VISIT_RETURN_OF_TYPE(Type::Ptr);
@@ -118,9 +117,11 @@ public:
 	};
 
 	static TypeChecker& getInstance();
-	~TypeChecker() { delete m_currentScope; }
+	virtual ~TypeChecker() { delete m_currentScope; }
 	TypeChecker(TypeChecker const&) = delete;
+	TypeChecker(TypeChecker&&) = delete;
 	void operator=(TypeChecker const&) = delete;
+	void operator=(TypeChecker&&) = delete;
 
 	TypeChecker::Result check(const std::vector<Statement::Ptr>& statements);
 
@@ -144,15 +145,16 @@ public:
 	void visitReturnStmt(ReturnStmt& returnStmt) override;
 
 private:
-	TypeChecker() : m_currentScope(new Scope(nullptr)){};
+	TypeChecker() = default;
 
 	std::vector<std::string> m_errors;
-	Scope* m_currentScope;
+	Scope* m_currentScope{new Scope(nullptr)};
 	FunctionType* m_currentFunction{};
 	bool m_doesCurrentFunctionReturn{};
 	char* m_currentClassName{};
 
 	void check(const Statement::Ptr& statement);
-	Scope* runInNewScope(const std::function<void()>& function, Scope* parent, Scope* valuesToCopy = nullptr);
+	template <class Callback>
+	Scope* runInNewScope(const Callback& function, Scope* parent, const Scope* valuesToCopy = nullptr);
 };
 }

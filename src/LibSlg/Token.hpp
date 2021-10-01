@@ -10,12 +10,12 @@
 namespace LibSlg {
 class Token {
 public:
-	typedef struct TokenValue {
+	struct TokenValue {
 		explicit TokenValue(std::string val) : value(std::move(val)){};
 		std::string value;
 		int asInt() const { return std::stoi(value); };
 		std::string asString() const { return value; };
-	} TokenValue;
+	};
 	Token(const TokenType& type, Position position, std::string lexeme, std::string value = "") :
 		m_type(type), m_position(position), m_lexeme(std::move(lexeme)), m_value(TokenValue(std::move(value))) {}
 	TokenType getType() const { return m_type; }
@@ -28,13 +28,13 @@ public:
 			   m_value.value == other.m_value.value;
 	}
 
-	friend std::ostream& operator<<(std::ostream& os, const Token& token) {
-		os << "Type " << TokenTypeName::getFor(token.m_type);
-		if(!token.m_lexeme.empty())
-			os << " with lexeme " << token.m_lexeme;
-		if(!token.m_value.value.empty())
-			os << " and a value of " << token.m_value.value;
-		os << " from " << token.m_position.start << " to " << token.m_position.end;
+	friend std::ostream& operator<<(std::ostream& os, const Token& rhs) {
+		os << "Type " << TokenTypeName::getFor(rhs.m_type);
+		if(!rhs.m_lexeme.empty())
+			os << " with lexeme " << rhs.m_lexeme;
+		if(!rhs.m_value.value.empty())
+			os << " and a value of " << rhs.m_value.value;
+		os << " from " << rhs.m_position.start << " to " << rhs.m_position.end;
 		return os;
 	}
 

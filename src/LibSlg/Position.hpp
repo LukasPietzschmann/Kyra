@@ -15,8 +15,8 @@ struct Position {
 		unsigned int line;
 		unsigned int column;
 
-		friend std::ostream& operator<<(std::ostream& os, const Position::Start& start) {
-			os << start.column << ":" << start.line;
+		friend std::ostream& operator<<(std::ostream& os, const Position::Start& rhs) {
+			os << rhs.column << ":" << rhs.line;
 			return os;
 		}
 	};
@@ -25,8 +25,8 @@ struct Position {
 		unsigned int line;
 		unsigned int column;
 
-		friend std::ostream& operator<<(std::ostream& os, const Position::End& end) {
-			os << end.column << ":" << end.line;
+		friend std::ostream& operator<<(std::ostream& os, const Position::End& rhs) {
+			os << rhs.column << ":" << rhs.line;
 			return os;
 		}
 	};
@@ -38,6 +38,5 @@ struct Position {
 		return start.line == rhs.start.line && start.column == rhs.start.column && end.line == rhs.end.line &&
 			   end.column == rhs.end.column;
 	}
-	bool operator!=(const Position& rhs) const { return !(rhs == *this); }
 };
 }

@@ -10,12 +10,11 @@
 #include <readline/readline.h>
 #endif
 
-#define PROMPT "SLG > "
-
 void simpleRepl();
 void niceRepl();
 
-bool verbose = false;
+static bool verbose = false;
+static std::string defaultPrompt = "SLG > ";
 
 int main(int argc, char** argv) {
 	std::ostream::sync_with_stdio(false);
@@ -60,7 +59,7 @@ int main(int argc, char** argv) {
 
 			LibSlg::Interpreter::getInstance().execute(fileContent.str(), verbose);
 		}
-	} catch(cxxopts::OptionException& exception) {
+	} catch(const cxxopts::OptionException& exception) {
 		std::cout << exception.what() << "\n" << options.help() << std::endl;
 		return 1;
 	}
@@ -71,14 +70,14 @@ int main(int argc, char** argv) {
 #ifndef HAS_READLINE
 void simpleRepl() {
 	std::cout << "Btw: To get the full REPL experience install the GNU readline library!" << std::endl;
-	std::cout << PROMPT;
+	std::cout << defaultPrompt;
 	for(std::string line; std::getline(std::cin, line);) {
 		if(line == "exit")
 			break;
 
 		LibSlg::Interpreter::getInstance().execute(line, verbose);
 
-		std::cout << PROMPT;
+		std::cout << defaultPrompt;
 	}
 }
 #endif
@@ -87,14 +86,14 @@ void simpleRepl() {
 void niceRepl() {
 	static bool unfinished = false;
 	static std::string completeCode;
-	static std::string prompt = PROMPT;
+	static std::string prompt = defaultPrompt;
 
 	rl_bind_key('\t', rl_insert);
 
 	while(true) {
 		char* inputLine = readline(prompt.c_str());
 		if(!inputLine || std::strcmp(inputLine, "exit") == 0) {
-			free(inputLine);
+			delete[] inputLine;
 			break;
 		}
 
@@ -108,10 +107,10 @@ void niceRepl() {
 			add_history(completeCode.c_str());
 			LibSlg::Interpreter::getInstance().execute(completeCode, verbose);
 			completeCode.clear();
-			prompt = PROMPT;
+			prompt = defaultPrompt;
 		}
 
-		free(inputLine);
+		delete[] inputLine;
 	}
 }
 #endif

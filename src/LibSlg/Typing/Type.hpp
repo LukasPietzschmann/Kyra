@@ -18,19 +18,18 @@ struct Variable {
 
 class Type {
 public:
-	typedef std::shared_ptr<Type> Ptr;
+	using Ptr = std::shared_ptr<Type>;
+	explicit Type(std::string name) : m_name(std::move(name)) {}
 	virtual ~Type() = default;
 
 	template <typename T, class... Args>
 	static Type::Ptr makePtr(Args... args) {
-		static_assert(std::is_constructible<T, Args...>::value, "Cannot construct object in Type::makePtr");
+		static_assert(std::is_constructible_v<T, Args...>, "Cannot construct object in Type::makePtr");
 		return std::make_shared<T>(args...);
 	}
 
-public:
-	Type(std::string name) : m_name(std::move(name)) {}
 	virtual std::optional<Variable> knowsAbout(const std::string&) const { return {}; }
-	virtual bool canBeCalledWith(std::vector<Type::Ptr>) const { return false; };
+	virtual bool canBeCalledWith(const std::vector<Ptr>&) const { return false; };
 
 	const std::string& getName() const { return m_name; }
 

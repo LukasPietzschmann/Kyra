@@ -1,5 +1,7 @@
 #pragma once
 
+#include <string_view>
+
 #include "../Values/Value.hpp"
 #include "ClassType.hpp"
 #include "FunctionType.hpp"
@@ -8,7 +10,7 @@
 namespace LibSlg {
 class NativeTypes {
 public:
-	static Type::Ptr make(const Value::Type& type) {
+	static Type::Ptr make(const std::string_view& type) {
 		static Type::Ptr boolType = Type::makePtr<ClassType>("Bool");
 		static Type::Ptr numberType = Type::makePtr<ClassType>("Number");
 		static Type::Ptr stringType = Type::makePtr<ClassType>("String");

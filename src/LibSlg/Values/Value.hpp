@@ -11,16 +11,16 @@
 namespace LibSlg {
 class Value {
 public:
-	typedef std::shared_ptr<Value> Ptr;
-	typedef std::string Type;
-	typedef struct NativeType {
+	using Ptr = std::shared_ptr<Value>;
+	using Type = std::string;
+	struct NativeTypes {
 		static const Type Nothing;
 		static const Type Number;
 		static const Type Bool;
 		static const Type String;
 		static const Type Function;
 		static const std::vector<Type> All;
-	} NativeTypes;
+	};
 
 	virtual bool isImplicitlyTrue() const = 0;
 	virtual Type getType() const = 0;
@@ -35,7 +35,7 @@ public:
 
 	template <typename T, class... Args>
 	static Value::Ptr makePtr(Args... args) {
-		static_assert(std::is_constructible<T, Args...>::value, "Cannot construct Value in Value::makePtr");
+		static_assert(std::is_constructible_v<T, Args...>, "Cannot construct Value in Value::makePtr");
 		return std::make_shared<T>(args...);
 	}
 

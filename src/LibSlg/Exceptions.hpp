@@ -7,7 +7,7 @@
 #include "Position.hpp"
 
 namespace LibSlg {
-class MessageException : std::exception {
+class MessageException : public std::exception {
 public:
 	MessageException() = delete;
 	const char* what() const noexcept override { return m_computedMessage.c_str(); }
@@ -19,6 +19,8 @@ protected:
 		ss << m_message << " [" << m_position.start << " - " << m_position.end << "]";
 		m_computedMessage = ss.str();
 	}
+
+private:
 	Position m_position;
 	std::string m_message;
 
@@ -49,7 +51,7 @@ public:
 
 class Value;
 
-class ReturnException : std::exception {
+class ReturnException : public std::exception {
 public:
 	explicit ReturnException(std::shared_ptr<Value> returnVal) : m_returnVal(std::move(returnVal)) {}
 	const std::shared_ptr<Value>& getReturnVal() const { return m_returnVal; }

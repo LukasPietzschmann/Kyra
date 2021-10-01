@@ -17,7 +17,7 @@ public:
 		return ss.str();
 	}
 
-protected:
+private:
 	Position m_position;
 	std::string m_message;
 };

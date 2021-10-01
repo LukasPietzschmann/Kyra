@@ -30,19 +30,20 @@ private:                                      \
 
 class Statement {
 public:
-	typedef std::shared_ptr<Statement> Ptr;
+	using Ptr = std::shared_ptr<Statement>;
 	explicit Statement(const Position& position) : m_position(position) {}
+	virtual ~Statement() = default;
+
 	virtual void accept(StatementVisitor& visitor) = 0;
 	template <typename T, class... Args>
 	static Ptr makePtr(Args... args) {
-		static_assert(std::is_constructible<T, Args...>::value, "Cannot construct object in Statement::makePtr");
+		static_assert(std::is_constructible_v<T, Args...>, "Cannot construct object in Statement::makePtr");
 		return std::make_shared<T>(args...);
 	}
 
 	const Position& getPosition() const { return m_position; }
 
 protected:
-	virtual ~Statement() = default;
 	Position m_position;
 };
 }

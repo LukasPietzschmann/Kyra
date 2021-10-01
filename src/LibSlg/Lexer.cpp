@@ -86,8 +86,9 @@ void Lexer::nameOrKeyword() {
 	std::string string = m_source.substr(m_startCharacter, m_currentCharacter - m_startCharacter);
 	std::string literal;
 	TokenType type = TokenType::NAME;
-	if(m_keywords.find(string) != m_keywords.end())
-		type = m_keywords.at(string);
+	const auto& it = m_keywords.find(string);
+	if(it != m_keywords.end())
+		type = it->second;
 	else
 		literal = m_source.substr(m_startCharacter, m_currentCharacter - m_startCharacter);
 
@@ -120,9 +121,9 @@ void Lexer::addToken(TokenType type, const std::string& literal) {
 	m_tokens.emplace_back(type, Position(m_startLine, startColumn, m_currentLine, currentColumn), lexeme, literal);
 }
 
-bool Lexer::isDigit(char character) { return character >= '0' && character <= '9'; }
+bool Lexer::isDigit(char character) const { return character >= '0' && character <= '9'; }
 
-bool Lexer::isAlpha(char character) {
+bool Lexer::isAlpha(char character) const {
 	return (character >= 'a' && character <= 'z') || (character >= 'A' && character <= 'Z');
 }
 

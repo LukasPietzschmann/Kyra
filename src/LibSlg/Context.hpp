@@ -11,12 +11,12 @@
 namespace LibSlg {
 class Context {
 public:
-	typedef std::shared_ptr<Context> Ptr;
-	typedef struct ContextValue {
+	using Ptr = std::shared_ptr<Context>;
+	struct ContextValue {
 		ContextValue(Value::Ptr value, bool isMutable) : value(std::move(value)), isMutable(isMutable) {}
 		Value::Ptr value;
 		bool isMutable;
-	} ContextValue;
+	};
 	explicit Context(Ptr parent = nullptr) : m_parent(std::move(std::move(parent))) {}
 
 	const std::shared_ptr<Context>& getParent() const;
@@ -28,7 +28,7 @@ public:
 
 	template <class... Args>
 	static Context::Ptr makePtr(Args... args) {
-		static_assert(std::is_constructible<Context, Args...>::value, "Cannot construct object in Context::makePtr");
+		static_assert(std::is_constructible_v<Context, Args...>, "Cannot construct object in Context::makePtr");
 		return std::make_shared<Context>(args...);
 	}
 

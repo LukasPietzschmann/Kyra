@@ -7,12 +7,12 @@ namespace LibSlg {
 bool Klass::knowsIdentifier(const std::string& identifier) const {
 	bool declarationsContainIdentifier = std::any_of(m_declarationStmt.getDeclarations().begin(),
 			m_declarationStmt.getDeclarations().end(),
-			[&identifier](const std::shared_ptr<DeclarationStmt>& decl) -> bool {
+			[&identifier](const std::shared_ptr<DeclarationStmt>& decl) {
 				return decl->getIdentifier().getValue().asString() == identifier;
 			});
 	bool constructorContainsIdentifier = std::any_of(m_declarationStmt.getConstructorParameters().begin(),
 			m_declarationStmt.getConstructorParameters().end(),
-			[&identifier](const ClassDeclarationStmt::ConstructorParameter& param) -> bool {
+			[&identifier](const ClassDeclarationStmt::ConstructorParameter& param) {
 				return param.name.getValue().asString() == identifier;
 			});
 	return declarationsContainIdentifier || constructorContainsIdentifier;
