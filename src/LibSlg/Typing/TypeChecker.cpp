@@ -214,7 +214,7 @@ void TypeChecker::visitUnaryExpr(UnaryExpr& unaryExpr) {
 			if(rhs->getName() == Value::NativeTypes::Number)
 				EXPR_RETURN_FROM_VISIT(NativeTypes::make(Value::NativeTypes::Number));
 			else
-				THROW_TYPING_ERROR(UnsupportedOperand(unaryExpr.getPosition(),
+				THROW_TYPING_ERROR(UnsupportedOperator(unaryExpr.getPosition(),
 						unaryExpr.getOperator().getValue().asString(),
 						rhs->getName()));
 		default: assert(false);

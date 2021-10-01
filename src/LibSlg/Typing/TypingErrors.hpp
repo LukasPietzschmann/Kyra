@@ -28,12 +28,12 @@ public:
 		TypingError(position, "Expected type " + expected + " does not equal provided type " + provided) {}
 };
 
-class UnsupportedOperand : public TypingError {
+class UnsupportedOperator : public TypingError {
 public:
-	UnsupportedOperand(const Position& position, const std::string& unaryOper, const std::string& type) :
+	UnsupportedOperator(const Position& position, const std::string& unaryOper, const std::string& type) :
 		TypingError(position, "Unsupported operator " + unaryOper + " on type " + type) {}
 
-	UnsupportedOperand(const Position& position,
+	UnsupportedOperator(const Position& position,
 			const std::string& lhsType,
 			const std::string& binaryOper,
 			const std::string& rhsType) :
