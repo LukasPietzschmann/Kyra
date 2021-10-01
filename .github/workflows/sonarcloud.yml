@@ -1,10 +1,7 @@
 name: SonarCloud
 on:
-  push:
-    branches:
-      - master
-  pull_request:
-    types: [opened, synchronize, reopened]
+  schedule:
+    - cron: '0 0 */2 * *'
 jobs:
   build:
     name: SonarCloud
