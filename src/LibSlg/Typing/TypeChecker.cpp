@@ -16,6 +16,7 @@ TypeChecker::Result TypeChecker::check(const std::vector<Statement::Ptr>& statem
 	for(const auto& error : m_errors)
 		result.insertError(error);
 
+	m_errors.clear();
 	return result;
 }
 
