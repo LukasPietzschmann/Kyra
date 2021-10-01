@@ -72,6 +72,7 @@ private:
 			m_parent = new Scope(*other.m_parent);
 			m_variables = other.m_variables;
 			m_types = other.m_types;
+			return *this;
 		}
 
 		Scope& operator=(Scope&& other) {
@@ -81,6 +82,7 @@ private:
 			other.m_parent = nullptr;
 			m_variables = std::move(other.m_variables);
 			m_types = std::move(other.m_types);
+			return *this;
 		}
 
 		bool setType(const std::string& name, const Type::Ptr& type);
