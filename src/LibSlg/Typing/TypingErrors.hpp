@@ -38,7 +38,7 @@ public:
 			const std::string& binaryOper,
 			const std::string& rhsType) :
 		TypingError(position,
-				"Unsupported operator " + binaryOper + " on left type " + lhsType + "with right type " + rhsType) {}
+				"Unsupported operator " + binaryOper + " on left type " + lhsType + " with right type " + rhsType) {}
 };
 
 class UndefinedTypeError : public TypingError {
