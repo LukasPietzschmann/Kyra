@@ -1,5 +1,11 @@
 # The Slanguage programming language
 
+[![SonarCloud](https://github.com/LukasPietzschmann/Slanguage/actions/workflows/sonarcloud.yml/badge.svg?branch=master)](https://github.com/LukasPietzschmann/Slanguage/actions/workflows/sonarcloud.yml)
+[![Lines of Code](https://sonarcloud.io/api/project_badges/measure?project=LukasPietzschmann_Slanguage&metric=ncloc)](https://sonarcloud.io/dashboard?id=LukasPietzschmann_Slanguage)
+[![Bugs](https://sonarcloud.io/api/project_badges/measure?project=LukasPietzschmann_Slanguage&metric=bugs)](https://sonarcloud.io/dashboard?id=LukasPietzschmann_Slanguage)
+[![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=LukasPietzschmann_Slanguage&metric=code_smells)](https://sonarcloud.io/dashboard?id=LukasPietzschmann_Slanguage)
+
+
 <p align=center>
 It's <code>Slang-(g)uage</code> not <code>S-language</code>!
 </p>
