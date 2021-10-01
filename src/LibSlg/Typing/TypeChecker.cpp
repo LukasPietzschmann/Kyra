@@ -128,7 +128,7 @@ void TypeChecker::visitFunction(FunctionExpr& functionExpr) {
 	FunctionType* enclosingFunctionType = m_currentFunction;
 	EXPR_ACCEPT(functionExpr.getReturnType(), *this, Type::Ptr returnType);
 	std::vector<Type::Ptr> parameters;
-	Scope* paramScope = runInNewScope(
+	const Scope* paramScope = runInNewScope(
 			[&functionExpr, &parameters, this]() {
 				for(const auto& param : functionExpr.getParameters()) {
 					const auto& result = m_currentScope->getType(param.type);

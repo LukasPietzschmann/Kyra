@@ -20,6 +20,8 @@ private:                                      \
 	visitee->accept(visitor);               \
 	STMT_GET_FROM_VISIT(dest)
 
+	virtual ~StatementVisitor() = default;
+
 	virtual void visitBlockStmt(BlockStmt& blockStmt) = 0;
 	virtual void visitDeclarationStmt(DeclarationStmt& declarationStmt) = 0;
 	virtual void visitClassDeclarationStmt(ClassDeclarationStmt& classDeclarationStmt) = 0;

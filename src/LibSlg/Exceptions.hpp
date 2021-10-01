@@ -23,8 +23,6 @@ protected:
 private:
 	Position m_position;
 	std::string m_message;
-
-private:
 	std::string m_computedMessage;
 };
 

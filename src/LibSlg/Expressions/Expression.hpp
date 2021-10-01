@@ -21,6 +21,8 @@ private:                                      \
 	visitee->accept(visitor);               \
 	EXPR_GET_FROM_VISIT(dest)
 
+	virtual ~ExpressionVisitor() = default;
+
 	virtual void visitAccessExpr(AccessExpr& accessExpr) = 0;
 	virtual void visitAssignmentExpr(AssignmentExpr& assignmentExpr) = 0;
 	virtual void visitBinaryExpr(BinaryExpr& binaryExpr) = 0;
@@ -36,7 +38,7 @@ private:                                      \
 
 class Expression {
 public:
-	typedef std::shared_ptr<Expression> Ptr;
+	using Ptr = std::shared_ptr<Expression>;
 	explicit Expression(const Position& position) : m_position(position) {}
 	virtual ~Expression() = default;
 

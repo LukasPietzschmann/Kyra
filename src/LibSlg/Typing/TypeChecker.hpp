@@ -47,23 +47,18 @@ private:
 	public:
 		explicit Scope(Scope* parent) : m_parent(parent) {
 			for(const auto& nativeType : Value::NativeTypes::All)
-				m_types.emplace(nativeType, NativeTypes::make(nativeType));
+				m_types.try_emplace(nativeType, NativeTypes::make(nativeType));
 		}
 		~Scope() { delete m_parent; }
 
 		Scope() : Scope(nullptr) {}
 
-		Scope(const Scope& other) {
-			m_parent = new Scope(*other.m_parent);
-			m_variables = other.m_variables;
-			m_types = other.m_types;
-		}
+		Scope(const Scope& other) :
+			m_parent(new Scope(*other.m_parent)), m_variables(other.m_variables), m_types(other.m_types) {}
 
-		Scope(Scope&& other) {
-			m_parent = other.m_parent;
+		Scope(Scope&& other) :
+			m_parent(other.m_parent), m_variables(std::move(other.m_variables)), m_types(std::move(other.m_types)) {
 			other.m_parent = nullptr;
-			m_variables = std::move(other.m_variables);
-			m_types = std::move(other.m_types);
 		}
 
 		Scope& operator=(const Scope& other) {
@@ -75,7 +70,7 @@ private:
 			return *this;
 		}
 
-		Scope& operator=(Scope&& other) {
+		Scope& operator=(Scope&& other) noexcept {
 			if(this == &other)
 				return *this;
 			m_parent = other.m_parent;

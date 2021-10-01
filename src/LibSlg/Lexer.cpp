@@ -86,8 +86,7 @@ void Lexer::nameOrKeyword() {
 	std::string string = m_source.substr(m_startCharacter, m_currentCharacter - m_startCharacter);
 	std::string literal;
 	TokenType type = TokenType::NAME;
-	const auto& it = m_keywords.find(string);
-	if(it != m_keywords.end())
+	if(const auto& it = m_keywords.find(string); it != m_keywords.end())
 		type = it->second;
 	else
 		literal = m_source.substr(m_startCharacter, m_currentCharacter - m_startCharacter);
