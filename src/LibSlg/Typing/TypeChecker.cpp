@@ -102,7 +102,51 @@ void TypeChecker::visitAssignmentExpr(AssignmentExpr& assignmentExpr) {
 	EXPR_RETURN_FROM_VISIT(newValueType);
 }
 
-void TypeChecker::visitBinaryExpr(BinaryExpr& binaryExpr) {}
+// TODO: It should be possible to override specific slg-functions to implement those oprrators
+void TypeChecker::visitBinaryExpr(BinaryExpr& binaryExpr) {
+	const Type::Ptr& num = NativeTypes::make(Value::NativeTypes::Number);
+	const Type::Ptr& str = NativeTypes::make(Value::NativeTypes::String);
+	const Type::Ptr& boolean = NativeTypes::make(Value::NativeTypes::Bool);
+	const Token& oper = binaryExpr.getOperator();
+	EXPR_ACCEPT(binaryExpr.getLhs(), *this, Type::Ptr lhs);
+	EXPR_ACCEPT(binaryExpr.getRhs(), *this, Type::Ptr rhs);
+
+	switch(oper.getType()) {
+		case TokenType::EQUAL_EQUAL:
+		case TokenType::BANG_EQUAL:
+		case TokenType::GREATER:
+		case TokenType::GREATER_EQUAL:
+		case TokenType::LESS:
+		case TokenType::LESS_EQUAL:
+			if(*lhs == rhs)
+				EXPR_RETURN_FROM_VISIT(boolean);
+			THROW_TYPING_ERROR(
+					UnsupportedOperator(binaryExpr.getPosition(), lhs->getName(), oper.getLexeme(), rhs->getName()));
+		case TokenType::SLASH:
+		case TokenType::MINUS:
+			if(*lhs == num && *rhs == num)
+				EXPR_RETURN_FROM_VISIT(num);
+			THROW_TYPING_ERROR(
+					UnsupportedOperator(binaryExpr.getPosition(), lhs->getName(), oper.getLexeme(), rhs->getName()));
+		case TokenType::PLUS:
+			if(*lhs == num && *rhs == num)
+				EXPR_RETURN_FROM_VISIT(num);
+			if(*lhs == str && *rhs == str)
+				EXPR_RETURN_FROM_VISIT(str);
+			THROW_TYPING_ERROR(
+					UnsupportedOperator(binaryExpr.getPosition(), lhs->getName(), oper.getLexeme(), rhs->getName()));
+		case TokenType::STAR:
+			if(*lhs == num && *rhs == num)
+				EXPR_RETURN_FROM_VISIT(num);
+			if(*lhs == str && *rhs == num)
+				EXPR_RETURN_FROM_VISIT(str);
+			THROW_TYPING_ERROR(
+					UnsupportedOperator(binaryExpr.getPosition(), lhs->getName(), oper.getLexeme(), rhs->getName()));
+		default:
+			THROW_TYPING_ERROR(
+					UnsupportedOperator(binaryExpr.getPosition(), lhs->getName(), oper.getLexeme(), rhs->getName()));
+	}
+}
 
 void TypeChecker::visitCallExpr(CallExpr& callExpr) {
 	EXPR_ACCEPT(callExpr.getFunction(), *this, Type::Ptr gFunction);
