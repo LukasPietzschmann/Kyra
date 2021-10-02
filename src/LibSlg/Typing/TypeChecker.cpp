@@ -117,11 +117,7 @@ void TypeChecker::visitBinaryExpr(BinaryExpr& binaryExpr) {
 		case TokenType::GREATER:
 		case TokenType::GREATER_EQUAL:
 		case TokenType::LESS:
-		case TokenType::LESS_EQUAL:
-			if(*lhs == rhs)
-				EXPR_RETURN_FROM_VISIT(boolean);
-			THROW_TYPING_ERROR(
-					UnsupportedOperator(binaryExpr.getPosition(), lhs->getName(), oper.getLexeme(), rhs->getName()));
+		case TokenType::LESS_EQUAL: EXPR_RETURN_FROM_VISIT(boolean);
 		case TokenType::SLASH:
 		case TokenType::MINUS:
 			if(*lhs == num && *rhs == num)
