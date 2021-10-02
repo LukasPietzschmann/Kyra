@@ -21,25 +21,25 @@ TEST_F(InterpreterTest, SimpleExpression) {
 
 TEST_F(InterpreterTest, VarDeclAndAssignment) {
 	CaptureStdout();
-	m_interpreter->execute("var a = 1; print a;");
+	m_interpreter->execute("var a: Number = 1; print a;");
 	EXPECT_STREQ(GetCapturedStdout().c_str(), "1\n");
 
 	CaptureStdout();
-	m_interpreter->execute("var b; print b;");
+	m_interpreter->execute("var b: Number; print b;");
 	EXPECT_STREQ(GetCapturedStdout().c_str(), "nothing\n");
 
 	CaptureStdout();
 	m_interpreter->execute("b = 1; print b;");
 	EXPECT_STREQ(GetCapturedStdout().c_str(), "1\n");
 
-	EXPECT_THROW(m_interpreter->execute("print notDeclared;", false, true), LibSlg::RuntimeException);
+	EXPECT_ANY_THROW(m_interpreter->execute("print notDeclared;", false, true));
 
-	EXPECT_THROW(m_interpreter->execute("var alreadyDeclared; var alreadyDeclared = 1;", false, true),
-			LibSlg::RuntimeException);
+	EXPECT_ANY_THROW(
+			m_interpreter->execute("var alreadyDeclared: Number; var alreadyDeclared: Number = 1;", false, true));
 
 	// immutable vals
-	EXPECT_THROW(m_interpreter->execute("val immutable = 1; immutable = 2;", false, true), LibSlg::RuntimeException);
-	EXPECT_THROW(m_interpreter->execute("val immutableTwo; immutableTwo = 2;", false, true), LibSlg::RuntimeException);
+	EXPECT_ANY_THROW(m_interpreter->execute("val immutable: Number = 1; immutable = 2;", false, true));
+	EXPECT_ANY_THROW(m_interpreter->execute("val immutableTwo: Number; immutableTwo = 2;", false, true));
 }
 
 TEST_F(InterpreterTest, SimpleBooleanComparison) {
@@ -123,26 +123,27 @@ TEST_F(InterpreterTest, StringConcat) {
 }
 
 TEST_F(InterpreterTest, BlockScope) {
-	EXPECT_ANY_THROW(m_interpreter->execute("var z; var z;", false, true));
-	EXPECT_NO_THROW(m_interpreter->execute("var x; {var x;}", false, true));
+	EXPECT_ANY_THROW(m_interpreter->execute("var z: Number; var z: String;", false, true));
+	EXPECT_NO_THROW(m_interpreter->execute("var x: Number; {var x: Number;}", false, true));
 
 	CaptureStdout();
-	m_interpreter->execute("var y = 420; {print y;}");
+	m_interpreter->execute("var y: Number = 420; {print y;}");
 	EXPECT_STREQ(GetCapturedStdout().c_str(), "420\n");
 }
 
 TEST_F(InterpreterTest, Functions) {
 	// Check Arity
-	EXPECT_ANY_THROW(m_interpreter->execute("fun(a, b){return a + b;}();", false, true));
-	EXPECT_NO_THROW(m_interpreter->execute("fun(a, b){return a + b;}(2, 2);", false, true));
+	EXPECT_ANY_THROW(m_interpreter->execute("fun(a: Number, b: Number)->Number{return a + b;}();", false, true));
+	EXPECT_NO_THROW(m_interpreter->execute("fun(a: Number, b: Number)->Number{return a + b;}(2, 2);", false, true));
 
 	// Simple function exec
 	CaptureStdout();
-	m_interpreter->execute("fun(a){print a;}(\"Hi\");");
+	m_interpreter->execute("fun(a: String)->Nothing{print a;}(\"Hi\");");
 	EXPECT_STREQ(GetCapturedStdout().c_str(), "Hi\n");
 
 	// Closures
 	CaptureStdout();
-	m_interpreter->execute("var closure = fun(a){return fun(){return a;};}(10); print closure();");
+	m_interpreter->execute("var closure: Function()->Number= fun(a: "
+						   "Number)->Function()->Number{return fun()->Number{return a;};}(10); print closure();");
 	EXPECT_STREQ(GetCapturedStdout().c_str(), "10\n");
 }
