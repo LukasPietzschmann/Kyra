@@ -32,7 +32,7 @@ public:
 			return false;
 		bool areParamsEqual = true;
 		if(m_parameters.size() != castedOther->getParameters().size())
-			areParamsEqual = false;
+			return false;
 		for(unsigned long i = 0; i < m_parameters.size(); ++i) {
 			if(*m_parameters[i] == castedOther->m_parameters[i])
 				continue;
