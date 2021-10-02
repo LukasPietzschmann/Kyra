@@ -21,8 +21,11 @@ void Interpreter::execute(const std::string& code, bool verboseLogging, bool pas
 		}
 
 		TypeChecker::Result result = TypeChecker::getInstance().check(statements);
-		for(const auto& error : result.getErrors())
+		for(const auto& error : result.getErrors()) {
+			if(passThroughExceptions)
+				throw TypingException(error);
 			std::cout << "[Typing Error] " << error << "\n";
+		}
 		std::cout << std::flush;
 		if(result.hasErrors())
 			return;
