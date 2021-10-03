@@ -96,7 +96,7 @@ void TypeChecker::visitAssignmentExpr(AssignmentExpr& assignmentExpr) {
 	if(!m_currentScope->getVar(name)->isMutable)
 		THROW_TYPING_ERROR(AssignmentToConstError(assignmentExpr.getPosition(), name));
 	EXPR_ACCEPT(assignmentExpr.getNewValue(), *this, Type::Ptr newValueType);
-	if(*newValueType != assignedValueType)
+	if(!newValueType->canBeAssignedTo(assignedValueType))
 		THROW_TYPING_ERROR(
 				WrongTypeError(assignmentExpr.getPosition(), assignedValueType->getName(), newValueType->getName()));
 	EXPR_RETURN_FROM_VISIT(newValueType);
@@ -155,10 +155,10 @@ void TypeChecker::visitCallExpr(CallExpr& callExpr) {
 				callExpr.getArguments().size(),
 				function->getName()));
 	for(unsigned long i = 0; i < function->getParameters().size(); ++i) {
-		const Type& param = *function->getParameters()[i];
+		const Type::Ptr param = function->getParameters()[i];
 		EXPR_ACCEPT(callExpr.getArguments()[i], *this, Type::Ptr arg);
-		if(param != arg)
-			THROW_TYPING_ERROR(WrongTypeError(callExpr.getPosition(), param.getName(), arg->getName()));
+		if(!arg->canBeAssignedTo(param))
+			THROW_TYPING_ERROR(WrongTypeError(callExpr.getPosition(), param->getName(), arg->getName()));
 	}
 
 	EXPR_RETURN_FROM_VISIT(function->getReturnType());
@@ -174,6 +174,8 @@ void TypeChecker::visitFunction(FunctionExpr& functionExpr) {
 					const auto& result = m_currentScope->getType(param.type);
 					if(!result.has_value())
 						THROW_TYPING_ERROR(UndefinedTypeError(functionExpr.getPosition(), param.type));
+					if(!result.value()->isApplicableForDeclaration())
+						THROW_TYPING_ERROR(UndefinedTypeError(functionExpr.getPosition(), result.value()->getName()));
 					parameters.push_back(result.value());
 					if(!m_currentScope->setVar(param.name.getValue().asString(), result.value(), true))
 						THROW_TYPING_ERROR(AlreadyDefinedVariableError(functionExpr.getPosition(),
@@ -286,9 +288,11 @@ void TypeChecker::visitBlockStmt(BlockStmt& blockStmt) {
 void TypeChecker::visitDeclarationStmt(DeclarationStmt& declarationStmt) {
 	const std::string& name = declarationStmt.getIdentifier().getValue().asString();
 	EXPR_ACCEPT(declarationStmt.getType(), *this, Type::Ptr expectedType);
+	if(!expectedType->isApplicableForDeclaration())
+		THROW_TYPING_ERROR(UndefinedTypeError(declarationStmt.getPosition(), expectedType->getName()));
 	if(declarationStmt.getInitializer() != nullptr) {
 		EXPR_ACCEPT(declarationStmt.getInitializer(), *this, Type::Ptr initType);
-		if(*expectedType != initType)
+		if(!initType->canBeAssignedTo(expectedType))
 			THROW_TYPING_ERROR(
 					WrongTypeError(declarationStmt.getPosition(), expectedType->getName(), initType->getName()));
 	}

@@ -30,6 +30,8 @@ public:
 
 	virtual std::optional<Variable> knowsAbout(const std::string&) const { return {}; }
 	virtual bool canBeCalledWith(const std::vector<Ptr>&) const { return false; };
+	virtual bool isApplicableForDeclaration() const { return true; }
+	virtual bool canBeAssignedTo(const Type::Ptr& assignee) const { return *this == assignee; };
 
 	const std::string& getName() const { return m_name; }
 

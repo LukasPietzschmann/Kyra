@@ -5,6 +5,7 @@
 #include "../Values/Value.hpp"
 #include "ClassType.hpp"
 #include "FunctionType.hpp"
+#include "NothingType.hpp"
 #include "Type.hpp"
 
 namespace LibSlg {
@@ -14,7 +15,7 @@ public:
 		static Type::Ptr boolType = Type::makePtr<ClassType>("Bool");
 		static Type::Ptr numberType = Type::makePtr<ClassType>("Number");
 		static Type::Ptr stringType = Type::makePtr<ClassType>("String");
-		static Type::Ptr nothingType = Type::makePtr<ClassType>("Nothing");
+		static Type::Ptr nothingType = Type::makePtr<NothingType>();
 
 		if(type == Value::NativeTypes::Bool)
 			return boolType;
