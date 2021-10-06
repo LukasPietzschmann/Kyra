@@ -52,7 +52,12 @@ int main(int argc, char** argv) {
 			// File
 			std::stringstream fileContent;
 			std::string line;
-			std::ifstream fileStream(result["file"].as<std::string>());
+			const std::string& fileName = result["file"].as<std::string>();
+			std::ifstream fileStream(fileName);
+			if(!fileStream.good()) {
+				std::cout << "File " << fileName << " not found" << std::endl;
+				return 1;
+			}
 			while(std::getline(fileStream, line))
 				fileContent << line << "\n";
 			fileStream.close();
