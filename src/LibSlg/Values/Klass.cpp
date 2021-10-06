@@ -20,7 +20,7 @@ bool Klass::knowsIdentifier(const std::string& identifier) const {
 
 void Klass::instantiate(std::vector<Value::Ptr> constructorArguments) {
 	assert(constructorArguments.size() == getArity());
-	m_instanceContext = Context::makePtr();
+	m_instanceContext = new Context();
 	for(unsigned long i = 0; i < constructorArguments.size(); ++i) {
 		assert(m_declarationStmt.getConstructorParameters()[i].type == constructorArguments[i]->getType());
 		m_instanceContext->declareVar(m_declarationStmt.getConstructorParameters()[i].name.getValue().asString(),
@@ -30,6 +30,8 @@ void Klass::instantiate(std::vector<Value::Ptr> constructorArguments) {
 	for(const auto& decl : m_declarationStmt.getDeclarations()) {
 		Value::Ptr init = Value::makePtr<Nothing>();
 		if(decl->getInitializer() != nullptr) {
+			// FIXME: hier müsste m_currentContext gesetzt werden, damit eine Function den richtigen Klassen Kontext
+			// besitzt
 			decl->getInitializer()->accept(Interpreter::getInstance());
 			init = Interpreter::getInstance().getVisitorReturn();
 		}

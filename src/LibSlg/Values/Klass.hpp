@@ -13,7 +13,7 @@ public:
 	explicit Klass(const ClassDeclarationStmt& declarationStmt) : m_declarationStmt(declarationStmt) {}
 
 	bool knowsIdentifier(const std::string& identifier) const;
-	const std::shared_ptr<Context>& getInstanceContext() const { return m_instanceContext; }
+	Context* getInstanceContext() const { return m_instanceContext; }
 	unsigned long getArity() const { return m_declarationStmt.getConstructorParameters().size(); }
 	void instantiate(std::vector<Value::Ptr> constructorArguments);
 
@@ -26,6 +26,6 @@ public:
 
 private:
 	ClassDeclarationStmt m_declarationStmt;
-	std::shared_ptr<Context> m_instanceContext;
+	Context* m_instanceContext{};
 };
 }

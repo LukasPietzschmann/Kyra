@@ -26,7 +26,7 @@ public:
 	Value::Ptr getVisitorReturn() const { return m_exprVisitorResult; }
 
 	void execute(const std::string& code, bool verboseLogging = false, bool passThroughExceptions = false);
-	void executeStatementsOnContext(const std::vector<Statement::Ptr>& statements, const Context::Ptr& context);
+	void executeStatementsOnContext(const std::vector<Statement::Ptr>& statements, Context& context);
 	bool isIncompleteStatement(const std::string& code) const;
 
 	void visitAccessExpr(AccessExpr& accessExpr) override;
@@ -50,6 +50,6 @@ public:
 private:
 	Interpreter() = default;
 
-	Context::Ptr m_currentContext{Context::makePtr()};
+	Context* m_currentContext{new Context()};
 };
 }

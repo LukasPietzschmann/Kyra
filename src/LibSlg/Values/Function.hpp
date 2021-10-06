@@ -10,7 +10,7 @@
 namespace LibSlg {
 class Function : public Value {
 public:
-	Function(const FunctionExpr& functionExpr, Context::Ptr definitionContext) :
+	Function(const FunctionExpr& functionExpr, Context definitionContext) :
 		m_functionExpr(functionExpr), m_definitionContext(std::move(definitionContext)) {}
 	~Function() override = default;
 
@@ -32,6 +32,6 @@ public:
 
 private:
 	FunctionExpr m_functionExpr;
-	Context::Ptr m_definitionContext;
+	Context m_definitionContext;
 };
 }

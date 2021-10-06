@@ -1,7 +1,7 @@
 #include "Context.hpp"
 
 namespace LibSlg {
-const std::shared_ptr<Context>& Context::getParent() const { return m_parent; }
+Context* Context::getParent() const { return m_parent; }
 
 Context::ContextValue Context::getVar(const std::string& name) const {
 	if(const auto& pos = m_variables.find(name); pos != m_variables.end())

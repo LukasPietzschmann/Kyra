@@ -312,15 +312,33 @@ void TypeChecker::visitClassDeclarationStmt(ClassDeclarationStmt& classDeclarati
 	if(m_currentScope->getType(name).has_value())
 		THROW_TYPING_ERROR(AlreadyDefinedTypeError(classDeclarationStmt.getPosition(), name));
 
+	std::vector<Type::Ptr> constructorParams;
+	const Scope* paramScope = runInNewScope(
+			[&classDeclarationStmt, &constructorParams, this]() {
+				for(const auto& param : classDeclarationStmt.getConstructorParameters()) {
+					const auto& result = m_currentScope->getType(param.type);
+					if(!result.has_value())
+						THROW_TYPING_ERROR(UndefinedTypeError(classDeclarationStmt.getPosition(), param.type));
+					if(!result.value()->isApplicableForDeclaration())
+						THROW_TYPING_ERROR(
+								UndefinedTypeError(classDeclarationStmt.getPosition(), result.value()->getName()));
+					constructorParams.push_back(result.value());
+					if(!m_currentScope->setVar(param.name.getValue().asString(), result.value(), true))
+						THROW_TYPING_ERROR(AlreadyDefinedVariableError(classDeclarationStmt.getPosition(),
+								param.name.getValue().asString()));
+				}
+			},
+			m_currentScope);
+
 	Scope* declScope = runInNewScope(
 			[&classDeclarationStmt, this]() {
 				for(const auto& decl : classDeclarationStmt.getDeclarations())
 					decl->accept(*this);
 			},
-			m_currentScope);
+			m_currentScope,
+			paramScope);
 
-	std::vector<Type::Ptr> constructorParams;
-	for(const auto& param : classDeclarationStmt.getConstructorParameters()) {
+	/*for(const auto& param : classDeclarationStmt.getConstructorParameters()) {
 		const auto& result = m_currentScope->getType(param.type);
 		if(!result.has_value())
 			assert(false);	// TODO throw error
@@ -328,7 +346,8 @@ void TypeChecker::visitClassDeclarationStmt(ClassDeclarationStmt& classDeclarati
 		if(!declScope->setVar(param.name.getValue().asString(), result.value(), param.isMutable))
 			THROW_TYPING_ERROR(
 					AlreadyDefinedVariableError(classDeclarationStmt.getPosition(), param.name.getValue().asString()));
-	}
+	}*/
+
 	m_currentScope->setType(name, Type::makePtr<ClassType>(name, declScope->getVariables(), constructorParams));
 	m_currentClassName = nullptr;
 	STMT_RETURN_FROM_VISIT(m_currentScope);
