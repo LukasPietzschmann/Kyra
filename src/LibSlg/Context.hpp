@@ -26,7 +26,7 @@ public:
 	void mutate(const std::string& name, Value::Ptr value);
 	void declareType(const Value::Type& type, const Klass& klass);
 
-	template <class... Args>
+	template <typename... Args>
 	static Context::Ptr makePtr(Args... args) {
 		static_assert(std::is_constructible_v<Context, Args...>, "Cannot construct object in Context::makePtr");
 		return std::make_shared<Context>(args...);

@@ -56,7 +56,7 @@ TypeChecker::Result TypeChecker::check(const std::vector<Statement::Ptr>& statem
 
 void TypeChecker::check(const Statement::Ptr& statement) { statement->accept(*this); }
 
-template <class Callback>
+template <typename Callback>
 TypeChecker::Scope* TypeChecker::runInNewScope(const Callback& function, Scope* parent, const Scope* valuesToCopy) {
 	Scope* globalScopeCopy = m_currentScope;
 	auto* newGlobalScope = new Scope(parent);

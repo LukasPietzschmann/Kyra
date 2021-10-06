@@ -151,7 +151,7 @@ private:
 	char* m_currentClassName{};
 
 	void check(const Statement::Ptr& statement);
-	template <class Callback>
+	template <typename Callback>
 	Scope* runInNewScope(const Callback& function, Scope* parent, const Scope* valuesToCopy = nullptr);
 };
 }
