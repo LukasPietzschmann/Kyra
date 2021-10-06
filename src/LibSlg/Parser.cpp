@@ -31,6 +31,10 @@ Statement::Ptr Parser::varDeclaration() {
 		init = assignment();
 	const Token& semicolon = consume(TokenType::SEMICOLON);
 
+	if(!isMutable && init == nullptr)
+		throw ParserException(Position(valVarKW.getPosition(), semicolon.getPosition()),
+				"Immutable Variable " + identifier.getValue().asString() + " needs to be initialized");
+
 	Position position(valVarKW.getPosition(), semicolon.getPosition());
 	return Statement::makePtr<DeclarationStmt>(position, identifier, init, expectedType, isMutable);
 }
