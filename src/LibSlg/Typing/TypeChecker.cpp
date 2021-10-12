@@ -3,40 +3,6 @@
 #include <utility>
 
 namespace LibSlg {
-bool TypeChecker::Scope::setVar(const std::string& name, const Variable& var) {
-	if(m_variables.contains(name))
-		return false;
-	m_variables.try_emplace(name, var);
-	return true;
-}
-
-bool TypeChecker::Scope::setVar(const std::string& name, const Type::Ptr& varType, bool isMutable) {
-	return setVar(name, Variable(varType, isMutable));
-}
-
-bool TypeChecker::Scope::setType(const std::string& name, const Type::Ptr& type) {
-	if(m_types.contains(name))
-		return false;
-	m_types.try_emplace(name, type);
-	return true;
-}
-
-std::optional<Variable> TypeChecker::Scope::getVar(const std::string& name) const {
-	if(const auto& it = m_variables.find(name); it != m_variables.end())
-		return it->second;
-	if(m_parent != nullptr)
-		return m_parent->getVar(name);
-	return {};
-}
-
-std::optional<Type::Ptr> TypeChecker::Scope::getType(const std::string& name) const {
-	if(const auto& it = m_types.find(name); it != m_types.end())
-		return it->second;
-	if(m_parent != nullptr)
-		return m_parent->getType(name);
-	return {};
-}
-
 TypeChecker& TypeChecker::getInstance() {
 	static TypeChecker instance;
 	return instance;
@@ -56,10 +22,12 @@ TypeChecker::Result TypeChecker::check(const std::vector<Statement::Ptr>& statem
 
 void TypeChecker::check(const Statement::Ptr& statement) { statement->accept(*this); }
 
-template <typename Callback>
-TypeChecker::Scope* TypeChecker::runInNewScope(const Callback& function, Scope* parent, const Scope* valuesToCopy) {
-	Scope* globalScopeCopy = m_currentScope;
-	auto* newGlobalScope = new Scope(parent);
+template <class Callback>
+TypeContext* TypeChecker::runInNewScope(const Callback& function,
+		TypeContext* parent,
+		const TypeContext* valuesToCopy) {
+	TypeContext* globalScopeCopy = m_currentScope;
+	auto* newGlobalScope = new TypeContext(parent);
 	if(valuesToCopy != nullptr) {
 		for(const auto& [name, variable] : valuesToCopy->getVariables())
 			newGlobalScope->setVar(name, variable);
@@ -168,7 +136,7 @@ void TypeChecker::visitFunction(FunctionExpr& functionExpr) {
 	FunctionType* enclosingFunctionType = m_currentFunction;
 	EXPR_ACCEPT(functionExpr.getReturnType(), *this, Type::Ptr returnType);
 	std::vector<Type::Ptr> parameters;
-	const Scope* paramScope = runInNewScope(
+	const TypeContext* paramScope = runInNewScope(
 			[&functionExpr, &parameters, this]() {
 				for(const auto& param : functionExpr.getParameters()) {
 					const auto& result = m_currentScope->getType(param.type);
@@ -276,7 +244,7 @@ void TypeChecker::visitVariable(VariableExpr& variableExpr) {
 }
 
 void TypeChecker::visitBlockStmt(BlockStmt& blockStmt) {
-	Scope* scope = runInNewScope(
+	TypeContext* scope = runInNewScope(
 			[this, &blockStmt]() {
 				for(const auto& statement : blockStmt.getStatements())
 					statement->accept(*this);
@@ -313,7 +281,7 @@ void TypeChecker::visitClassDeclarationStmt(ClassDeclarationStmt& classDeclarati
 		THROW_TYPING_ERROR(AlreadyDefinedTypeError(classDeclarationStmt.getPosition(), name));
 
 	std::vector<Type::Ptr> constructorParams;
-	const Scope* paramScope = runInNewScope(
+	const TypeContext* paramScope = runInNewScope(
 			[&classDeclarationStmt, &constructorParams, this]() {
 				for(const auto& param : classDeclarationStmt.getConstructorParameters()) {
 					const auto& result = m_currentScope->getType(param.type);
@@ -330,7 +298,7 @@ void TypeChecker::visitClassDeclarationStmt(ClassDeclarationStmt& classDeclarati
 			},
 			m_currentScope);
 
-	Scope* declScope = runInNewScope(
+	TypeContext* declScope = runInNewScope(
 			[&classDeclarationStmt, this]() {
 				for(const auto& decl : classDeclarationStmt.getDeclarations())
 					decl->accept(*this);

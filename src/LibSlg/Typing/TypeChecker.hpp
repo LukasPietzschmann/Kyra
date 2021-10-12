@@ -33,6 +33,7 @@
 #include "FunctionType.hpp"
 #include "NativeTypes.hpp"
 #include "Type.hpp"
+#include "TypeContext.hpp"
 #include "TypingErrors.hpp"
 
 namespace LibSlg {
@@ -43,59 +44,8 @@ class TypeChecker : public ExpressionVisitor, public StatementVisitor {
 		return;                                 \
 	} while(0)
 private:
-	class Scope {
-	public:
-		explicit Scope(Scope* parent) : m_parent(parent) {
-			for(const auto& nativeType : Value::NativeTypes::All)
-				m_types.try_emplace(nativeType, NativeTypes::make(nativeType));
-		}
-		~Scope() { delete m_parent; }
-
-		Scope() : Scope(nullptr) {}
-
-		Scope(const Scope& other) :
-			m_parent(new Scope(*other.m_parent)), m_variables(other.m_variables), m_types(other.m_types) {}
-
-		Scope(Scope&& other) :
-			m_parent(other.m_parent), m_variables(std::move(other.m_variables)), m_types(std::move(other.m_types)) {
-			other.m_parent = nullptr;
-		}
-
-		Scope& operator=(const Scope& other) {
-			if(this == &other)
-				return *this;
-			m_parent = new Scope(*other.m_parent);
-			m_variables = other.m_variables;
-			m_types = other.m_types;
-			return *this;
-		}
-
-		Scope& operator=(Scope&& other) noexcept {
-			if(this == &other)
-				return *this;
-			m_parent = other.m_parent;
-			other.m_parent = nullptr;
-			m_variables = std::move(other.m_variables);
-			m_types = std::move(other.m_types);
-			return *this;
-		}
-
-		bool setType(const std::string& name, const Type::Ptr& type);
-		bool setVar(const std::string& name, const Type::Ptr& varType, bool isMutable);
-		bool setVar(const std::string& name, const Variable& var);
-		std::optional<Type::Ptr> getType(const std::string& name) const;
-		std::optional<Variable> getVar(const std::string& name) const;
-		const std::unordered_map<std::string, Variable>& getVariables() const { return m_variables; }
-		const std::unordered_map<std::string, Type::Ptr>& getTypes() const { return m_types; }
-
-	private:
-		Scope* m_parent;
-		std::unordered_map<std::string, Variable> m_variables{};
-		std::unordered_map<std::string, Type::Ptr> m_types{};
-	};
-
 	EXPR_NEEDS_VISIT_RETURN_OF_TYPE(Type::Ptr);
-	STMT_NEEDS_VISIT_RETURN_OF_TYPE(Scope*);
+	STMT_NEEDS_VISIT_RETURN_OF_TYPE(TypeContext*);
 
 public:
 	class Result {
@@ -145,13 +95,15 @@ private:
 	TypeChecker() = default;
 
 	std::vector<std::string> m_errors;
-	Scope* m_currentScope{new Scope(nullptr)};
+	TypeContext* m_currentScope{new TypeContext(nullptr)};
 	FunctionType* m_currentFunction{};
 	bool m_doesCurrentFunctionReturn{};
 	char* m_currentClassName{};
 
 	void check(const Statement::Ptr& statement);
-	template <typename Callback>
-	Scope* runInNewScope(const Callback& function, Scope* parent, const Scope* valuesToCopy = nullptr);
+	template <class Callback>
+	TypeContext* runInNewScope(const Callback& function,
+			TypeContext* parent,
+			const TypeContext* valuesToCopy = nullptr);
 };
 }
