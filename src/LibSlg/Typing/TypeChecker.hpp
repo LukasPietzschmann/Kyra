@@ -64,7 +64,7 @@ public:
 	};
 
 	static TypeChecker& getInstance();
-	virtual ~TypeChecker() { delete m_currentScope; }
+	~TypeChecker() override { delete m_currentScope; }
 	TypeChecker(TypeChecker const&) = delete;
 	TypeChecker(TypeChecker&&) = delete;
 	void operator=(TypeChecker const&) = delete;
