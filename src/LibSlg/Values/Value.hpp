@@ -12,21 +12,20 @@ namespace LibSlg {
 class Value {
 public:
 	using Ptr = std::shared_ptr<Value>;
-	using Type = std::string;
 	struct NativeTypes {
-		static const Type Nothing;
-		static const Type Number;
-		static const Type Bool;
-		static const Type String;
-		static const Type Function;
-		static const std::vector<Type> All;
+		static const std::string Nothing;
+		static const std::string Number;
+		static const std::string Bool;
+		static const std::string String;
+		static const std::string Function;
+		static const std::vector<std::string> All;
 	};
 
 	virtual bool isImplicitlyTrue() const = 0;
-	virtual Type getType() const = 0;
+	virtual std::string getType() const = 0;
 	virtual std::string toString() const = 0;
 
-	virtual bool hasCorrectTypeForAssignment(const Value::Type& type) const { return getType() == type; };
+	virtual bool hasCorrectTypeForAssignment(const std::string& type) const { return getType() == type; };
 
 	template <typename R>
 	static std::shared_ptr<R> as(Value::Ptr value) {

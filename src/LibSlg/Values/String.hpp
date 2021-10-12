@@ -11,7 +11,7 @@ public:
 	explicit String(std::string string) : m_string(std::move(string)) {}
 	~String() override = default;
 	bool isImplicitlyTrue() const override { return true; }
-	Type getType() const override { return Value::NativeTypes::String; }
+	std::string getType() const override { return Value::NativeTypes::String; }
 	std::string toString() const override { return m_string; }
 
 	bool operator==(const Value::Ptr& other) const override {

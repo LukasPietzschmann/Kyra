@@ -16,14 +16,14 @@ public:
 
 	RuntimeContext* getParent() const;
 	Variable<Value::Ptr> getVar(const std::string& name) const;
-	const Klass& getCustomType(const Value::Type& type) const;
+	const Klass& getCustomType(const std::string& type) const;
 	void declareVar(const std::string& name, const Value::Ptr& value, bool isMutable = true);
 	void mutate(const std::string& name, Value::Ptr value);
-	void declareType(const Value::Type& type, const Klass& klass);
+	void declareType(const std::string& type, const Klass& klass);
 
 private:
 	RuntimeContext* m_parent;
 	std::unordered_map<std::string, Variable<Value::Ptr>> m_variables;
-	std::unordered_map<Value::Type, Klass> m_customTypes;
+	std::unordered_map<std::string, Klass> m_customTypes;
 };
 }

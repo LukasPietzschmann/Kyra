@@ -18,7 +18,7 @@ public:
 	void instantiate(std::vector<Value::Ptr> constructorArguments);
 
 	bool isImplicitlyTrue() const override { return true; }
-	Type getType() const override { return m_declarationStmt.getIdentifier().getValue().asString(); }
+	std::string getType() const override { return m_declarationStmt.getIdentifier().getValue().asString(); }
 	std::string toString() const override { return "[Object of type " + getType() + "]"; }
 	bool operator==(const Value::Ptr&) const override { return false; }
 	bool operator<(const Value::Ptr&) const override { return false; }

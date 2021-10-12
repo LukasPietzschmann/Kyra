@@ -18,7 +18,7 @@ public:
 	Value::Ptr exec(std::vector<Value::Ptr> arguments) const;
 
 	bool isImplicitlyTrue() const override { return true; }
-	Type getType() const override { return Value::NativeTypes::Function; }
+	std::string getType() const override { return Value::NativeTypes::Function; }
 	std::string toString() const override { return "[Function]"; }
 
 	bool operator==(const Value::Ptr& other) const override {

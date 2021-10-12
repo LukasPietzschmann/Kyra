@@ -51,7 +51,7 @@ Statement::Ptr Parser::classDeclaration() {
 			bool isMutable = previous().getType() == TokenType::VAR;
 			Token paramName = consume(TokenType::NAME);
 			consume(TokenType::COLON);
-			Value::Type type = consume(TokenType::NAME).getValue().asString();
+			std::string type = consume(TokenType::NAME).getValue().asString();
 			constructorParameter.emplace_back(paramName, isMutable, type);
 		} while(matchAndAdvance(TokenType::COMMA));
 	}
@@ -281,7 +281,7 @@ Expression::Ptr Parser::function() {
 		do {
 			Token name = consume(TokenType::NAME);
 			consume(TokenType::COLON);
-			Value::Type type = consume(TokenType::NAME).getValue().asString();
+			std::string type = consume(TokenType::NAME).getValue().asString();
 			parameters.emplace_back(name, type);
 		} while(matchAndAdvance(TokenType::COMMA));
 	}
@@ -297,7 +297,7 @@ Expression::Ptr Parser::function() {
 
 Expression::Ptr Parser::instantiation() {
 	const Token& instantiateKW = consume(TokenType::INSTANTIATE);
-	Value::Type name = consume(TokenType::NAME).getValue().asString();
+	std::string name = consume(TokenType::NAME).getValue().asString();
 
 	std::vector<Expression::Ptr> parameters;
 	consume(TokenType::LEFT_PAREN);

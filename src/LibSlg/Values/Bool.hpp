@@ -8,7 +8,7 @@ public:
 	explicit Bool(bool boolean) : m_bool(boolean) {}
 	~Bool() override = default;
 	bool isImplicitlyTrue() const override { return m_bool; }
-	Type getType() const override { return Value::NativeTypes::Bool; }
+	std::string getType() const override { return Value::NativeTypes::Bool; }
 	std::string toString() const override { return m_bool ? "true" : "false"; }
 
 	bool operator==(const Value::Ptr& other) const override { return m_bool == other->isImplicitlyTrue(); }

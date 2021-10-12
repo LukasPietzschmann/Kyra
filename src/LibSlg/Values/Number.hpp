@@ -10,7 +10,7 @@ public:
 	explicit Number(int number) : m_number(number) {}
 	~Number() override = default;
 	bool isImplicitlyTrue() const override { return true; }
-	Type getType() const override { return Value::NativeTypes::Number; }
+	std::string getType() const override { return Value::NativeTypes::Number; }
 	std::string toString() const override { return std::to_string(m_number); }
 
 	int getNumber() const { return m_number; }

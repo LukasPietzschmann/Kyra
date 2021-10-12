@@ -11,9 +11,9 @@ namespace LibSlg {
 class FunctionExpr : public Expression {
 public:
 	struct Parameter {
-		Parameter(Token name, Value::Type type) : name(std::move(std::move(name))), type(std::move(std::move(type))) {}
+		Parameter(Token name, std::string type) : name(std::move(std::move(name))), type(std::move(std::move(type))) {}
 		Token name;
-		Value::Type type;
+		std::string type;
 	};
 	FunctionExpr(const Position& position,
 			std::vector<Parameter> parameters,

@@ -12,11 +12,11 @@ namespace LibSlg {
 class ClassDeclarationStmt : public Statement {
 public:
 	struct ConstructorParameter {
-		ConstructorParameter(Token name, bool isMutable, Value::Type type) :
+		ConstructorParameter(Token name, bool isMutable, std::string type) :
 			name(std::move(std::move(name))), isMutable(isMutable), type(std::move(std::move(type))) {}
 		Token name;
 		bool isMutable;
-		Value::Type type;
+		std::string type;
 	};
 
 	ClassDeclarationStmt(const Position& position,
