@@ -5,7 +5,7 @@
 namespace LibSlg {
 Value::Ptr Function::exec(std::vector<Value::Ptr> arguments) const {
 	assert(arguments.size() == getArity());
-	Context runtimeContext = m_definitionContext;
+	RuntimeContext runtimeContext = m_definitionContext;
 	for(unsigned long i = 0; i < arguments.size(); ++i)
 		runtimeContext.declareVar(m_functionExpr.getParameters()[i].name.getValue().asString(), arguments[i]);
 	auto block = std::dynamic_pointer_cast<BlockStmt>(m_functionExpr.getImplementation());

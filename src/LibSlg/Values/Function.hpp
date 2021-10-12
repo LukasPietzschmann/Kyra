@@ -2,15 +2,15 @@
 
 #include <utility>
 
-#include "../Context.hpp"
 #include "../Expressions/FunctionExpr.hpp"
+#include "../Runtime/RuntimeContext.hpp"
 #include "Nothing.hpp"
 #include "Value.hpp"
 
 namespace LibSlg {
 class Function : public Value {
 public:
-	Function(const FunctionExpr& functionExpr, Context definitionContext) :
+	Function(const FunctionExpr& functionExpr, RuntimeContext definitionContext) :
 		m_functionExpr(functionExpr), m_definitionContext(std::move(definitionContext)) {}
 	~Function() override = default;
 
@@ -32,6 +32,6 @@ public:
 
 private:
 	FunctionExpr m_functionExpr;
-	Context m_definitionContext;
+	RuntimeContext m_definitionContext;
 };
 }

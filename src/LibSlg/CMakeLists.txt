@@ -1,4 +1,4 @@
-add_library(LibSlg AstLogger.hpp Context.hpp Context.cpp Exceptions.hpp
+add_library(LibSlg AstLogger.hpp Runtime/RuntimeContext.hpp Runtime/RuntimeContext.cpp Exceptions.hpp
 		TokenType.hpp Token.hpp Lexer.cpp Lexer.hpp Parser.cpp Parser.hpp Interpreter.hpp
 		Interpreter.cpp Position.hpp
 		Expressions/AssignmentExpr.hpp Expressions/CallExpr.hpp Expressions/Expression.hpp Expressions/UnaryExpr.hpp

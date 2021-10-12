@@ -1,7 +1,7 @@
 #include "Klass.hpp"
 
-#include "../Context.hpp"
 #include "../Interpreter.hpp"
+#include "../Runtime/RuntimeContext.hpp"
 
 namespace LibSlg {
 bool Klass::knowsIdentifier(const std::string& identifier) const {
@@ -20,7 +20,7 @@ bool Klass::knowsIdentifier(const std::string& identifier) const {
 
 void Klass::instantiate(std::vector<Value::Ptr> constructorArguments) {
 	assert(constructorArguments.size() == getArity());
-	m_instanceContext = new Context();
+	m_instanceContext = new RuntimeContext();
 	for(unsigned long i = 0; i < constructorArguments.size(); ++i) {
 		assert(m_declarationStmt.getConstructorParameters()[i].type == constructorArguments[i]->getType());
 		m_instanceContext->declareVar(m_declarationStmt.getConstructorParameters()[i].name.getValue().asString(),

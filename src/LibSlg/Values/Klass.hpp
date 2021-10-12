@@ -4,7 +4,7 @@
 #include "Value.hpp"
 
 namespace LibSlg {
-class Context;
+class RuntimeContext;
 
 class Klass : public Value {
 	EXPR_NEEDS_VISIT_RETURN_OF_TYPE(Value::Ptr);
@@ -13,7 +13,7 @@ public:
 	explicit Klass(const ClassDeclarationStmt& declarationStmt) : m_declarationStmt(declarationStmt) {}
 
 	bool knowsIdentifier(const std::string& identifier) const;
-	Context* getInstanceContext() const { return m_instanceContext; }
+	RuntimeContext* getInstanceContext() const { return m_instanceContext; }
 	unsigned long getArity() const { return m_declarationStmt.getConstructorParameters().size(); }
 	void instantiate(std::vector<Value::Ptr> constructorArguments);
 
@@ -26,6 +26,6 @@ public:
 
 private:
 	ClassDeclarationStmt m_declarationStmt;
-	Context* m_instanceContext{};
+	RuntimeContext* m_instanceContext{};
 };
 }

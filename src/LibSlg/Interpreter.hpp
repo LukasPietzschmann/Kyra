@@ -3,10 +3,10 @@
 #include <string>
 
 #include "AstLogger.hpp"
-#include "Context.hpp"
 #include "Expressions/Expression.hpp"
 #include "Lexer.hpp"
 #include "Parser.hpp"
+#include "Runtime/RuntimeContext.hpp"
 #include "Statements/Statement.hpp"
 #include "Typing/TypeChecker.hpp"
 #include "Values/Function.hpp"
@@ -26,7 +26,7 @@ public:
 	Value::Ptr getVisitorReturn() const { return m_exprVisitorResult; }
 
 	void execute(const std::string& code, bool verboseLogging = false, bool passThroughExceptions = false);
-	void executeStatementsOnContext(const std::vector<Statement::Ptr>& statements, Context& context);
+	void executeStatementsOnContext(const std::vector<Statement::Ptr>& statements, RuntimeContext& context);
 	bool isIncompleteStatement(const std::string& code) const;
 
 	void visitAccessExpr(AccessExpr& accessExpr) override;
@@ -50,6 +50,6 @@ public:
 private:
 	Interpreter() = default;
 
-	Context* m_currentContext{new Context()};
+	RuntimeContext* m_currentContext{new RuntimeContext()};
 };
 }

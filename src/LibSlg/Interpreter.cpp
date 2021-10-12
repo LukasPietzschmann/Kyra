@@ -64,7 +64,7 @@ void Interpreter::visitAccessExpr(AccessExpr& accessExpr) {
 }
 
 void Interpreter::visitAssignmentExpr(AssignmentExpr& assignmentExpr) {
-	Context* context = m_currentContext;
+	RuntimeContext* context = m_currentContext;
 	if(assignmentExpr.getOwner() != nullptr) {
 		EXPR_ACCEPT(assignmentExpr.getOwner(), *this, Value::Ptr owner);
 		context = Value::as<Klass>(owner)->getInstanceContext();
@@ -175,8 +175,8 @@ void Interpreter::visitReturnStmt(ReturnStmt& returnStmt) {
 	throw ReturnException(returnVal);
 }
 
-void Interpreter::executeStatementsOnContext(const std::vector<Statement::Ptr>& statements, Context& context) {
-	Context* prev = m_currentContext;
+void Interpreter::executeStatementsOnContext(const std::vector<Statement::Ptr>& statements, RuntimeContext& context) {
+	RuntimeContext* prev = m_currentContext;
 	m_currentContext = &context;
 	try {
 		for(const auto& statement : statements)
