@@ -1,7 +1,7 @@
 #include "TypeContext.hpp"
 
 namespace LibSlg {
-bool TypeContext::setVar(const std::string& name, const Variable& var) {
+bool TypeContext::setVar(const std::string& name, const Variable<Type::Ptr>& var) {
 	if(m_variables.contains(name))
 		return false;
 	m_variables.try_emplace(name, var);
@@ -19,7 +19,7 @@ bool TypeContext::setType(const std::string& name, const Type::Ptr& type) {
 	return true;
 }
 
-std::optional<Variable> TypeContext::getVar(const std::string& name) const {
+std::optional<Variable<Type::Ptr>> TypeContext::getVar(const std::string& name) const {
 	if(const auto& it = m_variables.find(name); it != m_variables.end())
 		return it->second;
 	if(m_parent != nullptr)

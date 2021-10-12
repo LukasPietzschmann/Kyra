@@ -47,15 +47,15 @@ public:
 
 	bool setType(const std::string& name, const Type::Ptr& type);
 	bool setVar(const std::string& name, const Type::Ptr& varType, bool isMutable);
-	bool setVar(const std::string& name, const Variable& var);
+	bool setVar(const std::string& name, const Variable<Type::Ptr>& var);
 	std::optional<Type::Ptr> getType(const std::string& name) const;
-	std::optional<Variable> getVar(const std::string& name) const;
-	const std::unordered_map<std::string, Variable>& getVariables() const { return m_variables; }
+	std::optional<Variable<Type::Ptr>> getVar(const std::string& name) const;
+	const std::unordered_map<std::string, Variable<Type::Ptr>>& getVariables() const { return m_variables; }
 	const std::unordered_map<std::string, Type::Ptr>& getTypes() const { return m_types; }
 
 private:
 	TypeContext* m_parent;
-	std::unordered_map<std::string, Variable> m_variables{};
+	std::unordered_map<std::string, Variable<Type::Ptr>> m_variables{};
 	std::unordered_map<std::string, Type::Ptr> m_types{};
 };
 }

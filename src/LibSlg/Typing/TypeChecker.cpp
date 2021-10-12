@@ -46,7 +46,7 @@ void TypeChecker::visitAccessExpr(AccessExpr& accessExpr) {
 	const auto& result = ownerType->knowsAbout(name);
 	if(!result.has_value())
 		THROW_TYPING_ERROR(UndefinedMemberError(accessExpr.getPosition(), ownerType->getName(), name));
-	EXPR_RETURN_FROM_VISIT(result->type);
+	EXPR_RETURN_FROM_VISIT(result->value);
 }
 
 void TypeChecker::visitAssignmentExpr(AssignmentExpr& assignmentExpr) {
@@ -55,9 +55,9 @@ void TypeChecker::visitAssignmentExpr(AssignmentExpr& assignmentExpr) {
 
 	if(assignmentExpr.getOwner() != nullptr) {
 		EXPR_ACCEPT(assignmentExpr.getOwner(), *this, Type::Ptr ownerType);
-		assignedValueType = ownerType->knowsAbout(name)->type;
+		assignedValueType = ownerType->knowsAbout(name)->value;
 	} else
-		assignedValueType = m_currentScope->getVar(name)->type;
+		assignedValueType = m_currentScope->getVar(name)->value;
 
 	if(assignedValueType == nullptr)
 		THROW_TYPING_ERROR(UndefinedVariableError(assignmentExpr.getPosition(), name));
@@ -240,7 +240,7 @@ void TypeChecker::visitVariable(VariableExpr& variableExpr) {
 		else
 			THROW_TYPING_ERROR(UndefinedVariableError(variableExpr.getPosition(), name));
 	}
-	EXPR_RETURN_FROM_VISIT(result->type);
+	EXPR_RETURN_FROM_VISIT(result->value);
 }
 
 void TypeChecker::visitBlockStmt(BlockStmt& blockStmt) {

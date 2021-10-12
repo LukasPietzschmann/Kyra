@@ -1,4 +1,4 @@
-add_library(LibSlg AstLogger.hpp Runtime/RuntimeContext.hpp Runtime/RuntimeContext.cpp Exceptions.hpp
+add_library(LibSlg AstLogger.hpp Exceptions.hpp Variable.hpp
 		TokenType.hpp Token.hpp Lexer.cpp Lexer.hpp Parser.cpp Parser.hpp Interpreter.hpp
 		Interpreter.cpp Position.hpp
 		Expressions/AssignmentExpr.hpp Expressions/CallExpr.hpp Expressions/Expression.hpp Expressions/UnaryExpr.hpp
@@ -11,5 +11,6 @@ add_library(LibSlg AstLogger.hpp Runtime/RuntimeContext.hpp Runtime/RuntimeConte
 		Typing/TypeChecker.hpp Typing/TypeChecker.cpp Typing/Type.hpp Typing/ClassType.hpp Typing/FunctionType.hpp
 		Typing/NothingType.hpp Typing/NativeTypes.hpp Typing/TypingErrors.hpp Typing/TypeContext.hpp Typing/TypeContext.cpp
 		Values/Value.hpp Values/Value.cpp Values/Bool.hpp Values/Function.hpp Values/Function.cpp Values/Number.hpp
-		Values/Nothing.hpp Values/String.hpp Values/Klass.hpp Values/Klass.cpp Values/Forward.hpp)
+		Values/Nothing.hpp Values/String.hpp Values/Klass.hpp Values/Klass.cpp Values/Forward.hpp
+		Runtime/RuntimeContext.hpp Runtime/RuntimeContext.cpp)
 set_target_properties(LibSlg PROPERTIES LINKER_LANGUAGE CXX)

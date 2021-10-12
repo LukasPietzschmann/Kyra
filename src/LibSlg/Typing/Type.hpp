@@ -7,15 +7,10 @@
 
 #include "../Values/Function.hpp"
 #include "../Values/Value.hpp"
+#include "../Variable.hpp"
 
 namespace LibSlg {
 class Type;
-struct Variable {
-	Variable(const std::shared_ptr<Type>& type, bool isMutable) : type(type), isMutable(isMutable) {}
-	std::shared_ptr<Type> type;
-	bool isMutable;
-};
-
 class Type {
 public:
 	using Ptr = std::shared_ptr<Type>;
@@ -28,7 +23,7 @@ public:
 		return std::make_shared<T>(args...);
 	}
 
-	virtual std::optional<Variable> knowsAbout(const std::string&) const { return {}; }
+	virtual std::optional<Variable<Type::Ptr>> knowsAbout(const std::string&) const { return {}; }
 	virtual bool canBeCalledWith(const std::vector<Ptr>&) const { return false; };
 	virtual bool isApplicableForDeclaration() const { return true; }
 	virtual bool canBeAssignedTo(const Type::Ptr& assignee) const { return *this == assignee; };
