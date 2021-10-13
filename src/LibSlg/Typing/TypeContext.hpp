@@ -16,8 +16,6 @@ public:
 	}
 	~TypeContext() { delete m_parent; }
 
-	TypeContext() : TypeContext(nullptr) {}
-
 	TypeContext(const TypeContext& other) :
 		m_parent(new TypeContext(*other.m_parent)), m_variables(other.m_variables), m_types(other.m_types) {}
 

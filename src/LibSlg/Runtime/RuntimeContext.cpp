@@ -1,8 +1,6 @@
 #include "RuntimeContext.hpp"
 
 namespace LibSlg {
-RuntimeContext* RuntimeContext::getParent() const { return m_parent; }
-
 Variable<Value::Ptr> RuntimeContext::getVar(const std::string& name) const {
 	if(const auto& pos = m_variables.find(name); pos != m_variables.end())
 		return pos->second;
