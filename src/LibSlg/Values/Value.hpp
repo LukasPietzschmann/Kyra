@@ -5,13 +5,13 @@
 #include <vector>
 
 #include "../Exceptions.hpp"
+#include "../HasPtrAlias.hpp"
 #include "Forward.hpp"
 #include "iostream"
 
 namespace Slanguage {
-class Value {
+class Value : public HasPtrAlias<Value> {
 public:
-	using Ptr = std::shared_ptr<Value>;
 	struct NativeTypes {
 		static const std::string Nothing;
 		static const std::string Number;
@@ -30,12 +30,6 @@ public:
 	template <typename R>
 	static std::shared_ptr<R> as(Value::Ptr value) {
 		return std::dynamic_pointer_cast<R>(value);
-	}
-
-	template <typename T, class... Args>
-	static Value::Ptr makePtr(Args... args) {
-		static_assert(std::is_constructible_v<T, Args...>, "Cannot construct Value in Value::makePtr");
-		return std::make_shared<T>(args...);
 	}
 
 	virtual bool operator==(const Value::Ptr&) const = 0;

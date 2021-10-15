@@ -1,5 +1,6 @@
 #pragma once
 
+#include "../HasPtrAlias.hpp"
 #include "../Position.hpp"
 #include "../Values/Value.hpp"
 #include "Forward.hpp"
@@ -36,18 +37,12 @@ private:                                      \
 	virtual void visitVariable(VariableExpr& variableExpr) = 0;
 };
 
-class Expression {
+class Expression : public HasPtrAlias<Expression> {
 public:
-	using Ptr = std::shared_ptr<Expression>;
 	explicit Expression(const Position& position) : m_position(position) {}
 	virtual ~Expression() = default;
 
 	virtual void accept(ExpressionVisitor& visitor) = 0;
-	template <typename T, class... Args>
-	static Ptr makePtr(Args... args) {
-		static_assert(std::is_constructible_v<T, Args...>, "Cannot construct object in Expression::makePtr");
-		return std::make_shared<T>(args...);
-	}
 
 	const Position& getPosition() const { return m_position; }
 

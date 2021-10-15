@@ -5,23 +5,16 @@
 #include <unordered_map>
 #include <utility>
 
+#include "../HasPtrAlias.hpp"
 #include "../Values/Function.hpp"
 #include "../Values/Value.hpp"
 #include "../Variable.hpp"
 
 namespace Slanguage {
-class Type;
-class Type {
+class Type : public HasPtrAlias<Type> {
 public:
-	using Ptr = std::shared_ptr<Type>;
 	explicit Type(std::string name) : m_name(std::move(name)) {}
 	virtual ~Type() = default;
-
-	template <typename T, class... Args>
-	static Type::Ptr makePtr(Args... args) {
-		static_assert(std::is_constructible_v<T, Args...>, "Cannot construct object in Type::makePtr");
-		return std::make_shared<T>(args...);
-	}
 
 	virtual std::optional<Variable<Type::Ptr>> knowsAbout(const std::string&) const { return {}; }
 	virtual bool canBeCalledWith(const std::vector<Ptr>&) const { return false; };
