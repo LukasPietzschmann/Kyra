@@ -42,7 +42,7 @@ public:
 	Value::Ptr getVisitorReturn();
 
 	void executeStatement(Statement::WeakPtr statement, RuntimeContext* contextToExecuteOn = nullptr);
-	Value::Ptr executeExpression(Expression::WeakPtr expression);
+	Value::Ptr executeExpression(Expression::WeakPtr expression, RuntimeContext* contextToExecuteOn = nullptr);
 
 	void visitAccessExpr(AccessExpr& accessExpr) override;
 	void visitAssignmentExpr(AssignmentExpr& assignmentExpr) override;

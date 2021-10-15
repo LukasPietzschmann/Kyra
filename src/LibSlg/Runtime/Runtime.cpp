@@ -19,8 +19,17 @@ void Runtime::executeStatement(Statement::WeakPtr statement, RuntimeContext* con
 	m_currentContext = contextCopy;
 }
 
-Value::Ptr Runtime::executeExpression(Expression::WeakPtr expression) {
+Value::Ptr Runtime::executeExpression(Expression::WeakPtr expression, RuntimeContext* contextToExecuteOn) {
+	if(contextToExecuteOn == nullptr) {
+		EXPR_ACCEPT(Expression::lock(expression), *this, Value::WeakPtr result);
+		return Value::lock(result);
+	}
+
+	RuntimeContext contextCopy = m_currentContext;
+	m_currentContext = *contextToExecuteOn;
 	EXPR_ACCEPT(Expression::lock(expression), *this, Value::WeakPtr result);
+	contextToExecuteOn = &m_currentContext;
+	m_currentContext = contextCopy;
 	return Value::lock(result);
 }
 

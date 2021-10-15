@@ -29,12 +29,8 @@ void Klass::instantiate(const std::vector<Value::Ptr>& constructorArguments) {
 	}
 	for(const auto& decl : m_declarationStmt.getDeclarations()) {
 		Value::Ptr init = Value::makePtr<Nothing>();
-		if(decl->getInitializer() != nullptr) {
-			// FIXME: hier müsste m_currentContext gesetzt werden, damit eine Function den richtigen Klassen Kontext
-			// besitzt
-			decl->getInitializer()->accept(Runtime::getInstance());
-			init = Runtime::getInstance().getVisitorReturn();
-		}
+		if(decl->getInitializer() != nullptr)
+			init = Runtime::getInstance().executeExpression(decl->getInitializer(), m_instanceContext);
 		m_instanceContext->declareVar(decl->getIdentifier().getValue().asString(), init, decl->isMutable());
 	}
 }
