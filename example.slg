@@ -1,12 +1,30 @@
 # This is a Comment :^)
 
-var number = 5;
-var string = "five";
-var empty = nothing;
+var closure: Function()->Number= fun(a: Number)->Function()->Number{
+	return fun()->Number{
+		return a;
+	};
+}(10);
+print closure();
 
-var numberTwo;
-numberTwo = 2;
+# mutable
+var number: Number = 5;
+var string: String = "five";
+var empty: Bool = nothing;
 
-var method = fun (a){
-	return a;
+#immutable
+val immutable: String = "";
+# immutable = "hello"; <- not possible
+
+var add: Function(Number, Number)->Number = fun(a: Number, b: Number)->Number{
+	return a+b;
 };
+
+class Human(var height: Number){
+	val printHeight: Function()->Nothing = fun()->Nothing{
+		print height;
+	};
+}
+
+var luke: Human = instantiate Human(185);
+luke.printHeight();
