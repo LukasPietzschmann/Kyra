@@ -244,13 +244,12 @@ void TypeChecker::visitVariable(VariableExpr& variableExpr) {
 }
 
 void TypeChecker::visitBlockStmt(BlockStmt& blockStmt) {
-	TypeContext* scope = runInNewScope(
+	runInNewScope(
 			[this, &blockStmt]() {
 				for(const auto& statement : blockStmt.getStatements())
 					statement->accept(*this);
 			},
 			m_currentScope);
-	STMT_RETURN_FROM_VISIT(scope);
 }
 
 void TypeChecker::visitDeclarationStmt(DeclarationStmt& declarationStmt) {
@@ -271,7 +270,6 @@ void TypeChecker::visitDeclarationStmt(DeclarationStmt& declarationStmt) {
 		else
 			THROW_TYPING_ERROR(AlreadyDefinedVariableError(declarationStmt.getPosition(), name));
 	}
-	STMT_RETURN_FROM_VISIT(m_currentScope);
 }
 
 void TypeChecker::visitClassDeclarationStmt(ClassDeclarationStmt& classDeclarationStmt) {
@@ -318,18 +316,11 @@ void TypeChecker::visitClassDeclarationStmt(ClassDeclarationStmt& classDeclarati
 
 	m_currentScope->setType(name, Type::makePtr<ClassType>(name, declScope->getVariables(), constructorParams));
 	m_currentClassName = nullptr;
-	STMT_RETURN_FROM_VISIT(m_currentScope);
 }
 
-void TypeChecker::visitExpressionStmt(ExpressionStmt& expressionStmt) {
-	expressionStmt.getExpr()->accept(*this);
-	STMT_RETURN_FROM_VISIT(m_currentScope);
-}
+void TypeChecker::visitExpressionStmt(ExpressionStmt& expressionStmt) { expressionStmt.getExpr()->accept(*this); }
 
-void TypeChecker::visitPrintStmt(PrintStmt& printStmt) {
-	EXPR_ACCEPT(printStmt.getExpr(), *this, Type::Ptr type);
-	STMT_RETURN_FROM_VISIT(m_currentScope);
-}
+void TypeChecker::visitPrintStmt(PrintStmt& printStmt) { EXPR_ACCEPT(printStmt.getExpr(), *this, Type::Ptr type); }
 
 void TypeChecker::visitReturnStmt(ReturnStmt& returnStmt) {
 	if(m_currentFunction == nullptr)
@@ -340,6 +331,5 @@ void TypeChecker::visitReturnStmt(ReturnStmt& returnStmt) {
 				m_currentFunction->getReturnType()->getName(),
 				returnedType->getName()));
 	m_doesCurrentFunctionReturn = true;
-	STMT_RETURN_FROM_VISIT(m_currentScope);
 }
 }

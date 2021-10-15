@@ -45,7 +45,6 @@ class TypeChecker : public ExpressionVisitor, public StatementVisitor {
 	} while(0)
 private:
 	EXPR_NEEDS_VISIT_RETURN_OF_TYPE(Type::Ptr);
-	STMT_NEEDS_VISIT_RETURN_OF_TYPE(TypeContext*);
 
 public:
 	class Result {
