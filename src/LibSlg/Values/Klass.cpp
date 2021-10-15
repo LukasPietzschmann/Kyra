@@ -18,7 +18,7 @@ bool Klass::knowsIdentifier(const std::string& identifier) const {
 	return declarationsContainIdentifier || constructorContainsIdentifier;
 }
 
-void Klass::instantiate(std::vector<Value::Ptr> constructorArguments) {
+void Klass::instantiate(const std::vector<Value::Ptr>& constructorArguments) {
 	assert(constructorArguments.size() == getArity());
 	m_instanceContext = new RuntimeContext();
 	for(unsigned long i = 0; i < constructorArguments.size(); ++i) {

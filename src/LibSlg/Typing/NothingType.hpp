@@ -8,6 +8,6 @@ public:
 	NothingType() : Type("Nothing") {}
 	~NothingType() override = default;
 	bool isApplicableForDeclaration() const override { return false; }
-	bool canBeAssignedTo(const Type::Ptr&) const override { return true; }
+	bool canBeAssignedTo(Type::WeakPtr) const override { return true; }
 };
 }

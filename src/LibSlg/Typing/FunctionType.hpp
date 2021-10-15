@@ -22,7 +22,7 @@ public:
 		m_name = "Function(" + params + ")->" + m_returnType->getName();
 	}
 	~FunctionType() override = default;
-	const Type::Ptr& getReturnType() const { return m_returnType; }
+	Type::Ptr getReturnType() const { return m_returnType; }
 	std::vector<Type::Ptr> getParameters() const { return m_parameters; }
 	unsigned long getArity() const { return m_parameters.size(); }
 

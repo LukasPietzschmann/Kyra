@@ -7,9 +7,9 @@
 namespace Slanguage {
 class GroupExpr : public Expression {
 public:
-	GroupExpr(const Position& position, Expression::Ptr expr) : Expression(position), m_expr(std::move(expr)) {}
+	GroupExpr(const Position& position, const Expression::Ptr& expr) : Expression(position), m_expr(expr) {}
 	~GroupExpr() override = default;
-	const Expression::Ptr& getExpr() const { return m_expr; }
+	Expression::Ptr getExpr() const { return m_expr; }
 	void accept(ExpressionVisitor& visitor) override { return visitor.visitGroupExpr(*this); }
 
 private:

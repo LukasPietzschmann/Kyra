@@ -41,8 +41,8 @@ public:
 	// FIXME only used in Klass::instantiate. Looks like bad design
 	Value::Ptr getVisitorReturn();
 
-	void executeStatement(const Statement::Ptr& statement, RuntimeContext* contextToExecuteOn = nullptr);
-	Value::Ptr executeExpression(const Expression::Ptr& expression);
+	void executeStatement(Statement::WeakPtr statement, RuntimeContext* contextToExecuteOn = nullptr);
+	Value::Ptr executeExpression(Expression::WeakPtr expression);
 
 	void visitAccessExpr(AccessExpr& accessExpr) override;
 	void visitAssignmentExpr(AssignmentExpr& assignmentExpr) override;

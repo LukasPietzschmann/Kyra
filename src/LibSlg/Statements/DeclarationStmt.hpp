@@ -12,18 +12,17 @@ class DeclarationStmt : public Statement {
 public:
 	DeclarationStmt(const Position& position,
 			Token identifier,
-			Expression::Ptr initializer,
-			Expression::Ptr type,
+			const Expression::Ptr& initializer,
+			const Expression::Ptr& type,
 			bool isMutable = true) :
 		Statement(position),
-		m_identifier(std::move(identifier)), m_initializer(std::move(initializer)), m_type(std::move(type)),
-		m_isMutable(isMutable) {}
+		m_identifier(std::move(identifier)), m_initializer(initializer), m_type(type), m_isMutable(isMutable) {}
 	~DeclarationStmt() override = default;
 	void accept(StatementVisitor& visitor) override { visitor.visitDeclarationStmt(*this); }
 
 	const Token& getIdentifier() const { return m_identifier; }
-	const Expression::Ptr& getInitializer() const { return m_initializer; }
-	const Expression::Ptr& getType() const { return m_type; }
+	Expression::Ptr getInitializer() const { return m_initializer; }
+	Expression::Ptr getType() const { return m_type; }
 	bool isMutable() const { return m_isMutable; }
 
 private:

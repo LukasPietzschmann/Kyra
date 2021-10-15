@@ -17,15 +17,15 @@ public:
 	};
 	FunctionExpr(const Position& position,
 			std::vector<Parameter> parameters,
-			Expression::Ptr returnType,
-			Statement::Ptr impl) :
+			const Expression::Ptr& returnType,
+			const Statement::Ptr& impl) :
 		Expression(position),
-		m_parameters(std::move(parameters)), m_returnType(std::move(returnType)), m_implementation(std::move(impl)) {}
+		m_parameters(std::move(parameters)), m_returnType(returnType), m_implementation(impl) {}
 	~FunctionExpr() override = default;
 	void accept(ExpressionVisitor& visitor) override { return visitor.visitFunction(*this); }
 	const std::vector<Parameter>& getParameters() const { return m_parameters; }
-	const Expression::Ptr& getReturnType() const { return m_returnType; }
-	const Statement::Ptr& getImplementation() const { return m_implementation; }
+	Expression::Ptr getReturnType() const { return m_returnType; }
+	Statement::Ptr getImplementation() const { return m_implementation; }
 
 private:
 	std::vector<Parameter> m_parameters;

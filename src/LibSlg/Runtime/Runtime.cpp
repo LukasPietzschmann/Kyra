@@ -6,25 +6,25 @@ Runtime& Runtime::getInstance() {
 	return instance;
 }
 
-void Runtime::executeStatement(const Statement::Ptr& statement, RuntimeContext* contextToExecuteOn) {
+void Runtime::executeStatement(Statement::WeakPtr statement, RuntimeContext* contextToExecuteOn) {
 	if(contextToExecuteOn == nullptr) {
-		statement->accept(*this);
+		Statement::lock(statement)->accept(*this);
 		return;
 	}
 
-	RuntimeContext contextCopy = std::move(m_currentContext);
+	RuntimeContext contextCopy = m_currentContext;
 	m_currentContext = *contextToExecuteOn;
-	statement->accept(*this);
+	Statement::lock(statement)->accept(*this);
 	contextToExecuteOn = &m_currentContext;
-	m_currentContext = std::move(contextCopy);
+	m_currentContext = contextCopy;
 }
 
-Value::Ptr Runtime::executeExpression(const Expression::Ptr& expression) {
-	EXPR_ACCEPT(expression, *this, Value::Ptr result);
-	return result;
+Value::Ptr Runtime::executeExpression(Expression::WeakPtr expression) {
+	EXPR_ACCEPT(Expression::lock(expression), *this, Value::WeakPtr result);
+	return Value::lock(result);
 }
 
-Value::Ptr Runtime::getVisitorReturn() { return m_exprVisitorResult; }
+Value::Ptr Runtime::getVisitorReturn() { return Value::lock(m_exprVisitorResult); }
 
 void Runtime::visitAccessExpr(AccessExpr& accessExpr) {
 	EXPR_ACCEPT(accessExpr.getOwner(), *this, Value::Ptr owner);
@@ -147,11 +147,11 @@ void Runtime::visitReturnStmt(ReturnStmt& returnStmt) {
 
 template <typename Callback>
 RuntimeContext Runtime::runInNewContext(const Callback& callback, RuntimeContext* parent) {
-	RuntimeContext currentContextCopy = std::move(m_currentContext);
+	RuntimeContext currentContextCopy = m_currentContext;
 	m_currentContext = RuntimeContext(parent);
 	callback();
-	RuntimeContext modifiedContext = std::move(m_currentContext);
-	m_currentContext = std::move(currentContextCopy);
+	RuntimeContext modifiedContext = m_currentContext;
+	m_currentContext = currentContextCopy;
 	return modifiedContext;
 }
 }

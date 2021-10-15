@@ -15,7 +15,7 @@ public:
 	bool knowsIdentifier(const std::string& identifier) const;
 	RuntimeContext* getInstanceContext() const { return m_instanceContext; }
 	unsigned long getArity() const { return m_declarationStmt.getConstructorParameters().size(); }
-	void instantiate(std::vector<Value::Ptr> constructorArguments);
+	void instantiate(const std::vector<Value::Ptr>& constructorArguments);
 
 	bool isImplicitlyTrue() const override { return true; }
 	std::string getType() const override { return m_declarationStmt.getIdentifier().getValue().asString(); }

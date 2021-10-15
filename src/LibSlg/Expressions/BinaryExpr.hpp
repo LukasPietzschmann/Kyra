@@ -8,13 +8,13 @@
 namespace Slanguage {
 class BinaryExpr : public Expression {
 public:
-	BinaryExpr(const Position& position, Expression::Ptr lhs, Token oper, Expression::Ptr rhs) :
-		Expression(position), m_operator(std::move(oper)), m_lhs(std::move(lhs)), m_rhs(std::move(rhs)) {}
+	BinaryExpr(const Position& position, const Expression::Ptr& lhs, Token oper, const Expression::Ptr& rhs) :
+		Expression(position), m_operator(std::move(oper)), m_lhs(lhs), m_rhs(rhs) {}
 	~BinaryExpr() override = default;
 	void accept(ExpressionVisitor& visitor) override { return visitor.visitBinaryExpr(*this); }
 	const Token& getOperator() const { return m_operator; }
-	const Ptr& getLhs() const { return m_lhs; }
-	const Ptr& getRhs() const { return m_rhs; }
+	Expression::Ptr getLhs() const { return m_lhs; }
+	Expression::Ptr getRhs() const { return m_rhs; }
 
 private:
 	Token m_operator;
