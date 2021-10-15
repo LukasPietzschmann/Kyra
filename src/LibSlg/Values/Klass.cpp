@@ -32,8 +32,8 @@ void Klass::instantiate(std::vector<Value::Ptr> constructorArguments) {
 		if(decl->getInitializer() != nullptr) {
 			// FIXME: hier müsste m_currentContext gesetzt werden, damit eine Function den richtigen Klassen Kontext
 			// besitzt
-			decl->getInitializer()->accept(Interpreter::getInstance());
-			init = Interpreter::getInstance().getVisitorReturn();
+			decl->getInitializer()->accept(Runtime::getInstance());
+			init = Runtime::getInstance().getVisitorReturn();
 		}
 		m_instanceContext->declareVar(decl->getIdentifier().getValue().asString(), init, decl->isMutable());
 	}

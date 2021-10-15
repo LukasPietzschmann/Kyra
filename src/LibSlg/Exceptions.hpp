@@ -43,13 +43,7 @@ private:
 
 class TypingException : public MessageException {
 public:
-	TypingException(const std::string& message) : MessageException(Position(0, 0, 0, 0), message) {}
-};
-
-class RuntimeException : public MessageException {
-public:
-	explicit RuntimeException(const Position& position, const std::string& message) :
-		MessageException(position, message) {}
+	explicit TypingException(const std::string& message) : MessageException(Position(0, 0, 0, 0), message) {}
 };
 
 class Value;

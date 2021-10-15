@@ -6,12 +6,25 @@ Runtime& Runtime::getInstance() {
 	return instance;
 }
 
-void Runtime::executeStatement(const Statement::Ptr& statement) { statement->accept(*this); }
+void Runtime::executeStatement(const Statement::Ptr& statement, RuntimeContext* contextToExecuteOn) {
+	if(contextToExecuteOn == nullptr) {
+		statement->accept(*this);
+		return;
+	}
+
+	RuntimeContext contextCopy = std::move(m_currentContext);
+	m_currentContext = *contextToExecuteOn;
+	statement->accept(*this);
+	contextToExecuteOn = &m_currentContext;
+	m_currentContext = std::move(contextCopy);
+}
 
 Value::Ptr Runtime::executeExpression(const Expression::Ptr& expression) {
 	EXPR_ACCEPT(expression, *this, Value::Ptr result);
 	return result;
 }
+
+Value::Ptr Runtime::getVisitorReturn() { return m_exprVisitorResult; }
 
 void Runtime::visitAccessExpr(AccessExpr& accessExpr) {
 	EXPR_ACCEPT(accessExpr.getOwner(), *this, Value::Ptr owner);
@@ -67,7 +80,7 @@ void Runtime::visitGroupExpr(GroupExpr& groupExpr) {
 }
 
 void Runtime::visitInstantiationExpr(InstantiationExpr& instantiationExpr) {
-	Value::Ptr klass = Value::makePtr<Klass>(m_currentContext.getCustomType(instantiationExpr.getName()));
+	Value::Ptr klass = m_currentContext.getCustomType(instantiationExpr.getName());
 	std::vector<Value::Ptr> args;
 	for(const auto& arg : instantiationExpr.getArguments()) {
 		EXPR_ACCEPT(arg, *this, Value::Ptr value);
@@ -117,7 +130,7 @@ void Runtime::visitDeclarationStmt(DeclarationStmt& declarationStmt) {
 
 void Runtime::visitClassDeclarationStmt(ClassDeclarationStmt& classDeclarationStmt) {
 	const std::string& name = classDeclarationStmt.getIdentifier().getValue().asString();
-	m_currentContext.declareType(name, Klass(classDeclarationStmt));
+	m_currentContext.declareType(name, Value::makePtr<Klass>(classDeclarationStmt));
 }
 
 void Runtime::visitExpressionStmt(ExpressionStmt& expressionStmt) { expressionStmt.getExpr()->accept(*this); }

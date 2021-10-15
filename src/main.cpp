@@ -52,7 +52,7 @@ int main(int argc, char** argv) {
 			// File
 			std::stringstream fileContent;
 			std::string line;
-			const std::string& fileName = result["file"].as<std::string>();
+			const auto& fileName = result["file"].as<std::string>();
 			std::ifstream fileStream(fileName);
 			if(!fileStream.good()) {
 				std::cout << "File " << fileName << " not found" << std::endl;
@@ -62,7 +62,7 @@ int main(int argc, char** argv) {
 				fileContent << line << "\n";
 			fileStream.close();
 
-			LibSlg::Interpreter::getInstance().execute(fileContent.str(), verbose);
+			LibSlg::Interpreter::execute(fileContent.str(), verbose);
 		}
 	} catch(const cxxopts::OptionException& exception) {
 		std::cout << exception.what() << "\n" << options.help() << std::endl;
@@ -103,14 +103,14 @@ void niceRepl() {
 		}
 
 		completeCode += inputLine;
-		unfinished = LibSlg::Interpreter::getInstance().isIncompleteStatement(completeCode);
+		unfinished = LibSlg::Interpreter::isIncompleteStatement(completeCode);
 
 		if(unfinished) {
 			prompt = ".... ";
 			completeCode += "\n";
 		} else {
 			add_history(completeCode.c_str());
-			LibSlg::Interpreter::getInstance().execute(completeCode, verbose);
+			LibSlg::Interpreter::execute(completeCode, verbose);
 			completeCode.clear();
 			prompt = defaultPrompt;
 		}

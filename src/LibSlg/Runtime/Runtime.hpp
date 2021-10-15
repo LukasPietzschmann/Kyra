@@ -28,8 +28,9 @@
 
 namespace LibSlg {
 class Runtime : public ExpressionVisitor, public StatementVisitor {
-public:
 	EXPR_NEEDS_VISIT_RETURN_OF_TYPE(Value::Ptr);
+
+public:
 	static Runtime& getInstance();
 
 	Runtime(Runtime const&) = delete;
@@ -37,7 +38,10 @@ public:
 	Runtime& operator=(Runtime const&) = delete;
 	Runtime& operator=(Runtime&&) = delete;
 
-	void executeStatement(const Statement::Ptr& statement);
+	// FIXME only used in Klass::instantiate. Looks like bad design
+	Value::Ptr getVisitorReturn();
+
+	void executeStatement(const Statement::Ptr& statement, RuntimeContext* contextToExecuteOn = nullptr);
 	Value::Ptr executeExpression(const Expression::Ptr& expression);
 
 	void visitAccessExpr(AccessExpr& accessExpr) override;

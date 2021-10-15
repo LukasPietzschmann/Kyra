@@ -3,53 +3,15 @@
 #include <string>
 
 #include "AstLogger.hpp"
-#include "Expressions/Expression.hpp"
 #include "Lexer.hpp"
 #include "Parser.hpp"
-#include "Runtime/RuntimeContext.hpp"
-#include "Statements/Statement.hpp"
+#include "Runtime/Runtime.hpp"
 #include "Typing/TypeChecker.hpp"
-#include "Values/Function.hpp"
-#include "Values/Klass.hpp"
 
 namespace LibSlg {
-class Interpreter : public ExpressionVisitor, public StatementVisitor {
-	EXPR_NEEDS_VISIT_RETURN_OF_TYPE(Value::Ptr);
-
+class Interpreter {
 public:
-	static Interpreter& getInstance();
-	Interpreter(Interpreter const&) = delete;
-	void operator=(Interpreter const&) = delete;
-	virtual ~Interpreter() = default;
-
-	// FIXME this is only needed for Klass::instantiate
-	Value::Ptr getVisitorReturn() const { return m_exprVisitorResult; }
-
-	void execute(const std::string& code, bool verboseLogging = false, bool passThroughExceptions = false);
-	void executeStatementsOnContext(const std::vector<Statement::Ptr>& statements, RuntimeContext& context);
-	bool isIncompleteStatement(const std::string& code) const;
-
-	void visitAccessExpr(AccessExpr& accessExpr) override;
-	void visitAssignmentExpr(AssignmentExpr& assignmentExpr) override;
-	void visitBinaryExpr(BinaryExpr& binaryExpr) override;
-	void visitCallExpr(CallExpr& callExpr) override;
-	void visitFunction(FunctionExpr& functionExpr) override;
-	void visitGroupExpr(GroupExpr& groupExpr) override;
-	void visitInstantiationExpr(InstantiationExpr& instantiationExpr) override;
-	void visitLiteral(LiteralExpr& literalExpr) override;
-	void visitTypeExpr(TypeExpr& typeExpr) override;
-	void visitUnaryExpr(UnaryExpr& unaryExpr) override;
-	void visitVariable(VariableExpr& variableExpr) override;
-	void visitBlockStmt(BlockStmt& blockStmt) override;
-	void visitDeclarationStmt(DeclarationStmt& declarationStmt) override;
-	void visitClassDeclarationStmt(ClassDeclarationStmt& classDeclarationStmt) override;
-	void visitExpressionStmt(ExpressionStmt& expressionStmt) override;
-	void visitPrintStmt(PrintStmt& printStmt) override;
-	void visitReturnStmt(ReturnStmt& returnStmt) override;
-
-private:
-	Interpreter() = default;
-
-	RuntimeContext* m_currentContext{new RuntimeContext()};
+	static void execute(const std::string& code, bool verboseLogging = false, bool passThroughExceptions = false);
+	static bool isIncompleteStatement(const std::string& code);
 };
 }

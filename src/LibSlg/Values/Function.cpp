@@ -10,7 +10,8 @@ Value::Ptr Function::exec(std::vector<Value::Ptr> arguments) const {
 		runtimeContext.declareVar(m_functionExpr.getParameters()[i].name.getValue().asString(), arguments[i]);
 	auto block = std::dynamic_pointer_cast<BlockStmt>(m_functionExpr.getImplementation());
 	try {
-		Interpreter::getInstance().executeStatementsOnContext(block->getStatements(), runtimeContext);
+		for(const auto& statement : block->getStatements())
+			Runtime::getInstance().executeStatement(statement, &runtimeContext);
 	} catch(const ReturnException& exception) { return exception.getReturnVal(); }
 	return Value::makePtr<Nothing>();
 }
