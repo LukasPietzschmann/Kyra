@@ -1,6 +1,6 @@
 #include "Runtime.hpp"
 
-namespace LibSlg {
+namespace Slanguage {
 Runtime& Runtime::getInstance() {
 	static Runtime instance;
 	return instance;

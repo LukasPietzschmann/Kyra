@@ -1,6 +1,6 @@
 #include "TypeContext.hpp"
 
-namespace LibSlg {
+namespace Slanguage {
 bool TypeContext::setVar(const std::string& name, const Variable<Type::Ptr>& var) {
 	if(m_variables.contains(name))
 		return false;

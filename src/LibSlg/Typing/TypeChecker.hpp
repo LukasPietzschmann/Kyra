@@ -36,7 +36,7 @@
 #include "TypeContext.hpp"
 #include "TypingErrors.hpp"
 
-namespace LibSlg {
+namespace Slanguage {
 class TypeChecker : public ExpressionVisitor, public StatementVisitor {
 #define THROW_TYPING_ERROR(error)               \
 	do {                                        \

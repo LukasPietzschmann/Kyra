@@ -4,7 +4,7 @@
 
 #include "Expression.hpp"
 
-namespace LibSlg {
+namespace Slanguage {
 class GroupExpr : public Expression {
 public:
 	GroupExpr(const Position& position, Expression::Ptr expr) : Expression(position), m_expr(std::move(expr)) {}

@@ -8,7 +8,7 @@
 #include "NothingType.hpp"
 #include "Type.hpp"
 
-namespace LibSlg {
+namespace Slanguage {
 class NativeTypes {
 public:
 	static Type::Ptr make(const std::string_view& type) {

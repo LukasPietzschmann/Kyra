@@ -1,6 +1,6 @@
 #include "Lexer.hpp"
 
-namespace LibSlg {
+namespace Slanguage {
 std::vector<Token> Lexer::scanTokens() {
 	while(!isAtEnd()) {
 		scanToken();

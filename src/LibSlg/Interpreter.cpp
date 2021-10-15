@@ -1,6 +1,6 @@
 #include "Interpreter.hpp"
 
-namespace LibSlg {
+namespace Slanguage {
 void Interpreter::execute(const std::string& code, bool verboseLogging, bool passThroughExceptions) {
 	try {
 		auto tokens = Lexer(code).scanTokens();

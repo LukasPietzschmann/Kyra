@@ -3,7 +3,7 @@
 #include "../Values/Value.hpp"
 #include "Expression.hpp"
 
-namespace LibSlg {
+namespace Slanguage {
 class LiteralExpr : public Expression {
 public:
 	LiteralExpr(const Position& position, Value::Ptr value) : Expression(position), m_value(std::move(value)) {}

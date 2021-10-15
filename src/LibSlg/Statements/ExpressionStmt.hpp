@@ -2,7 +2,7 @@
 
 #include "Statement.hpp"
 
-namespace LibSlg {
+namespace Slanguage {
 class ExpressionStmt : public Statement {
 public:
 	ExpressionStmt(const Position& position, Expression::Ptr expr) : Statement(position), m_expr(std::move(expr)) {}

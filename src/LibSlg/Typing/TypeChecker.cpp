@@ -2,7 +2,7 @@
 
 #include <utility>
 
-namespace LibSlg {
+namespace Slanguage {
 TypeChecker& TypeChecker::getInstance() {
 	static TypeChecker instance;
 	return instance;

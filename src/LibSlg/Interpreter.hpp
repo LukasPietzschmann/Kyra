@@ -8,7 +8,7 @@
 #include "Runtime/Runtime.hpp"
 #include "Typing/TypeChecker.hpp"
 
-namespace LibSlg {
+namespace Slanguage {
 class Interpreter {
 public:
 	static void execute(const std::string& code, bool verboseLogging = false, bool passThroughExceptions = false);

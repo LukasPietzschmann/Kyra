@@ -9,7 +9,7 @@
 #include "Exceptions.hpp"
 #include "Token.hpp"
 
-namespace LibSlg {
+namespace Slanguage {
 class Lexer {
 public:
 	explicit Lexer(std::string source) : m_source(std::move(source)) {}

@@ -5,7 +5,7 @@
 #include "../Token.hpp"
 #include "Expression.hpp"
 
-namespace LibSlg {
+namespace Slanguage {
 class VariableExpr : public Expression {
 public:
 	VariableExpr(const Position& position, Token name) : Expression(position), m_name(std::move(name)) {}

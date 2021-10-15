@@ -1,6 +1,6 @@
 #include "RuntimeContext.hpp"
 
-namespace LibSlg {
+namespace Slanguage {
 Variable<Value::Ptr> RuntimeContext::getVar(const std::string& name) const {
 	if(const auto& pos = m_variables.find(name); pos != m_variables.end())
 		return pos->second;

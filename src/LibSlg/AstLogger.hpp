@@ -26,7 +26,7 @@
 
 #define COUT std::cout << std::string(m_indent * 4, ' ')
 
-namespace LibSlg {
+namespace Slanguage {
 class AstLogger : public StatementVisitor, public ExpressionVisitor {
 public:
 	AstLogger() = default;

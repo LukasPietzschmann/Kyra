@@ -9,7 +9,7 @@
 #include "../Values/Value.hpp"
 #include "../Variable.hpp"
 
-namespace LibSlg {
+namespace Slanguage {
 class Type;
 class Type {
 public:

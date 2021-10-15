@@ -62,7 +62,7 @@ int main(int argc, char** argv) {
 				fileContent << line << "\n";
 			fileStream.close();
 
-			LibSlg::Interpreter::execute(fileContent.str(), verbose);
+			Slanguage::Interpreter::execute(fileContent.str(), verbose);
 		}
 	} catch(const cxxopts::OptionException& exception) {
 		std::cout << exception.what() << "\n" << options.help() << std::endl;
@@ -80,7 +80,7 @@ void simpleRepl() {
 		if(line == "exit")
 			break;
 
-		LibSlg::Interpreter::getInstance().execute(line, verbose);
+		Slanguage::Interpreter::getInstance().execute(line, verbose);
 
 		std::cout << defaultPrompt;
 	}
@@ -103,14 +103,14 @@ void niceRepl() {
 		}
 
 		completeCode += inputLine;
-		unfinished = LibSlg::Interpreter::isIncompleteStatement(completeCode);
+		unfinished = Slanguage::Interpreter::isIncompleteStatement(completeCode);
 
 		if(unfinished) {
 			prompt = ".... ";
 			completeCode += "\n";
 		} else {
 			add_history(completeCode.c_str());
-			LibSlg::Interpreter::execute(completeCode, verbose);
+			Slanguage::Interpreter::execute(completeCode, verbose);
 			completeCode.clear();
 			prompt = defaultPrompt;
 		}

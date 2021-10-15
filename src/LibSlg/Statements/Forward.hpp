@@ -1,6 +1,6 @@
 #pragma once
 
-namespace LibSlg {
+namespace Slanguage {
 class BlockStmt;
 class DeclarationStmt;
 class ClassDeclarationStmt;

@@ -2,7 +2,7 @@
 
 #include "../Interpreter.hpp"
 
-namespace LibSlg {
+namespace Slanguage {
 Value::Ptr Function::exec(std::vector<Value::Ptr> arguments) const {
 	assert(arguments.size() == getArity());
 	RuntimeContext runtimeContext = m_definitionContext;

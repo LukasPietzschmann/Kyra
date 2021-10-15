@@ -3,7 +3,7 @@
 #include "../Position.hpp"
 #include "Forward.hpp"
 
-namespace LibSlg {
+namespace Slanguage {
 
 class StatementVisitor {
 public:

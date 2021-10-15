@@ -4,7 +4,7 @@
 #include "../Values/Value.hpp"
 #include "Forward.hpp"
 
-namespace LibSlg {
+namespace Slanguage {
 
 class ExpressionVisitor {
 public:

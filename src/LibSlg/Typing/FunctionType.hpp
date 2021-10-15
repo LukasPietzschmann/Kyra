@@ -5,7 +5,7 @@
 
 #include "Type.hpp"
 
-namespace LibSlg {
+namespace Slanguage {
 class FunctionType : public Type {
 public:
 	FunctionType(Type::Ptr returnType, std::vector<Type::Ptr> parameters) :

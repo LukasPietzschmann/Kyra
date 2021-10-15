@@ -1,6 +1,6 @@
 #pragma once
 
-namespace LibSlg {
+namespace Slanguage {
 class AccessExpr;
 class AssignmentExpr;
 class BinaryExpr;

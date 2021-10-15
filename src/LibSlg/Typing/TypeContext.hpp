@@ -7,7 +7,7 @@
 #include "NativeTypes.hpp"
 #include "Type.hpp"
 
-namespace LibSlg {
+namespace Slanguage {
 class TypeContext {
 public:
 	explicit TypeContext(TypeContext* parent) : m_parent(parent) {

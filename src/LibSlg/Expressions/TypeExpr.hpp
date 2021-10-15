@@ -4,7 +4,7 @@
 
 #include "Expression.hpp"
 
-namespace LibSlg {
+namespace Slanguage {
 class TypeExpr : public Expression {
 public:
 	TypeExpr(const Position& position, std::string name) :

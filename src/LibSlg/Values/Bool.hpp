@@ -2,7 +2,7 @@
 
 #include "Value.hpp"
 
-namespace LibSlg {
+namespace Slanguage {
 class Bool : public Value {
 public:
 	explicit Bool(bool boolean) : m_bool(boolean) {}

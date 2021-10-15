@@ -5,7 +5,7 @@
 
 #include "Expression.hpp"
 
-namespace LibSlg {
+namespace Slanguage {
 class CallExpr : public Expression {
 public:
 	CallExpr(const Position& position, Expression::Ptr function, std::vector<Expression::Ptr> arguments) :

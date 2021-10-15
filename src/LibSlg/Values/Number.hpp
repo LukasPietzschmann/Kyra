@@ -4,7 +4,7 @@
 
 #include "Value.hpp"
 
-namespace LibSlg {
+namespace Slanguage {
 class Number : public Value {
 public:
 	explicit Number(int number) : m_number(number) {}

@@ -5,7 +5,7 @@
 #include "Nothing.hpp"
 #include "Value.hpp"
 
-namespace LibSlg {
+namespace Slanguage {
 class String : public Value {
 public:
 	explicit String(std::string string) : m_string(std::move(string)) {}

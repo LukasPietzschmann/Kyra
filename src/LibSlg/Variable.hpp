@@ -1,6 +1,6 @@
 #pragma once
 
-namespace LibSlg {
+namespace Slanguage {
 template <typename ValueType>
 struct Variable {
 	Variable(ValueType value, bool isMutable) : value(value), isMutable(isMutable) {}

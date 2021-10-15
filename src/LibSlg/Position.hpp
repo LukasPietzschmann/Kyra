@@ -4,7 +4,7 @@
 #include <sstream>
 #include <string>
 
-namespace LibSlg {
+namespace Slanguage {
 struct Position {
 	Position(unsigned int startLine, unsigned int startColumn, unsigned int endLine, unsigned int endColumn) :
 		start(Start(startLine, startColumn)), end(End(endLine, endColumn)) {}

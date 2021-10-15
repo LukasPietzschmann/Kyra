@@ -4,7 +4,7 @@
 
 #include "Value.hpp"
 
-namespace LibSlg {
+namespace Slanguage {
 class Nothing : public Value {
 public:
 	Nothing() = default;

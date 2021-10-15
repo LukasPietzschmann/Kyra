@@ -5,7 +5,7 @@
 #include "../Token.hpp"
 #include "Expression.hpp"
 
-namespace LibSlg {
+namespace Slanguage {
 class BinaryExpr : public Expression {
 public:
 	BinaryExpr(const Position& position, Expression::Ptr lhs, Token oper, Expression::Ptr rhs) :

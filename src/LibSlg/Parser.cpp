@@ -1,6 +1,6 @@
 #include "Parser.hpp"
 
-namespace LibSlg {
+namespace Slanguage {
 std::vector<Statement::Ptr> Parser::parse() {
 	while(!isAtEnd())
 		m_statements.push_back(declaration());

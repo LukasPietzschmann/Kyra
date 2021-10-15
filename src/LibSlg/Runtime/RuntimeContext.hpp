@@ -9,7 +9,7 @@
 #include "../Values/Nothing.hpp"
 #include "../Variable.hpp"
 
-namespace LibSlg {
+namespace Slanguage {
 class RuntimeContext {
 public:
 	explicit RuntimeContext(RuntimeContext* parent = nullptr) : m_parent(parent) {}

@@ -1,6 +1,6 @@
 #pragma once
 
-namespace LibSlg {
+namespace Slanguage {
 enum class TokenType {
 	// clang-format off
 	// Single-character tokens

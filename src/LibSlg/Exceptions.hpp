@@ -6,7 +6,7 @@
 
 #include "Position.hpp"
 
-namespace LibSlg {
+namespace Slanguage {
 class MessageException : public std::exception {
 public:
 	MessageException() = delete;

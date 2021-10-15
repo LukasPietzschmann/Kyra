@@ -7,7 +7,7 @@
 #include "Position.hpp"
 #include "TokenType.hpp"
 
-namespace LibSlg {
+namespace Slanguage {
 class Token {
 public:
 	struct TokenValue {

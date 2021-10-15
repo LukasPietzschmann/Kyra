@@ -1,6 +1,6 @@
 #include "Value.hpp"
 
-namespace LibSlg {
+namespace Slanguage {
 const std::string Value::NativeTypes::Nothing = "Nothing";
 const std::string Value::NativeTypes::Number = "Number";
 const std::string Value::NativeTypes::Bool = "Bool";

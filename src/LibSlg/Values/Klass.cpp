@@ -3,7 +3,7 @@
 #include "../Interpreter.hpp"
 #include "../Runtime/RuntimeContext.hpp"
 
-namespace LibSlg {
+namespace Slanguage {
 bool Klass::knowsIdentifier(const std::string& identifier) const {
 	bool declarationsContainIdentifier = std::any_of(m_declarationStmt.getDeclarations().begin(),
 			m_declarationStmt.getDeclarations().end(),

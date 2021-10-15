@@ -8,7 +8,7 @@
 #include "Forward.hpp"
 #include "iostream"
 
-namespace LibSlg {
+namespace Slanguage {
 class Value {
 public:
 	using Ptr = std::shared_ptr<Value>;

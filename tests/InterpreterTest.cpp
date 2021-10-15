@@ -7,136 +7,139 @@ using ::testing::internal::GetCapturedStdout;
 
 TEST(InterpreterTest, SimpleExpression) {
 	CaptureStdout();
-	LibSlg::Interpreter::execute("print 1;");
+	Slanguage::Interpreter::execute("print 1;");
 	EXPECT_STREQ(GetCapturedStdout().c_str(), "1\n");
 }
 
 TEST(InterpreterTest, VarDeclAndAssignment) {
 	CaptureStdout();
-	LibSlg::Interpreter::execute("var a: Number = 1; print a;");
+	Slanguage::Interpreter::execute("var a: Number = 1; print a;");
 	EXPECT_STREQ(GetCapturedStdout().c_str(), "1\n");
 
 	CaptureStdout();
-	LibSlg::Interpreter::execute("var b: Number; print b;");
+	Slanguage::Interpreter::execute("var b: Number; print b;");
 	EXPECT_STREQ(GetCapturedStdout().c_str(), "nothing\n");
 
 	CaptureStdout();
-	LibSlg::Interpreter::execute("b = 1; print b;");
+	Slanguage::Interpreter::execute("b = 1; print b;");
 	EXPECT_STREQ(GetCapturedStdout().c_str(), "1\n");
 
-	EXPECT_ANY_THROW(LibSlg::Interpreter::execute("print notDeclared;", false, true));
+	EXPECT_ANY_THROW(Slanguage::Interpreter::execute("print notDeclared;", false, true));
 
-	EXPECT_ANY_THROW(
-			LibSlg::Interpreter::execute("var alreadyDeclared: Number; var alreadyDeclared: Number = 1;", false, true));
+	EXPECT_ANY_THROW(Slanguage::Interpreter::execute("var alreadyDeclared: Number; var alreadyDeclared: Number = 1;",
+			false,
+			true));
 
 	// immutable vals
-	EXPECT_ANY_THROW(LibSlg::Interpreter::execute("val immutable: Number = 1; immutable = 2;", false, true));
-	EXPECT_ANY_THROW(LibSlg::Interpreter::execute("val immutableTwo: Number; immutableTwo = 2;", false, true));
+	EXPECT_ANY_THROW(Slanguage::Interpreter::execute("val immutable: Number = 1; immutable = 2;", false, true));
+	EXPECT_ANY_THROW(Slanguage::Interpreter::execute("val immutableTwo: Number; immutableTwo = 2;", false, true));
 }
 
 TEST(InterpreterTest, SimpleBooleanComparison) {
 	CaptureStdout();
-	LibSlg::Interpreter::execute("print true == false;");
+	Slanguage::Interpreter::execute("print true == false;");
 	EXPECT_STREQ(GetCapturedStdout().c_str(), "false\n");
 
 	CaptureStdout();
-	LibSlg::Interpreter::execute("print true < false;");
+	Slanguage::Interpreter::execute("print true < false;");
 	EXPECT_STREQ(GetCapturedStdout().c_str(), "false\n");
 
 	CaptureStdout();
-	LibSlg::Interpreter::execute("print false < true;");
+	Slanguage::Interpreter::execute("print false < true;");
 	EXPECT_STREQ(GetCapturedStdout().c_str(), "true\n");
 
 	CaptureStdout();
-	LibSlg::Interpreter::execute("print true < true;");
+	Slanguage::Interpreter::execute("print true < true;");
 	EXPECT_STREQ(GetCapturedStdout().c_str(), "false\n");
 
 	CaptureStdout();
-	LibSlg::Interpreter::execute("print true <= true;");
+	Slanguage::Interpreter::execute("print true <= true;");
 	EXPECT_STREQ(GetCapturedStdout().c_str(), "true\n");
 }
 
 TEST(InterpreterTest, ArithmeticPrecedence) {
 	CaptureStdout();
-	LibSlg::Interpreter::execute("print 1 + 2 * 3;");
+	Slanguage::Interpreter::execute("print 1 + 2 * 3;");
 	EXPECT_STREQ(GetCapturedStdout().c_str(), "7\n");
 
 	CaptureStdout();
-	LibSlg::Interpreter::execute("print (1 + 2) * 3;");
+	Slanguage::Interpreter::execute("print (1 + 2) * 3;");
 	EXPECT_STREQ(GetCapturedStdout().c_str(), "9\n");
 
 	CaptureStdout();
-	LibSlg::Interpreter::execute("print -(1 + 2) * 3;");
+	Slanguage::Interpreter::execute("print -(1 + 2) * 3;");
 	EXPECT_STREQ(GetCapturedStdout().c_str(), "-9\n");
 }
 
 TEST(InterpreterTest, Comparisons) {
 	CaptureStdout();
-	LibSlg::Interpreter::execute("print nothing == nothing;");
+	Slanguage::Interpreter::execute("print nothing == nothing;");
 	EXPECT_STREQ(GetCapturedStdout().c_str(), "true\n");
 
 	CaptureStdout();
-	LibSlg::Interpreter::execute("print nothing == !nothing;");
+	Slanguage::Interpreter::execute("print nothing == !nothing;");
 	EXPECT_STREQ(GetCapturedStdout().c_str(), "false\n");
 
 	CaptureStdout();
-	LibSlg::Interpreter::execute("print 1 < 2;");
+	Slanguage::Interpreter::execute("print 1 < 2;");
 	EXPECT_STREQ(GetCapturedStdout().c_str(), "true\n");
 
 	CaptureStdout();
-	LibSlg::Interpreter::execute("print 1 <= 1;");
+	Slanguage::Interpreter::execute("print 1 <= 1;");
 	EXPECT_STREQ(GetCapturedStdout().c_str(), "true\n");
 
 	CaptureStdout();
-	LibSlg::Interpreter::execute("print !(1 <= 1);");
+	Slanguage::Interpreter::execute("print !(1 <= 1);");
 	EXPECT_STREQ(GetCapturedStdout().c_str(), "false\n");
 
 	CaptureStdout();
-	LibSlg::Interpreter::execute(R"(print "a" <= "a";)");
+	Slanguage::Interpreter::execute(R"(print "a" <= "a";)");
 	EXPECT_STREQ(GetCapturedStdout().c_str(), "true\n");
 
 	CaptureStdout();
-	LibSlg::Interpreter::execute(R"(print "a" < "a";)");
+	Slanguage::Interpreter::execute(R"(print "a" < "a";)");
 	EXPECT_STREQ(GetCapturedStdout().c_str(), "false\n");
 }
 
 TEST(InterpreterTest, StringConcat) {
 	CaptureStdout();
-	LibSlg::Interpreter::execute(R"(print "first" + " " + "second";)");
+	Slanguage::Interpreter::execute(R"(print "first" + " " + "second";)");
 	EXPECT_STREQ(GetCapturedStdout().c_str(), "first second\n");
 
 	CaptureStdout();
-	LibSlg::Interpreter::execute(R"(print "ten times: " + "lol" * 10;)");
+	Slanguage::Interpreter::execute(R"(print "ten times: " + "lol" * 10;)");
 	EXPECT_STREQ(GetCapturedStdout().c_str(), "ten times: lollollollollollollollollollol\n");
 
 	CaptureStdout();
-	LibSlg::Interpreter::execute(R"(print "zero times: " + "lol" * -10;)");
+	Slanguage::Interpreter::execute(R"(print "zero times: " + "lol" * -10;)");
 	EXPECT_STREQ(GetCapturedStdout().c_str(), "zero times: \n");
 }
 
 TEST(InterpreterTest, BlockScope) {
-	EXPECT_ANY_THROW(LibSlg::Interpreter::execute("var z: Number; var z: String;", false, true));
-	EXPECT_NO_THROW(LibSlg::Interpreter::execute("var x: Number; {var x: Number;}", false, true));
+	EXPECT_ANY_THROW(Slanguage::Interpreter::execute("var z: Number; var z: String;", false, true));
+	EXPECT_NO_THROW(Slanguage::Interpreter::execute("var x: Number; {var x: Number;}", false, true));
 
 	CaptureStdout();
-	LibSlg::Interpreter::execute("var y: Number = 420; {print y;}");
+	Slanguage::Interpreter::execute("var y: Number = 420; {print y;}");
 	EXPECT_STREQ(GetCapturedStdout().c_str(), "420\n");
 }
 
 TEST(InterpreterTest, Functions) {
 	// Check Arity
-	EXPECT_ANY_THROW(LibSlg::Interpreter::execute("fun(a: Number, b: Number)->Number{return a + b;}();", false, true));
+	EXPECT_ANY_THROW(
+			Slanguage::Interpreter::execute("fun(a: Number, b: Number)->Number{return a + b;}();", false, true));
 	EXPECT_NO_THROW(
-			LibSlg::Interpreter::execute("fun(a: Number, b: Number)->Number{return a + b;}(2, 2);", false, true));
+			Slanguage::Interpreter::execute("fun(a: Number, b: Number)->Number{return a + b;}(2, 2);", false, true));
 
 	// Simple function exec
 	CaptureStdout();
-	LibSlg::Interpreter::execute("fun(a: String)->Nothing{print a;}(\"Hi\");");
+	Slanguage::Interpreter::execute("fun(a: String)->Nothing{print a;}(\"Hi\");");
 	EXPECT_STREQ(GetCapturedStdout().c_str(), "Hi\n");
 
 	// Closures
 	CaptureStdout();
-	LibSlg::Interpreter::execute("var closure: Function()->Number= fun(a: "
-								 "Number)->Function()->Number{return fun()->Number{return a;};}(10); print closure();");
+	Slanguage::Interpreter::execute(
+			"var closure: Function()->Number= fun(a: "
+			"Number)->Function()->Number{return fun()->Number{return a;};}(10); print closure();");
 	EXPECT_STREQ(GetCapturedStdout().c_str(), "10\n");
 }

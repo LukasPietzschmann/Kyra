@@ -7,7 +7,7 @@
 #include "../Token.hpp"
 #include "Expression.hpp"
 
-namespace LibSlg {
+namespace Slanguage {
 class FunctionExpr : public Expression {
 public:
 	struct Parameter {

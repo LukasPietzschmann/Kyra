@@ -7,7 +7,7 @@
 #include "Nothing.hpp"
 #include "Value.hpp"
 
-namespace LibSlg {
+namespace Slanguage {
 class Function : public Value {
 public:
 	Function(const FunctionExpr& functionExpr, RuntimeContext definitionContext) :

@@ -4,7 +4,7 @@
 
 #include "Expression.hpp"
 
-namespace LibSlg {
+namespace Slanguage {
 class InstantiationExpr : public Expression {
 public:
 	InstantiationExpr(const Position& position, std::string name, std::vector<Expression::Ptr> arguments) :

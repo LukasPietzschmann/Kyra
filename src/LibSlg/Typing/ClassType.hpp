@@ -7,7 +7,7 @@
 
 #include "Type.hpp"
 
-namespace LibSlg {
+namespace Slanguage {
 class ClassType : public Type {
 public:
 	ClassType(const std::string& name,

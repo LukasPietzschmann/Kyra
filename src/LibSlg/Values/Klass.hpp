@@ -3,7 +3,7 @@
 #include "../Statements/ClassDeclarationStmt.hpp"
 #include "Value.hpp"
 
-namespace LibSlg {
+namespace Slanguage {
 class RuntimeContext;
 
 class Klass : public Value {

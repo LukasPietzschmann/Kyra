@@ -6,7 +6,7 @@
 
 #include "../Position.hpp"
 
-namespace LibSlg {
+namespace Slanguage {
 class TypingError {
 public:
 	TypingError(const Position& position, std::string message) : m_position(position), m_message(std::move(message)) {}

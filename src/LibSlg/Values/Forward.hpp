@@ -1,6 +1,6 @@
 #pragma once
 
-namespace LibSlg {
+namespace Slanguage {
 class Bool;
 class Function;
 class Klass;

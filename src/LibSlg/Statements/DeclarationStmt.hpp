@@ -7,7 +7,7 @@
 #include "../Token.hpp"
 #include "Statement.hpp"
 
-namespace LibSlg {
+namespace Slanguage {
 class DeclarationStmt : public Statement {
 public:
 	DeclarationStmt(const Position& position,

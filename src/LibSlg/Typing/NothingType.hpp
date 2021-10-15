@@ -2,7 +2,7 @@
 
 #include "Type.hpp"
 
-namespace LibSlg {
+namespace Slanguage {
 class NothingType : public Type {
 public:
 	NothingType() : Type("Nothing") {}

@@ -8,7 +8,7 @@
 #include "../Values/Value.hpp"
 #include "Statement.hpp"
 
-namespace LibSlg {
+namespace Slanguage {
 class ClassDeclarationStmt : public Statement {
 public:
 	struct ConstructorParameter {

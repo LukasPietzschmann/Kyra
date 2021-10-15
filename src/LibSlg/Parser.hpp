@@ -31,7 +31,7 @@
 #include "Values/Number.hpp"
 #include "Values/String.hpp"
 
-namespace LibSlg {
+namespace Slanguage {
 class Parser {
 public:
 	explicit Parser(std::vector<Token> tokens) : m_tokens(std::move(tokens)) { m_statements.reserve(m_tokens.size()); }

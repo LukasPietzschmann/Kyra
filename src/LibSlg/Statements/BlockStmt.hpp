@@ -2,7 +2,7 @@
 
 #include "Statement.hpp"
 
-namespace LibSlg {
+namespace Slanguage {
 class BlockStmt : public Statement {
 public:
 	BlockStmt(const Position& position, std::vector<Statement::Ptr> statements) :

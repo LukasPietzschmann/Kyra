@@ -5,7 +5,7 @@
 #include "../Token.hpp"
 #include "Expression.hpp"
 
-namespace LibSlg {
+namespace Slanguage {
 class AccessExpr : public Expression {
 public:
 	AccessExpr(const Position& position, Expression::Ptr owner, Token name) :

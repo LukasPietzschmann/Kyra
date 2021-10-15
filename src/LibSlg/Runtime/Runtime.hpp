@@ -26,7 +26,7 @@
 #include "../Values/Number.hpp"
 #include "RuntimeContext.hpp"
 
-namespace LibSlg {
+namespace Slanguage {
 class Runtime : public ExpressionVisitor, public StatementVisitor {
 	EXPR_NEEDS_VISIT_RETURN_OF_TYPE(Value::Ptr);
 
