@@ -23,11 +23,12 @@ to implement a basic language to become more familiar with C++ and the magic beh
 
 ### For others:
 
-Slanguage is a **very** basic language, currently supporting:
+Slanguage is a **very** basic statically typed language, currently supporting:
 
+- classes
 - first-class functions
 - mutable and immutable variables
-    - strings, signed integers, booleans, functions and nothing (nil) values
+    - strings, signed integers, booleans and empty (nil) values
 - closures
 - little things like
     - console logging
