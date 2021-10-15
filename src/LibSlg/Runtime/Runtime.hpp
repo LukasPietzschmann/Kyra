@@ -38,11 +38,8 @@ public:
 	Runtime& operator=(Runtime const&) = delete;
 	Runtime& operator=(Runtime&&) = delete;
 
-	// FIXME only used in Klass::instantiate. Looks like bad design
-	Value::Ptr getVisitorReturn();
-
-	void executeStatement(Statement::WeakPtr statement, RuntimeContext* contextToExecuteOn = nullptr);
-	Value::Ptr executeExpression(Expression::WeakPtr expression, RuntimeContext* contextToExecuteOn = nullptr);
+	void executeStatement(Statement::WeakPtr statement, RuntimeContext::Ptr contextToExecuteOn = nullptr);
+	Value::Ptr executeExpression(Expression::WeakPtr expression, RuntimeContext::Ptr contextToExecuteOn = nullptr);
 
 	void visitAccessExpr(AccessExpr& accessExpr) override;
 	void visitAssignmentExpr(AssignmentExpr& assignmentExpr) override;
@@ -66,9 +63,9 @@ public:
 private:
 	Runtime() = default;
 
-	RuntimeContext m_currentContext{RuntimeContext()};
+	RuntimeContext::Ptr m_currentContext{RuntimeContext::makePtr<RuntimeContext>()};
 
 	template <typename Callback>
-	RuntimeContext runInNewContext(const Callback& callback, RuntimeContext* parent);
+	RuntimeContext::Ptr runInNewContext(const Callback& callback, RuntimeContext::Ptr parent);
 };
 }

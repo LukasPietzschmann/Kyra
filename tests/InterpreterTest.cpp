@@ -133,13 +133,13 @@ TEST(InterpreterTest, Functions) {
 
 	// Simple function exec
 	CaptureStdout();
-	Slanguage::Interpreter::execute("fun(a: String)->Nothing{print a;}(\"Hi\");");
+	Slanguage::Interpreter::execute("fun(xy: String)->Nothing{print xy;}(\"Hi\");");
 	EXPECT_STREQ(GetCapturedStdout().c_str(), "Hi\n");
 
 	// Closures
 	CaptureStdout();
 	Slanguage::Interpreter::execute(
-			"var closure: Function()->Number= fun(a: "
-			"Number)->Function()->Number{return fun()->Number{return a;};}(10); print closure();");
+			"var closure: Function()->Number= fun(xyz: "
+			"Number)->Function()->Number{return fun()->Number{return xyz;};}(10); print closure();");
 	EXPECT_STREQ(GetCapturedStdout().c_str(), "10\n");
 }

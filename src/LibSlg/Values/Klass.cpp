@@ -20,7 +20,7 @@ bool Klass::knowsIdentifier(const std::string& identifier) const {
 
 void Klass::instantiate(const std::vector<Value::Ptr>& constructorArguments) {
 	assert(constructorArguments.size() == getArity());
-	m_instanceContext = new RuntimeContext();
+	m_instanceContext = RuntimeContext::makePtr<RuntimeContext>();
 	for(unsigned long i = 0; i < constructorArguments.size(); ++i) {
 		assert(m_declarationStmt.getConstructorParameters()[i].type == constructorArguments[i]->getType());
 		m_instanceContext->declareVar(m_declarationStmt.getConstructorParameters()[i].name.getValue().asString(),

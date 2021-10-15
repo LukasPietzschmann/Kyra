@@ -6,34 +6,30 @@ Runtime& Runtime::getInstance() {
 	return instance;
 }
 
-void Runtime::executeStatement(Statement::WeakPtr statement, RuntimeContext* contextToExecuteOn) {
+void Runtime::executeStatement(Statement::WeakPtr statement, RuntimeContext::Ptr contextToExecuteOn) {
 	if(contextToExecuteOn == nullptr) {
 		Statement::lock(statement)->accept(*this);
 		return;
 	}
 
-	RuntimeContext contextCopy = m_currentContext;
-	m_currentContext = *contextToExecuteOn;
+	RuntimeContext::Ptr contextCopy = RuntimeContext::makePtr<RuntimeContext>(*m_currentContext);
+	m_currentContext = contextToExecuteOn;
 	Statement::lock(statement)->accept(*this);
-	contextToExecuteOn = &m_currentContext;
 	m_currentContext = contextCopy;
 }
 
-Value::Ptr Runtime::executeExpression(Expression::WeakPtr expression, RuntimeContext* contextToExecuteOn) {
+Value::Ptr Runtime::executeExpression(Expression::WeakPtr expression, RuntimeContext::Ptr contextToExecuteOn) {
 	if(contextToExecuteOn == nullptr) {
 		EXPR_ACCEPT(Expression::lock(expression), *this, Value::WeakPtr result);
 		return Value::lock(result);
 	}
 
-	RuntimeContext contextCopy = m_currentContext;
-	m_currentContext = *contextToExecuteOn;
+	RuntimeContext::Ptr contextCopy = RuntimeContext::makePtr<RuntimeContext>(*m_currentContext);
+	m_currentContext = contextToExecuteOn;
 	EXPR_ACCEPT(Expression::lock(expression), *this, Value::WeakPtr result);
-	contextToExecuteOn = &m_currentContext;
 	m_currentContext = contextCopy;
 	return Value::lock(result);
 }
-
-Value::Ptr Runtime::getVisitorReturn() { return Value::lock(m_exprVisitorResult); }
 
 void Runtime::visitAccessExpr(AccessExpr& accessExpr) {
 	EXPR_ACCEPT(accessExpr.getOwner(), *this, Value::Ptr owner);
@@ -43,7 +39,7 @@ void Runtime::visitAccessExpr(AccessExpr& accessExpr) {
 
 void Runtime::visitAssignmentExpr(AssignmentExpr& assignmentExpr) {
 	EXPR_ACCEPT(assignmentExpr.getNewValue(), *this, Value::Ptr newValue);
-	m_currentContext.mutate(assignmentExpr.getName().getValue().asString(), newValue);
+	m_currentContext->mutate(assignmentExpr.getName().getValue().asString(), newValue);
 	EXPR_RETURN_FROM_VISIT(newValue);
 }
 
@@ -89,7 +85,7 @@ void Runtime::visitGroupExpr(GroupExpr& groupExpr) {
 }
 
 void Runtime::visitInstantiationExpr(InstantiationExpr& instantiationExpr) {
-	Value::Ptr klass = m_currentContext.getCustomType(instantiationExpr.getName());
+	Value::Ptr klass = m_currentContext->getCustomType(instantiationExpr.getName());
 	std::vector<Value::Ptr> args;
 	for(const auto& arg : instantiationExpr.getArguments()) {
 		EXPR_ACCEPT(arg, *this, Value::Ptr value);
@@ -115,7 +111,7 @@ void Runtime::visitUnaryExpr(UnaryExpr& unaryExpr) {
 }
 
 void Runtime::visitVariable(VariableExpr& variableExpr) {
-	EXPR_RETURN_FROM_VISIT(m_currentContext.getVar(variableExpr.getName().getValue().asString()).value);
+	EXPR_RETURN_FROM_VISIT(m_currentContext->getVar(variableExpr.getName().getValue().asString()).value);
 }
 
 void Runtime::visitBlockStmt(BlockStmt& blockStmt) {
@@ -124,7 +120,7 @@ void Runtime::visitBlockStmt(BlockStmt& blockStmt) {
 				for(const auto& statement : blockStmt.getStatements())
 					statement->accept(*this);
 			},
-			&m_currentContext);
+			m_currentContext);
 }
 
 void Runtime::visitDeclarationStmt(DeclarationStmt& declarationStmt) {
@@ -134,12 +130,12 @@ void Runtime::visitDeclarationStmt(DeclarationStmt& declarationStmt) {
 	}
 
 	const std::string& name = declarationStmt.getIdentifier().getValue().asString();
-	m_currentContext.declareVar(name, init, declarationStmt.isMutable());
+	m_currentContext->declareVar(name, init, declarationStmt.isMutable());
 }
 
 void Runtime::visitClassDeclarationStmt(ClassDeclarationStmt& classDeclarationStmt) {
 	const std::string& name = classDeclarationStmt.getIdentifier().getValue().asString();
-	m_currentContext.declareType(name, Value::makePtr<Klass>(classDeclarationStmt));
+	m_currentContext->declareType(name, Value::makePtr<Klass>(classDeclarationStmt));
 }
 
 void Runtime::visitExpressionStmt(ExpressionStmt& expressionStmt) { expressionStmt.getExpr()->accept(*this); }
@@ -155,12 +151,12 @@ void Runtime::visitReturnStmt(ReturnStmt& returnStmt) {
 }
 
 template <typename Callback>
-RuntimeContext Runtime::runInNewContext(const Callback& callback, RuntimeContext* parent) {
-	RuntimeContext currentContextCopy = m_currentContext;
-	m_currentContext = RuntimeContext(parent);
+RuntimeContext::Ptr Runtime::runInNewContext(const Callback& callback, RuntimeContext::Ptr parent) {
+	RuntimeContext::Ptr contextCopy = RuntimeContext::makePtr<RuntimeContext>(*m_currentContext);
+	m_currentContext = RuntimeContext::makePtr<RuntimeContext>(parent);
 	callback();
-	RuntimeContext modifiedContext = m_currentContext;
-	m_currentContext = currentContextCopy;
+	RuntimeContext::Ptr modifiedContext = m_currentContext;
+	m_currentContext = contextCopy;
 	return modifiedContext;
 }
 }

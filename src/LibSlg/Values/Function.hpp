@@ -10,8 +10,8 @@
 namespace Slanguage {
 class Function : public Value {
 public:
-	Function(const FunctionExpr& functionExpr, RuntimeContext definitionContext) :
-		m_functionExpr(functionExpr), m_definitionContext(std::move(definitionContext)) {}
+	Function(const FunctionExpr& functionExpr, RuntimeContext::Ptr definitionContext) :
+		m_functionExpr(functionExpr), m_definitionContext(definitionContext) {}
 	~Function() override = default;
 
 	unsigned long getArity() const { return m_functionExpr.getParameters().size(); }
@@ -32,6 +32,6 @@ public:
 
 private:
 	FunctionExpr m_functionExpr;
-	RuntimeContext m_definitionContext;
+	RuntimeContext::Ptr m_definitionContext;
 };
 }

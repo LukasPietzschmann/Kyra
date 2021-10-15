@@ -1,5 +1,6 @@
 #pragma once
 
+#include "../Runtime/RuntimeContext.hpp"
 #include "../Statements/ClassDeclarationStmt.hpp"
 #include "Value.hpp"
 
@@ -13,7 +14,7 @@ public:
 	explicit Klass(const ClassDeclarationStmt& declarationStmt) : m_declarationStmt(declarationStmt) {}
 
 	bool knowsIdentifier(const std::string& identifier) const;
-	RuntimeContext* getInstanceContext() const { return m_instanceContext; }
+	RuntimeContext::Ptr getInstanceContext() const { return m_instanceContext; }
 	unsigned long getArity() const { return m_declarationStmt.getConstructorParameters().size(); }
 	void instantiate(const std::vector<Value::Ptr>& constructorArguments);
 
@@ -26,6 +27,6 @@ public:
 
 private:
 	ClassDeclarationStmt m_declarationStmt;
-	RuntimeContext* m_instanceContext{};
+	RuntimeContext::Ptr m_instanceContext{};
 };
 }
