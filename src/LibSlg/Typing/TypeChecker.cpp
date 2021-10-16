@@ -26,18 +26,18 @@ template <class Callback>
 TypeContext::Ptr TypeChecker::runInNewScope(const Callback& function,
 		TypeContext::Ptr parent,
 		TypeContext::Ptr valuesToCopy) {
-	TypeContext::Ptr globalScopeCopy = TypeContext::makePtr<TypeContext>(*m_currentScope);
-	TypeContext::Ptr newGlobalScope = TypeContext::makePtr<TypeContext>(parent);
+	TypeContext::Ptr contextCopy = TypeContext::makePtr<TypeContext>(*m_currentScope);
+	m_currentScope = TypeContext::makePtr<TypeContext>(parent);
 	if(valuesToCopy != nullptr) {
 		for(const auto& [name, variable] : valuesToCopy->getVariables())
-			newGlobalScope->setVar(name, variable);
+			m_currentScope->setVar(name, variable);
 		for(const auto& [typeName, type] : valuesToCopy->getTypes())
-			newGlobalScope->setType(typeName, type);
+			m_currentScope->setType(typeName, type);
 	}
-	m_currentScope = newGlobalScope;
 	function();
-	m_currentScope = globalScopeCopy;
-	return newGlobalScope;
+	TypeContext::Ptr modifiedContext = m_currentScope;
+	m_currentScope = contextCopy;
+	return modifiedContext;
 }
 
 void TypeChecker::visitAccessExpr(AccessExpr& accessExpr) {
