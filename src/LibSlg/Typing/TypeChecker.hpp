@@ -43,7 +43,7 @@ class TypeChecker : public ExpressionVisitor, public StatementVisitor {
 		m_errors.push_back((error).getCause()); \
 		return;                                 \
 	} while(0)
-private:
+
 	EXPR_NEEDS_VISIT_RETURN_OF_TYPE(Type::Ptr);
 
 public:
@@ -63,7 +63,6 @@ public:
 	};
 
 	static TypeChecker& getInstance();
-	~TypeChecker() override { delete m_currentScope; }
 	TypeChecker(TypeChecker const&) = delete;
 	TypeChecker(TypeChecker&&) = delete;
 	void operator=(TypeChecker const&) = delete;
@@ -94,15 +93,15 @@ private:
 	TypeChecker() = default;
 
 	std::vector<std::string> m_errors;
-	TypeContext* m_currentScope{new TypeContext(nullptr)};
+	TypeContext::Ptr m_currentScope{TypeContext::makePtr<TypeContext>()};
 	FunctionType* m_currentFunction{};
 	bool m_doesCurrentFunctionReturn{};
 	char* m_currentClassName{};
 
 	void check(const Statement::Ptr& statement);
 	template <class Callback>
-	TypeContext* runInNewScope(const Callback& function,
-			TypeContext* parent,
-			const TypeContext* valuesToCopy = nullptr);
+	TypeContext::Ptr runInNewScope(const Callback& function,
+			TypeContext::Ptr parent,
+			TypeContext::Ptr valuesToCopy = nullptr);
 };
 }

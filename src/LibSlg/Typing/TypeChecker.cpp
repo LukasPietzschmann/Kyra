@@ -23,11 +23,11 @@ TypeChecker::Result TypeChecker::check(const std::vector<Statement::Ptr>& statem
 void TypeChecker::check(const Statement::Ptr& statement) { statement->accept(*this); }
 
 template <class Callback>
-TypeContext* TypeChecker::runInNewScope(const Callback& function,
-		TypeContext* parent,
-		const TypeContext* valuesToCopy) {
-	TypeContext* globalScopeCopy = m_currentScope;
-	auto* newGlobalScope = new TypeContext(parent);
+TypeContext::Ptr TypeChecker::runInNewScope(const Callback& function,
+		TypeContext::Ptr parent,
+		TypeContext::Ptr valuesToCopy) {
+	TypeContext::Ptr globalScopeCopy = TypeContext::makePtr<TypeContext>(*m_currentScope);
+	TypeContext::Ptr newGlobalScope = TypeContext::makePtr<TypeContext>(parent);
 	if(valuesToCopy != nullptr) {
 		for(const auto& [name, variable] : valuesToCopy->getVariables())
 			newGlobalScope->setVar(name, variable);
@@ -136,7 +136,7 @@ void TypeChecker::visitFunction(FunctionExpr& functionExpr) {
 	FunctionType* enclosingFunctionType = m_currentFunction;
 	EXPR_ACCEPT(functionExpr.getReturnType(), *this, Type::Ptr returnType);
 	std::vector<Type::Ptr> parameters;
-	const TypeContext* paramScope = runInNewScope(
+	TypeContext::Ptr paramScope = runInNewScope(
 			[&functionExpr, &parameters, this]() {
 				for(const auto& param : functionExpr.getParameters()) {
 					const auto& result = m_currentScope->getType(param.type);
@@ -279,7 +279,7 @@ void TypeChecker::visitClassDeclarationStmt(ClassDeclarationStmt& classDeclarati
 		THROW_TYPING_ERROR(AlreadyDefinedTypeError(classDeclarationStmt.getPosition(), name));
 
 	std::vector<Type::Ptr> constructorParams;
-	const TypeContext* paramScope = runInNewScope(
+	TypeContext::Ptr paramScope = runInNewScope(
 			[&classDeclarationStmt, &constructorParams, this]() {
 				for(const auto& param : classDeclarationStmt.getConstructorParameters()) {
 					const auto& result = m_currentScope->getType(param.type);
@@ -296,23 +296,13 @@ void TypeChecker::visitClassDeclarationStmt(ClassDeclarationStmt& classDeclarati
 			},
 			m_currentScope);
 
-	TypeContext* declScope = runInNewScope(
+	TypeContext::Ptr declScope = runInNewScope(
 			[&classDeclarationStmt, this]() {
 				for(const auto& decl : classDeclarationStmt.getDeclarations())
 					decl->accept(*this);
 			},
 			m_currentScope,
 			paramScope);
-
-	/*for(const auto& param : classDeclarationStmt.getConstructorParameters()) {
-		const auto& result = m_currentScope->getType(param.type);
-		if(!result.has_value())
-			assert(false);	// TODO throw error
-		constructorParams.push_back(result.value());
-		if(!declScope->setVar(param.name.getValue().asString(), result.value(), param.isMutable))
-			THROW_TYPING_ERROR(
-					AlreadyDefinedVariableError(classDeclarationStmt.getPosition(), param.name.getValue().asString()));
-	}*/
 
 	m_currentScope->setType(name, Type::makePtr<ClassType>(name, declScope->getVariables(), constructorParams));
 	m_currentClassName = nullptr;

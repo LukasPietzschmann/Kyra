@@ -8,11 +8,11 @@ bool TypeContext::setVar(const std::string& name, const Variable<Type::Ptr>& var
 	return true;
 }
 
-bool TypeContext::setVar(const std::string& name, const Type::Ptr& varType, bool isMutable) {
+bool TypeContext::setVar(const std::string& name, Type::Ptr varType, bool isMutable) {
 	return setVar(name, Variable(varType, isMutable));
 }
 
-bool TypeContext::setType(const std::string& name, const Type::Ptr& type) {
+bool TypeContext::setType(const std::string& name, Type::Ptr type) {
 	if(m_types.contains(name))
 		return false;
 	m_types.try_emplace(name, type);
