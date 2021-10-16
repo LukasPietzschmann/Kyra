@@ -16,7 +16,7 @@ struct Position {
 		unsigned int column;
 
 		friend std::ostream& operator<<(std::ostream& os, const Position::Start& rhs) {
-			os << rhs.column << ":" << rhs.line;
+			os << rhs.line << ":" << rhs.column;
 			return os;
 		}
 	};
@@ -26,7 +26,7 @@ struct Position {
 		unsigned int column;
 
 		friend std::ostream& operator<<(std::ostream& os, const Position::End& rhs) {
-			os << rhs.column << ":" << rhs.line;
+			os << rhs.line << ":" << rhs.column;
 			return os;
 		}
 	};
