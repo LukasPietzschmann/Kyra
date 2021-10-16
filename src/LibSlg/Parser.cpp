@@ -23,8 +23,9 @@ Statement::Ptr Parser::varDeclaration() {
 
 	Token identifier = consume(TokenType::NAME);
 
-	consume(TokenType::COLON);
-	Expression::Ptr expectedType = typeIndicator();
+	Expression::Ptr expectedType{};
+	if(matchAndAdvance(TokenType::COLON))
+		expectedType = typeIndicator();
 
 	Expression::Ptr init = nullptr;
 	if(matchAndAdvance(TokenType::EQUAL))

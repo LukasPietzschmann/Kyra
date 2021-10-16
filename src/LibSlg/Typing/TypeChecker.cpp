@@ -254,14 +254,20 @@ void TypeChecker::visitBlockStmt(BlockStmt& blockStmt) {
 
 void TypeChecker::visitDeclarationStmt(DeclarationStmt& declarationStmt) {
 	const std::string& name = declarationStmt.getIdentifier().getValue().asString();
-	EXPR_ACCEPT(declarationStmt.getType(), *this, Type::Ptr expectedType);
-	if(!expectedType->isApplicableForDeclaration())
-		THROW_TYPING_ERROR(UndefinedTypeError(declarationStmt.getPosition(), expectedType->getName()));
-	if(declarationStmt.getInitializer() != nullptr) {
-		EXPR_ACCEPT(declarationStmt.getInitializer(), *this, Type::Ptr initType);
-		if(!initType->canBeAssignedTo(expectedType))
-			THROW_TYPING_ERROR(
-					WrongTypeError(declarationStmt.getPosition(), expectedType->getName(), initType->getName()));
+
+	Type::Ptr expectedType{};
+	if(declarationStmt.getType() == nullptr) {
+		EXPR_ACCEPT(declarationStmt.getInitializer(), *this, expectedType);
+	} else {
+		EXPR_ACCEPT(declarationStmt.getType(), *this, expectedType);
+		if(!expectedType->isApplicableForDeclaration())
+			THROW_TYPING_ERROR(UndefinedTypeError(declarationStmt.getPosition(), expectedType->getName()));
+		if(declarationStmt.getInitializer() != nullptr) {
+			EXPR_ACCEPT(declarationStmt.getInitializer(), *this, Type::Ptr initType);
+			if(!initType->canBeAssignedTo(expectedType))
+				THROW_TYPING_ERROR(
+						WrongTypeError(declarationStmt.getPosition(), expectedType->getName(), initType->getName()));
+		}
 	}
 	if(!m_currentScope->setVar(name, expectedType, declarationStmt.isMutable())) {
 		if(m_currentClassName != nullptr)
