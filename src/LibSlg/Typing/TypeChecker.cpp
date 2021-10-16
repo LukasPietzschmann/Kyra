@@ -23,20 +23,20 @@ TypeChecker::Result TypeChecker::check(const std::vector<Statement::Ptr>& statem
 void TypeChecker::check(const Statement::Ptr& statement) { statement->accept(*this); }
 
 template <class Callback>
-TypeContext::Ptr TypeChecker::runInNewScope(const Callback& function,
+TypeContext::Ptr TypeChecker::runInNewContext(const Callback& function,
 		TypeContext::Ptr parent,
 		TypeContext::Ptr valuesToCopy) {
-	TypeContext::Ptr contextCopy = TypeContext::makePtr<TypeContext>(*m_currentScope);
-	m_currentScope = TypeContext::makePtr<TypeContext>(parent);
+	TypeContext::Ptr contextCopy = TypeContext::makePtr<TypeContext>(*m_currentContext);
+	m_currentContext = TypeContext::makePtr<TypeContext>(parent);
 	if(valuesToCopy != nullptr) {
 		for(const auto& [name, variable] : valuesToCopy->getVariables())
-			m_currentScope->setVar(name, variable);
+			m_currentContext->setVar(name, variable);
 		for(const auto& [typeName, type] : valuesToCopy->getTypes())
-			m_currentScope->setType(typeName, type);
+			m_currentContext->setType(typeName, type);
 	}
 	function();
-	TypeContext::Ptr modifiedContext = m_currentScope;
-	m_currentScope = contextCopy;
+	TypeContext::Ptr modifiedContext = m_currentContext;
+	m_currentContext = contextCopy;
 	return modifiedContext;
 }
 
@@ -57,11 +57,11 @@ void TypeChecker::visitAssignmentExpr(AssignmentExpr& assignmentExpr) {
 		EXPR_ACCEPT(assignmentExpr.getOwner(), *this, Type::Ptr ownerType);
 		assignedValueType = ownerType->knowsAbout(name)->value;
 	} else
-		assignedValueType = m_currentScope->getVar(name)->value;
+		assignedValueType = m_currentContext->getVar(name)->value;
 
 	if(assignedValueType == nullptr)
 		THROW_TYPING_ERROR(UndefinedVariableError(assignmentExpr.getPosition(), name));
-	if(!m_currentScope->getVar(name)->isMutable)
+	if(!m_currentContext->getVar(name)->isMutable)
 		THROW_TYPING_ERROR(AssignmentToConstError(assignmentExpr.getPosition(), name));
 	EXPR_ACCEPT(assignmentExpr.getNewValue(), *this, Type::Ptr newValueType);
 	if(!newValueType->canBeAssignedTo(assignedValueType))
@@ -136,27 +136,27 @@ void TypeChecker::visitFunction(FunctionExpr& functionExpr) {
 	FunctionType* enclosingFunctionType = m_currentFunction;
 	EXPR_ACCEPT(functionExpr.getReturnType(), *this, Type::Ptr returnType);
 	std::vector<Type::Ptr> parameters;
-	TypeContext::Ptr paramScope = runInNewScope(
+	TypeContext::Ptr paramScope = runInNewContext(
 			[&functionExpr, &parameters, this]() {
 				for(const auto& param : functionExpr.getParameters()) {
-					const auto& result = m_currentScope->getType(param.type);
+					const auto& result = m_currentContext->getType(param.type);
 					if(!result.has_value())
 						THROW_TYPING_ERROR(UndefinedTypeError(functionExpr.getPosition(), param.type));
 					if(!result.value()->isApplicableForDeclaration())
 						THROW_TYPING_ERROR(UndefinedTypeError(functionExpr.getPosition(), result.value()->getName()));
 					parameters.push_back(result.value());
-					if(!m_currentScope->setVar(param.name.getValue().asString(), result.value(), true))
+					if(!m_currentContext->setVar(param.name.getValue().asString(), result.value(), true))
 						THROW_TYPING_ERROR(AlreadyDefinedVariableError(functionExpr.getPosition(),
 								param.name.getValue().asString()));
 				}
 			},
-			m_currentScope);
+			m_currentContext);
 
 	Type::Ptr functionType = Type::makePtr<FunctionType>(returnType, parameters);
 	m_currentFunction = std::dynamic_pointer_cast<FunctionType>(functionType).get();
 
-	runInNewScope([&functionExpr, this]() { functionExpr.getImplementation()->accept(*this); },
-			m_currentScope,
+	runInNewContext([&functionExpr, this]() { functionExpr.getImplementation()->accept(*this); },
+			m_currentContext,
 			paramScope);
 
 	if(!m_doesCurrentFunctionReturn && m_currentFunction->getReturnType()->getName() != Value::NativeTypes::Nothing)
@@ -175,7 +175,7 @@ void TypeChecker::visitGroupExpr(GroupExpr& groupExpr) {
 }
 
 void TypeChecker::visitInstantiationExpr(InstantiationExpr& instantiationExpr) {
-	const auto& result = m_currentScope->getType(instantiationExpr.getName());
+	const auto& result = m_currentContext->getType(instantiationExpr.getName());
 	if(!result.has_value())
 		THROW_TYPING_ERROR(UndefinedTypeError(instantiationExpr.getPosition(), instantiationExpr.getName()));
 	auto classType = std::dynamic_pointer_cast<ClassType>(result.value());
@@ -195,7 +195,7 @@ void TypeChecker::visitInstantiationExpr(InstantiationExpr& instantiationExpr) {
 }
 
 void TypeChecker::visitLiteral(LiteralExpr& literalExpr) {
-	EXPR_RETURN_FROM_VISIT(m_currentScope->getType(literalExpr.getValue()->getType()).value());
+	EXPR_RETURN_FROM_VISIT(m_currentContext->getType(literalExpr.getValue()->getType()).value());
 }
 
 void TypeChecker::visitTypeExpr(TypeExpr& typeExpr) {
@@ -208,7 +208,7 @@ void TypeChecker::visitTypeExpr(TypeExpr& typeExpr) {
 		}
 		EXPR_RETURN_FROM_VISIT(Type::makePtr<FunctionType>(returnType, paramTypes));
 	}
-	const auto& result = m_currentScope->getType(typeExpr.getName());
+	const auto& result = m_currentContext->getType(typeExpr.getName());
 	if(!result.has_value())
 		THROW_TYPING_ERROR(UndefinedTypeError(typeExpr.getPosition(), typeExpr.getName()));
 	EXPR_RETURN_FROM_VISIT(result.value());
@@ -219,7 +219,7 @@ void TypeChecker::visitUnaryExpr(UnaryExpr& unaryExpr) {
 	const TokenType& oper = unaryExpr.getOperator().getType();
 	EXPR_ACCEPT(unaryExpr.getRhs(), *this, Type::Ptr rhs);
 	switch(oper) {
-		case TokenType::BANG: EXPR_RETURN_FROM_VISIT(m_currentScope->getType(Value::NativeTypes::Bool).value());
+		case TokenType::BANG: EXPR_RETURN_FROM_VISIT(m_currentContext->getType(Value::NativeTypes::Bool).value());
 		case TokenType::MINUS:
 			if(rhs->getName() == Value::NativeTypes::Number)
 				EXPR_RETURN_FROM_VISIT(NativeTypes::make(Value::NativeTypes::Number));
@@ -233,7 +233,7 @@ void TypeChecker::visitUnaryExpr(UnaryExpr& unaryExpr) {
 
 void TypeChecker::visitVariable(VariableExpr& variableExpr) {
 	const std::string& name = variableExpr.getName().getValue().asString();
-	const auto& result = m_currentScope->getVar(name);
+	const auto& result = m_currentContext->getVar(name);
 	if(!result.has_value()) {
 		if(m_currentClassName != nullptr)
 			THROW_TYPING_ERROR(UndefinedMemberError(variableExpr.getPosition(), std::string(m_currentClassName), name));
@@ -244,12 +244,12 @@ void TypeChecker::visitVariable(VariableExpr& variableExpr) {
 }
 
 void TypeChecker::visitBlockStmt(BlockStmt& blockStmt) {
-	runInNewScope(
+	runInNewContext(
 			[this, &blockStmt]() {
 				for(const auto& statement : blockStmt.getStatements())
 					statement->accept(*this);
 			},
-			m_currentScope);
+			m_currentContext);
 }
 
 void TypeChecker::visitDeclarationStmt(DeclarationStmt& declarationStmt) {
@@ -269,7 +269,7 @@ void TypeChecker::visitDeclarationStmt(DeclarationStmt& declarationStmt) {
 						WrongTypeError(declarationStmt.getPosition(), expectedType->getName(), initType->getName()));
 		}
 	}
-	if(!m_currentScope->setVar(name, expectedType, declarationStmt.isMutable())) {
+	if(!m_currentContext->setVar(name, expectedType, declarationStmt.isMutable())) {
 		if(m_currentClassName != nullptr)
 			THROW_TYPING_ERROR(
 					AlreadyDefinedMemberError(declarationStmt.getPosition(), std::string(m_currentClassName), name));
@@ -281,36 +281,36 @@ void TypeChecker::visitDeclarationStmt(DeclarationStmt& declarationStmt) {
 void TypeChecker::visitClassDeclarationStmt(ClassDeclarationStmt& classDeclarationStmt) {
 	m_currentClassName = classDeclarationStmt.getIdentifier().getValue().asString().data();
 	const std::string& name = classDeclarationStmt.getIdentifier().getValue().asString();
-	if(m_currentScope->getType(name).has_value())
+	if(m_currentContext->getType(name).has_value())
 		THROW_TYPING_ERROR(AlreadyDefinedTypeError(classDeclarationStmt.getPosition(), name));
 
 	std::vector<Type::Ptr> constructorParams;
-	TypeContext::Ptr paramScope = runInNewScope(
+	TypeContext::Ptr paramScope = runInNewContext(
 			[&classDeclarationStmt, &constructorParams, this]() {
 				for(const auto& param : classDeclarationStmt.getConstructorParameters()) {
-					const auto& result = m_currentScope->getType(param.type);
+					const auto& result = m_currentContext->getType(param.type);
 					if(!result.has_value())
 						THROW_TYPING_ERROR(UndefinedTypeError(classDeclarationStmt.getPosition(), param.type));
 					if(!result.value()->isApplicableForDeclaration())
 						THROW_TYPING_ERROR(
 								UndefinedTypeError(classDeclarationStmt.getPosition(), result.value()->getName()));
 					constructorParams.push_back(result.value());
-					if(!m_currentScope->setVar(param.name.getValue().asString(), result.value(), true))
+					if(!m_currentContext->setVar(param.name.getValue().asString(), result.value(), true))
 						THROW_TYPING_ERROR(AlreadyDefinedVariableError(classDeclarationStmt.getPosition(),
 								param.name.getValue().asString()));
 				}
 			},
-			m_currentScope);
+			m_currentContext);
 
-	TypeContext::Ptr declScope = runInNewScope(
+	TypeContext::Ptr declScope = runInNewContext(
 			[&classDeclarationStmt, this]() {
 				for(const auto& decl : classDeclarationStmt.getDeclarations())
 					decl->accept(*this);
 			},
-			m_currentScope,
+			m_currentContext,
 			paramScope);
 
-	m_currentScope->setType(name, Type::makePtr<ClassType>(name, declScope->getVariables(), constructorParams));
+	m_currentContext->setType(name, Type::makePtr<ClassType>(name, declScope->getVariables(), constructorParams));
 	m_currentClassName = nullptr;
 }
 

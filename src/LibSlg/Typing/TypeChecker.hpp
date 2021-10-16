@@ -93,14 +93,14 @@ private:
 	TypeChecker() = default;
 
 	std::vector<std::string> m_errors;
-	TypeContext::Ptr m_currentScope{TypeContext::makePtr<TypeContext>()};
+	TypeContext::Ptr m_currentContext{TypeContext::makePtr<TypeContext>()};
 	FunctionType* m_currentFunction{};
 	bool m_doesCurrentFunctionReturn{};
 	char* m_currentClassName{};
 
 	void check(const Statement::Ptr& statement);
 	template <class Callback>
-	TypeContext::Ptr runInNewScope(const Callback& function,
+	TypeContext::Ptr runInNewContext(const Callback& function,
 			TypeContext::Ptr parent,
 			TypeContext::Ptr valuesToCopy = nullptr);
 };
