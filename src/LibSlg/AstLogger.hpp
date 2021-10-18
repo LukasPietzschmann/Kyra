@@ -30,7 +30,7 @@ namespace Slanguage {
 class AstLogger : public StatementVisitor, public ExpressionVisitor {
 public:
 	AstLogger() = default;
-	virtual ~AstLogger() = default;
+	~AstLogger() override = default;
 	void logStatement(const Statement::Ptr& statement) {
 		m_indent = 0;
 		statement->accept(*this);

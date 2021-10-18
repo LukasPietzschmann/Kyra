@@ -213,11 +213,10 @@ Expression::Ptr Parser::call() {
 		if(matchAndAdvance(TokenType::LEFT_PAREN)) {
 			bool needsComma = false;
 			std::vector<Expression::Ptr> arguments;
-			while(!match(TokenType::RIGHT_PAREN)) {
-				if(needsComma)
-					consume(TokenType::COMMA);
-				arguments.push_back(assignment());
-				needsComma = true;
+			if(!match(TokenType::RIGHT_PAREN)){
+				do {
+					arguments.push_back(assignment());
+				} while (matchAndAdvance(TokenType::COMMA));
 			}
 			const Token& rightParen = consume(TokenType::RIGHT_PAREN);
 			expr = Expression::makePtr<CallExpr>(Position(expr->getPosition(), rightParen.getPosition()),
