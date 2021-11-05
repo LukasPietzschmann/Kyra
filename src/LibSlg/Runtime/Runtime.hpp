@@ -1,32 +1,30 @@
 #pragma once
 
-#include "../Exceptions.hpp"
-#include "../Expressions/AccessExpr.hpp"
-#include "../Expressions/AssignmentExpr.hpp"
-#include "../Expressions/BinaryExpr.hpp"
-#include "../Expressions/CallExpr.hpp"
 #include "../Expressions/Expression.hpp"
-#include "../Expressions/FunctionExpr.hpp"
-#include "../Expressions/GroupExpr.hpp"
-#include "../Expressions/InstantiationExpr.hpp"
-#include "../Expressions/LiteralExpr.hpp"
-#include "../Expressions/TypeExpr.hpp"
-#include "../Expressions/UnaryExpr.hpp"
-#include "../Expressions/VariableExpr.hpp"
-#include "../Statements/BlockStmt.hpp"
-#include "../Statements/ClassDeclarationStmt.hpp"
-#include "../Statements/DeclarationStmt.hpp"
-#include "../Statements/ExpressionStmt.hpp"
-#include "../Statements/PrintStmt.hpp"
-#include "../Statements/ReturnStmt.hpp"
+#include "../HasPtrAlias.hpp"
 #include "../Statements/Statement.hpp"
-#include "../Values/Bool.hpp"
-#include "../Values/Function.hpp"
-#include "../Values/Klass.hpp"
-#include "../Values/Number.hpp"
+#include "../Values/Value.hpp"
 #include "RuntimeContext.hpp"
 
 namespace Slanguage {
+class AccessExpr;
+class AssignmentExpr;
+class BinaryExpr;
+class BlockStmt;
+class CallExpr;
+class ClassDeclarationStmt;
+class DeclarationStmt;
+class ExpressionStmt;
+class FunctionExpr;
+class GroupExpr;
+class InstantiationExpr;
+class LiteralExpr;
+class PrintStmt;
+class ReturnStmt;
+class TypeExpr;
+class UnaryExpr;
+class VariableExpr;
+
 class Runtime : public ExpressionVisitor, public StatementVisitor {
 	EXPR_NEEDS_VISIT_RETURN_OF_TYPE(Value::Ptr);
 

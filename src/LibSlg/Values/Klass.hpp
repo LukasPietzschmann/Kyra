@@ -1,12 +1,17 @@
 #pragma once
 
+#include <iosfwd>
+#include <string>
+#include <vector>
+
+#include "../Expressions/Expression.hpp"
+#include "../HasPtrAlias.hpp"
 #include "../Runtime/RuntimeContext.hpp"
 #include "../Statements/ClassDeclarationStmt.hpp"
+#include "../Token.hpp"
 #include "Value.hpp"
 
 namespace Slanguage {
-class RuntimeContext;
-
 class Klass : public Value {
 	EXPR_NEEDS_VISIT_RETURN_OF_TYPE(Value::Ptr);
 

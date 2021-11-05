@@ -1,5 +1,12 @@
 #include "TypeContext.hpp"
 
+#include <memory>
+#include <type_traits>
+#include <utility>
+
+#include "../HasPtrAlias.hpp"
+#include "../Variable.hpp"
+
 namespace Slanguage {
 bool TypeContext::setVar(const std::string& name, const Variable<Type::Ptr>& var) {
 	if(m_variables.contains(name))

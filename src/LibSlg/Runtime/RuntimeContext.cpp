@@ -1,5 +1,14 @@
 #include "RuntimeContext.hpp"
 
+#include <cassert>
+#include <memory>
+#include <type_traits>
+#include <utility>
+
+#include "../HasPtrAlias.hpp"
+#include "../Values/Value.hpp"
+#include "../Variable.hpp"
+
 namespace Slanguage {
 Variable<Value::Ptr> RuntimeContext::getVar(const std::string& name) const {
 	if(const auto& pos = m_variables.find(name); pos != m_variables.end())

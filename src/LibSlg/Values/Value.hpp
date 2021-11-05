@@ -1,12 +1,13 @@
 #pragma once
 
+#include <memory>
 #include <ostream>
+#include <string>
 #include <vector>
 
 #include "../Exceptions.hpp"
 #include "../HasPtrAlias.hpp"
-#include "Forward.hpp"
-#include "iostream"
+#include "../Position.hpp"
 
 namespace Slanguage {
 class Value : public HasPtrAlias<Value> {

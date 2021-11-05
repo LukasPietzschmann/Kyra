@@ -1,5 +1,10 @@
 #include "Lexer.hpp"
 
+#include <utility>
+
+#include "Exceptions.hpp"
+#include "Position.hpp"
+
 namespace Slanguage {
 std::vector<Token> Lexer::scanTokens() {
 	while(!isAtEnd()) {

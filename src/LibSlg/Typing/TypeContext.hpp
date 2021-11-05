@@ -1,10 +1,13 @@
 #pragma once
+#include <iosfwd>
 #include <optional>
 #include <string>
 #include <unordered_map>
+#include <vector>
 
 #include "../HasPtrAlias.hpp"
 #include "../Values/Value.hpp"
+#include "../Variable.hpp"
 #include "NativeTypes.hpp"
 #include "Type.hpp"
 

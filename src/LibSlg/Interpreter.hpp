@@ -1,12 +1,6 @@
 #pragma once
 
-#include <string>
-
-#include "AstLogger.hpp"
-#include "Lexer.hpp"
-#include "Parser.hpp"
-#include "Runtime/Runtime.hpp"
-#include "Typing/TypeChecker.hpp"
+#include <iosfwd>
 
 namespace Slanguage {
 class Interpreter {

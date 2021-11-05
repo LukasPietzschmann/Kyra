@@ -1,13 +1,17 @@
 #include <config.h>
 
+#include <cstring>
 #include <cxxopts.hpp>
 #include <fstream>
 #include <iostream>
+#include <memory>
+#include <string>
 
 #include "LibSlg/Interpreter.hpp"
 
 #ifdef HAS_READLINE
 #include <readline/readline.h>
+
 #endif
 
 void simpleRepl();
@@ -53,7 +57,7 @@ int main(int argc, char** argv) {
 			std::stringstream fileContent;
 			std::string line;
 			const auto& fileName = result["file"].as<std::string>();
-			std::ifstream fileStream(fileName);
+			std::basic_fstream<char> fileStream(fileName);
 			if(!fileStream.good()) {
 				std::cout << "File " << fileName << " not found" << std::endl;
 				return 1;

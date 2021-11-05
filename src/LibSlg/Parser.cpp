@@ -1,5 +1,35 @@
 #include "Parser.hpp"
 
+#include <algorithm>
+#include <iostream>
+#include <memory>
+#include <string>
+
+#include "Exceptions.hpp"
+#include "Expressions/AccessExpr.hpp"
+#include "Expressions/AssignmentExpr.hpp"
+#include "Expressions/BinaryExpr.hpp"
+#include "Expressions/CallExpr.hpp"
+#include "Expressions/FunctionExpr.hpp"
+#include "Expressions/GroupExpr.hpp"
+#include "Expressions/InstantiationExpr.hpp"
+#include "Expressions/LiteralExpr.hpp"
+#include "Expressions/TypeExpr.hpp"
+#include "Expressions/UnaryExpr.hpp"
+#include "Expressions/VariableExpr.hpp"
+#include "Position.hpp"
+#include "Statements/BlockStmt.hpp"
+#include "Statements/ClassDeclarationStmt.hpp"
+#include "Statements/DeclarationStmt.hpp"
+#include "Statements/ExpressionStmt.hpp"
+#include "Statements/PrintStmt.hpp"
+#include "Statements/ReturnStmt.hpp"
+#include "Values/Bool.hpp"
+#include "Values/Nothing.hpp"
+#include "Values/Number.hpp"
+#include "Values/String.hpp"
+#include "Values/Value.hpp"
+
 namespace Slanguage {
 std::vector<Statement::Ptr> Parser::parse() {
 	while(!isAtEnd())
@@ -211,12 +241,11 @@ Expression::Ptr Parser::call() {
 			continue;
 		}
 		if(matchAndAdvance(TokenType::LEFT_PAREN)) {
-			bool needsComma = false;
 			std::vector<Expression::Ptr> arguments;
-			if(!match(TokenType::RIGHT_PAREN)){
+			if(!match(TokenType::RIGHT_PAREN)) {
 				do {
 					arguments.push_back(assignment());
-				} while (matchAndAdvance(TokenType::COMMA));
+				} while(matchAndAdvance(TokenType::COMMA));
 			}
 			const Token& rightParen = consume(TokenType::RIGHT_PAREN);
 			expr = Expression::makePtr<CallExpr>(Position(expr->getPosition(), rightParen.getPosition()),

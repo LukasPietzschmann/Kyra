@@ -1,9 +1,20 @@
 #include "Klass.hpp"
 
-#include "../Interpreter.hpp"
+#include <algorithm>
+#include <cassert>
+#include <memory>
+#include <type_traits>
+
+#include "../HasPtrAlias.hpp"
+#include "../Runtime/Runtime.hpp"
 #include "../Runtime/RuntimeContext.hpp"
+#include "../Statements/ClassDeclarationStmt.hpp"
+#include "../Token.hpp"
+#include "Nothing.hpp"
 
 namespace Slanguage {
+class DeclarationStmt;
+
 bool Klass::knowsIdentifier(const std::string& identifier) const {
 	bool declarationsContainIdentifier = std::any_of(m_declarationStmt.getDeclarations().begin(),
 			m_declarationStmt.getDeclarations().end(),

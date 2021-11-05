@@ -2,12 +2,12 @@
 
 #include <iostream>
 #include <string>
+#include <type_traits>
 #include <unordered_map>
-#include <utility>
 #include <vector>
 
-#include "Exceptions.hpp"
 #include "Token.hpp"
+#include "TokenType.hpp"
 
 namespace Slanguage {
 class Lexer {

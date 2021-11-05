@@ -1,6 +1,43 @@
 #include "Runtime.hpp"
 
+#include <cassert>
+#include <iostream>
+#include <memory>
+#include <type_traits>
+#include <vector>
+
+#include "../Exceptions.hpp"
+#include "../Expressions/AccessExpr.hpp"
+#include "../Expressions/AssignmentExpr.hpp"
+#include "../Expressions/BinaryExpr.hpp"
+#include "../Expressions/CallExpr.hpp"
+#include "../Expressions/Expression.hpp"
+#include "../Expressions/GroupExpr.hpp"
+#include "../Expressions/InstantiationExpr.hpp"
+#include "../Expressions/LiteralExpr.hpp"
+#include "../Expressions/UnaryExpr.hpp"
+#include "../Expressions/VariableExpr.hpp"
+#include "../HasPtrAlias.hpp"
+#include "../Statements/BlockStmt.hpp"
+#include "../Statements/ClassDeclarationStmt.hpp"
+#include "../Statements/DeclarationStmt.hpp"
+#include "../Statements/ExpressionStmt.hpp"
+#include "../Statements/PrintStmt.hpp"
+#include "../Statements/ReturnStmt.hpp"
+#include "../Statements/Statement.hpp"
+#include "../Token.hpp"
+#include "../TokenType.hpp"
+#include "../Values/Bool.hpp"
+#include "../Values/Function.hpp"
+#include "../Values/Klass.hpp"
+#include "../Values/Nothing.hpp"
+#include "../Values/Number.hpp"
+#include "../Values/Value.hpp"
+#include "../Variable.hpp"
+
 namespace Slanguage {
+class FunctionExpr;
+class TypeExpr;
 Runtime& Runtime::getInstance() {
 	static Runtime instance;
 	return instance;

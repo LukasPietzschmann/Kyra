@@ -1,42 +1,37 @@
 #pragma once
 
-#include <functional>
-#include <memory>
+#include <iosfwd>
 #include <optional>
-#include <tuple>
-#include <unordered_map>
-#include <utility>
+#include <type_traits>
 #include <vector>
 
-#include "../Exceptions.hpp"
-#include "../Expressions/AccessExpr.hpp"
-#include "../Expressions/AssignmentExpr.hpp"
-#include "../Expressions/BinaryExpr.hpp"
-#include "../Expressions/CallExpr.hpp"
 #include "../Expressions/Expression.hpp"
-#include "../Expressions/FunctionExpr.hpp"
-#include "../Expressions/GroupExpr.hpp"
-#include "../Expressions/InstantiationExpr.hpp"
-#include "../Expressions/LiteralExpr.hpp"
-#include "../Expressions/TypeExpr.hpp"
-#include "../Expressions/UnaryExpr.hpp"
-#include "../Expressions/VariableExpr.hpp"
-#include "../Statements/BlockStmt.hpp"
-#include "../Statements/ClassDeclarationStmt.hpp"
-#include "../Statements/DeclarationStmt.hpp"
-#include "../Statements/ExpressionStmt.hpp"
-#include "../Statements/PrintStmt.hpp"
-#include "../Statements/ReturnStmt.hpp"
+#include "../HasPtrAlias.hpp"
 #include "../Statements/Statement.hpp"
-#include "../Token.hpp"
-#include "ClassType.hpp"
-#include "FunctionType.hpp"
-#include "NativeTypes.hpp"
 #include "Type.hpp"
 #include "TypeContext.hpp"
 #include "TypingErrors.hpp"
 
 namespace Slanguage {
+class AccessExpr;
+class AssignmentExpr;
+class BinaryExpr;
+class BlockStmt;
+class CallExpr;
+class ClassDeclarationStmt;
+class DeclarationStmt;
+class ExpressionStmt;
+class FunctionExpr;
+class FunctionType;
+class GroupExpr;
+class InstantiationExpr;
+class LiteralExpr;
+class PrintStmt;
+class ReturnStmt;
+class TypeExpr;
+class UnaryExpr;
+class VariableExpr;
+
 class TypeChecker : public ExpressionVisitor, public StatementVisitor {
 #define THROW_TYPING_ERROR(error)               \
 	do {                                        \

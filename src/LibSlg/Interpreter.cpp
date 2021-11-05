@@ -1,5 +1,18 @@
 #include "Interpreter.hpp"
 
+#include <iostream>
+#include <memory>
+#include <string>
+#include <vector>
+
+#include "AstLogger.hpp"
+#include "Exceptions.hpp"
+#include "Lexer.hpp"
+#include "Parser.hpp"
+#include "Runtime/Runtime.hpp"
+#include "Token.hpp"
+#include "Typing/TypeChecker.hpp"
+
 namespace Slanguage {
 void Interpreter::execute(const std::string& code, bool verboseLogging, bool passThroughExceptions) {
 	try {
