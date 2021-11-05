@@ -28,6 +28,14 @@ add_executable(Slanguage main.cpp ${PROJECT_SOURCE_DIR}/include/config.h ${BACKW
 target_include_directories(Slanguage PRIVATE ${PROJECT_SOURCE_DIR}/include)
 target_link_libraries(Slanguage LibSlg cxxopts)
 
+option(IWYU "Adds Include-What-You-Use to the Toolchain" OFF)
+if (IWYU)
+	find_program(iwyu_path NAMES include-what-you-use iwyu REQUIRED)
+	set(iwyu_path_and_options ${iwyu_path} -Xiwyu --check_also="${PROJECT_SOURCE_DIR}/src/LibSlg/Token.hpp")
+	set_property(TARGET LibSlg Slanguage PROPERTY CXX_INCLUDE_WHAT_YOU_USE ${iwyu_path_and_options})
+	set_property(TARGET LibSlg Slanguage PROPERTY C_INCLUDE_WHAT_YOU_USE ${iwyu_path_and_options})
+endif ()
+
 if (CMAKE_BUILD_TYPE MATCHES DEBUG)
 	add_backward(Slanguage)
 endif (CMAKE_BUILD_TYPE MATCHES DEBUG)
