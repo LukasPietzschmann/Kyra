@@ -36,8 +36,8 @@ public:
 	Runtime& operator=(Runtime const&) = delete;
 	Runtime& operator=(Runtime&&) = delete;
 
-	void executeStatement(Statement::WeakPtr statement, RuntimeContext::Ptr contextToExecuteOn = nullptr);
-	Value::Ptr executeExpression(Expression::WeakPtr expression, RuntimeContext::Ptr contextToExecuteOn = nullptr);
+	void executeStatement(Statement::Ptr statement, RuntimeContext::Ptr contextToExecuteOn = nullptr);
+	Value::Ptr executeExpression(Expression::Ptr expression, RuntimeContext::Ptr contextToExecuteOn = nullptr);
 
 	void visitAccessExpr(AccessExpr& accessExpr) override;
 	void visitAssignmentExpr(AssignmentExpr& assignmentExpr) override;

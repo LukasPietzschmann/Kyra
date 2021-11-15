@@ -18,7 +18,7 @@ public:
 	virtual std::optional<Variable<Type::Ptr>> knowsAbout(const std::string&) const { return {}; }
 	virtual bool canBeCalledWith(const std::vector<Type::Ptr>&) const { return false; };
 	virtual bool isApplicableForDeclaration() const { return true; }
-	virtual bool canBeAssignedTo(Type::WeakPtr assignee) const { return *this == Type::lock(assignee); };
+	virtual bool canBeAssignedTo(Type::Ptr assignee) const { return *this == assignee; };
 
 	const std::string& getName() const { return m_name; }
 

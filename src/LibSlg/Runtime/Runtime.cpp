@@ -43,29 +43,29 @@ Runtime& Runtime::getInstance() {
 	return instance;
 }
 
-void Runtime::executeStatement(Statement::WeakPtr statement, RuntimeContext::Ptr contextToExecuteOn) {
+void Runtime::executeStatement(Statement::Ptr statement, RuntimeContext::Ptr contextToExecuteOn) {
 	if(contextToExecuteOn == nullptr) {
-		Statement::lock(statement)->accept(*this);
+		statement->accept(*this);
 		return;
 	}
 
 	RuntimeContext::Ptr contextCopy = RuntimeContext::makePtr<RuntimeContext>(*m_currentContext);
 	m_currentContext = contextToExecuteOn;
-	Statement::lock(statement)->accept(*this);
+	statement->accept(*this);
 	m_currentContext = contextCopy;
 }
 
-Value::Ptr Runtime::executeExpression(Expression::WeakPtr expression, RuntimeContext::Ptr contextToExecuteOn) {
+Value::Ptr Runtime::executeExpression(Expression::Ptr expression, RuntimeContext::Ptr contextToExecuteOn) {
 	if(contextToExecuteOn == nullptr) {
-		EXPR_ACCEPT(Expression::lock(expression), *this, Value::WeakPtr result);
-		return Value::lock(result);
+		EXPR_ACCEPT(expression, *this, Value::Ptr result);
+		return result;
 	}
 
 	RuntimeContext::Ptr contextCopy = RuntimeContext::makePtr<RuntimeContext>(*m_currentContext);
 	m_currentContext = contextToExecuteOn;
-	EXPR_ACCEPT(Expression::lock(expression), *this, Value::WeakPtr result);
+	EXPR_ACCEPT(expression, *this, Value::Ptr result);
 	m_currentContext = contextCopy;
-	return Value::lock(result);
+	return result;
 }
 
 void Runtime::visitAccessExpr(AccessExpr& accessExpr) {
