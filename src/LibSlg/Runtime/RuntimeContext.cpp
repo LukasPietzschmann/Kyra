@@ -26,18 +26,21 @@ Value::Ptr RuntimeContext::getCustomType(const std::string& type) const {
 	assert(false);
 }
 
-void RuntimeContext::declareVar(const std::string& name, Value::Ptr value, bool isMutable) {
+bool RuntimeContext::declareVar(const std::string& name, Value::Ptr value, bool isMutable) {
+	if(m_variables.contains(name))
+		return false;
 	m_variables.try_emplace(name, value, isMutable);
+	return true;
 }
 
-void RuntimeContext::mutate(const std::string& name, Value::Ptr value) {
-	assert(m_variables.at(name).isMutable);
-	if(m_variables.contains(name))
+bool RuntimeContext::mutate(const std::string& name, Value::Ptr value) {
+	if(m_variables.contains(name)) {
 		m_variables.at(name).value = std::move(value);
-	else if(m_parent)
+		return true;
+	} else if(m_parent)
 		m_parent->mutate(name, value);
 	else
-		assert(false);
+		return false;
 }
 
 void RuntimeContext::declareType(const std::string& type, Value::Ptr klass) { m_customTypes.try_emplace(type, klass); }

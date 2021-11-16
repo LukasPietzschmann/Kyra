@@ -43,6 +43,8 @@ public:
 		return *m_returnType == castedOther->m_returnType && areParamsEqual;
 	}
 
+	bool isFunction() const override { return true; }
+
 private:
 	Type::Ptr m_returnType;
 	std::vector<Type::Ptr> m_parameters;

@@ -19,6 +19,7 @@ public:
 	virtual bool canBeCalledWith(const std::vector<Type::Ptr>&) const { return false; };
 	virtual bool isApplicableForDeclaration() const { return true; }
 	virtual bool canBeAssignedTo(Type::Ptr assignee) const { return *this == assignee; };
+	virtual bool isFunction() const { return false; }
 
 	const std::string& getName() const { return m_name; }
 

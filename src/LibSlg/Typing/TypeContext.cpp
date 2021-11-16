@@ -26,6 +26,22 @@ bool TypeContext::setType(const std::string& name, Type::Ptr type) {
 	return true;
 }
 
+bool TypeContext::removeVar(const std::string& name) {
+	const auto& it = m_variables.find(name);
+	if(it == m_variables.end())
+		return false;
+	m_variables.erase(it);
+	return true;
+}
+
+bool TypeContext::removeType(const std::string& name) {
+	const auto& it = m_types.find(name);
+	if(it == m_types.end())
+		return false;
+	m_types.erase(it);
+	return true;
+}
+
 std::optional<Variable<Type::Ptr>> TypeContext::getVar(const std::string& name) const {
 	if(const auto& it = m_variables.find(name); it != m_variables.end())
 		return it->second;

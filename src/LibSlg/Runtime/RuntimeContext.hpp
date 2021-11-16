@@ -15,8 +15,8 @@ public:
 
 	Variable<Value::Ptr> getVar(const std::string& name) const;
 	Value::Ptr getCustomType(const std::string& type) const;
-	void declareVar(const std::string& name, Value::Ptr value, bool isMutable = true);
-	void mutate(const std::string& name, Value::Ptr value);
+	bool declareVar(const std::string& name, Value::Ptr value, bool isMutable = true);
+	bool mutate(const std::string& name, Value::Ptr value);
 	void declareType(const std::string& type, Value::Ptr klass);
 
 private:

@@ -1,4 +1,10 @@
 # This is a Comment :^)
+val f: Function(Number)->Nothing = fun(a: Number)->Nothing{
+	print a;
+	f(a+1);
+};
+
+f(1);
 
 var closure: Function()->Number= fun(a: Number)->Function()->Number{
 	return fun()->Number{

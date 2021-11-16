@@ -293,7 +293,13 @@ void TypeChecker::visitDeclarationStmt(DeclarationStmt& declarationStmt) {
 		if(!expectedType->isApplicableForDeclaration())
 			THROW_TYPING_ERROR(UndefinedTypeError(declarationStmt.getPosition(), expectedType->getName()));
 		if(declarationStmt.getInitializer() != nullptr) {
+			// TODO: this is necessary for recursion to work
+			// Is types aren't explicitly annotated, this code won't run
+			if(expectedType->isFunction())
+				m_currentContext->setVar(name, expectedType, declarationStmt.isMutable());
 			EXPR_ACCEPT(declarationStmt.getInitializer(), *this, Type::Ptr initType);
+			if(expectedType->isFunction())
+				m_currentContext->removeVar(name);
 			if(!initType->canBeAssignedTo(expectedType))
 				THROW_TYPING_ERROR(
 						WrongTypeError(declarationStmt.getPosition(), expectedType->getName(), initType->getName()));

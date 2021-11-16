@@ -22,6 +22,8 @@ public:
 	bool setType(const std::string& name, Type::Ptr type);
 	bool setVar(const std::string& name, Type::Ptr varType, bool isMutable);
 	bool setVar(const std::string& name, const Variable<Type::Ptr>& var);
+	bool removeVar(const std::string& name);
+	bool removeType(const std::string& name);
 	std::optional<Type::Ptr> getType(const std::string& name) const;
 	std::optional<Variable<Type::Ptr>> getVar(const std::string& name) const;
 	const std::unordered_map<std::string, Variable<Type::Ptr>>& getVariables() const { return m_variables; }
