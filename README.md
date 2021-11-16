@@ -4,6 +4,7 @@
 [![Lines of Code](https://sonarcloud.io/api/project_badges/measure?project=LukasPietzschmann_Slanguage&metric=ncloc)](https://sonarcloud.io/dashboard?id=LukasPietzschmann_Slanguage)
 [![Bugs](https://sonarcloud.io/api/project_badges/measure?project=LukasPietzschmann_Slanguage&metric=bugs)](https://sonarcloud.io/dashboard?id=LukasPietzschmann_Slanguage)
 [![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=LukasPietzschmann_Slanguage&metric=code_smells)](https://sonarcloud.io/dashboard?id=LukasPietzschmann_Slanguage)
+![works on my machine](https://cdn.jsdelivr.net/gh/nikku/works-on-my-machine@v0.2.0/badge.svg)
 
 
 <p align=center>
