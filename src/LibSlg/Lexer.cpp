@@ -56,7 +56,16 @@ void Lexer::scanToken() {
 }
 
 void Lexer::comment() {
-	while(!match('\n') && !isAtEnd())
+	bool multiline = false;
+	if(matchAndAdvance('#'))
+		multiline = true;
+
+	while(multiline && (!isAtEnd() && !matchMultipleAndAdvance("##"))) {
+		if(match('\n'))
+			++m_currentLine;
+		advance();
+	}
+	while(!multiline && (!isAtEnd() && !match('\n')))
 		advance();
 }
 
@@ -107,12 +116,29 @@ char Lexer::peek() const {
 	return m_source[m_currentCharacter];
 }
 
+std::string Lexer::peekMultiple(int n) const {
+	assert(n > 0);
+	if(isAtEnd())
+		return "";
+	return m_source.substr(m_currentCharacter, n);
+}
+
 bool Lexer::match(char expected) const { return peek() == expected; }
 
 bool Lexer::matchAndAdvance(char expected) {
 	if(!match(expected))
 		return false;
 	advance();
+	return true;
+}
+
+bool Lexer::matchMultiple(const std::string& expected) const { return peekMultiple((int)expected.size()) == expected; }
+
+bool Lexer::matchMultipleAndAdvance(const std::string& expected) {
+	if(!matchMultiple(expected))
+		return false;
+	for(unsigned long i = 0; i < expected.size(); ++i)
+		advance();
 	return true;
 }
 

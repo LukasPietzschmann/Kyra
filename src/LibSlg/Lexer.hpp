@@ -41,8 +41,11 @@ private:
 	void nameOrKeyword();
 	char advance();
 	char peek() const;
+	std::string peekMultiple(int n) const;
 	bool match(char expected) const;
 	bool matchAndAdvance(char expected);
+	bool matchMultiple(const std::string& expected) const;
+	bool matchMultipleAndAdvance(const std::string& expected);
 	void addToken(TokenType type, const std::string& literal = "");
 	bool isDigit(char character) const;
 	bool isAlpha(char character) const;
