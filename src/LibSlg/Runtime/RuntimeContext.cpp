@@ -38,7 +38,7 @@ bool RuntimeContext::mutate(const std::string& name, Value::Ptr value) {
 		m_variables.at(name).value = std::move(value);
 		return true;
 	} else if(m_parent)
-		m_parent->mutate(name, value);
+		return m_parent->mutate(name, value);
 	else
 		return false;
 }
