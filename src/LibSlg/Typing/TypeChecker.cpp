@@ -145,6 +145,8 @@ void TypeChecker::visitBinaryExpr(BinaryExpr& binaryExpr) {
 void TypeChecker::visitCallExpr(CallExpr& callExpr) {
 	EXPR_ACCEPT(callExpr.getFunction(), *this, Type::Ptr gFunction);
 	const auto& function = std::dynamic_pointer_cast<FunctionType>(gFunction);
+	if(gFunction == nullptr)
+		return;
 	if(function == nullptr)
 		THROW_TYPING_ERROR(WrongTypeError(callExpr.getPosition(), Value::NativeTypes::Function, gFunction->getName()));
 	if(function->getParameters().size() != callExpr.getArguments().size())
