@@ -3,6 +3,7 @@
 #include <cassert>
 #include <iostream>
 #include <memory>
+#include <optional>
 #include <type_traits>
 #include <vector>
 
@@ -33,7 +34,6 @@
 #include "../Values/Nothing.hpp"
 #include "../Values/Number.hpp"
 #include "../Values/Value.hpp"
-#include "../Variable.hpp"
 
 namespace Slanguage {
 class FunctionExpr;
@@ -71,12 +71,16 @@ Value::Ptr Runtime::executeExpression(Expression::Ptr expression, RuntimeContext
 void Runtime::visitAccessExpr(AccessExpr& accessExpr) {
 	EXPR_ACCEPT(accessExpr.getOwner(), *this, Value::Ptr owner);
 	const auto& klass = Value::as<Klass>(owner);
-	EXPR_RETURN_FROM_VISIT(klass->getInstanceContext()->getVar(accessExpr.getName().getValue().asString()).value);
+	const auto& var = klass->getInstanceContext()->getVar(accessExpr.getName().getValue().asString());
+	if(!var.has_value())
+		assert(false);
+	EXPR_RETURN_FROM_VISIT(var->value);
 }
 
 void Runtime::visitAssignmentExpr(AssignmentExpr& assignmentExpr) {
 	EXPR_ACCEPT(assignmentExpr.getNewValue(), *this, Value::Ptr newValue);
-	m_currentContext->mutate(assignmentExpr.getName().getValue().asString(), newValue);
+	if(!m_currentContext->mutateVar(assignmentExpr.getName().getValue().asString(), newValue))
+		assert(false);
 	EXPR_RETURN_FROM_VISIT(newValue);
 }
 
@@ -122,7 +126,10 @@ void Runtime::visitGroupExpr(GroupExpr& groupExpr) {
 }
 
 void Runtime::visitInstantiationExpr(InstantiationExpr& instantiationExpr) {
-	Value::Ptr klass = m_currentContext->getCustomType(instantiationExpr.getName());
+	const auto& typeOrError = m_currentContext->getType(instantiationExpr.getName());
+	if(!typeOrError.has_value())
+		assert(false);
+	Value::Ptr klass = typeOrError.value();
 	std::vector<Value::Ptr> args;
 	for(const auto& arg : instantiationExpr.getArguments()) {
 		EXPR_ACCEPT(arg, *this, Value::Ptr value);
@@ -148,7 +155,10 @@ void Runtime::visitUnaryExpr(UnaryExpr& unaryExpr) {
 }
 
 void Runtime::visitVariable(VariableExpr& variableExpr) {
-	EXPR_RETURN_FROM_VISIT(m_currentContext->getVar(variableExpr.getName().getValue().asString()).value);
+	const auto& var = m_currentContext->getVar(variableExpr.getName().getValue().asString());
+	if(!var.has_value())
+		assert(false);
+	EXPR_RETURN_FROM_VISIT(var->value);
 }
 
 void Runtime::visitBlockStmt(BlockStmt& blockStmt) {
@@ -167,12 +177,14 @@ void Runtime::visitDeclarationStmt(DeclarationStmt& declarationStmt) {
 	}
 
 	const std::string& name = declarationStmt.getIdentifier().getValue().asString();
-	m_currentContext->declareVar(name, init, declarationStmt.isMutable());
+	if(!m_currentContext->declareVar(name, init, declarationStmt.isMutable()))
+		assert(false);
 }
 
 void Runtime::visitClassDeclarationStmt(ClassDeclarationStmt& classDeclarationStmt) {
 	const std::string& name = classDeclarationStmt.getIdentifier().getValue().asString();
-	m_currentContext->declareType(name, Value::makePtr<Klass>(classDeclarationStmt));
+	if(!m_currentContext->declareType(name, Value::makePtr<Klass>(classDeclarationStmt)))
+		assert(false);
 }
 
 void Runtime::visitExpressionStmt(ExpressionStmt& expressionStmt) { expressionStmt.getExpr()->accept(*this); }

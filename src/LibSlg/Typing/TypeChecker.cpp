@@ -28,6 +28,7 @@
 #include "../Token.hpp"
 #include "../TokenType.hpp"
 #include "../Values/Value.hpp"
+#include "../Variable.hpp"
 #include "ClassType.hpp"
 #include "FunctionType.hpp"
 #include "NativeTypes.hpp"
@@ -60,9 +61,9 @@ TypeContext::Ptr TypeChecker::runInNewContext(const Callback& function,
 	m_currentContext = TypeContext::makePtr<TypeContext>(parent);
 	if(valuesToCopy != nullptr) {
 		for(const auto& [name, variable] : valuesToCopy->getVariables())
-			m_currentContext->setVar(name, variable);
+			m_currentContext->declareVar(name, variable);
 		for(const auto& [typeName, type] : valuesToCopy->getTypes())
-			m_currentContext->setType(typeName, type);
+			m_currentContext->declareType(typeName, type);
 	}
 	function();
 	TypeContext::Ptr modifiedContext = m_currentContext;
@@ -177,7 +178,7 @@ void TypeChecker::visitFunction(FunctionExpr& functionExpr) {
 					if(!result.value()->isApplicableForDeclaration())
 						THROW_TYPING_ERROR(UndefinedTypeError(functionExpr.getPosition(), result.value()->getName()));
 					parameters.push_back(result.value());
-					if(!m_currentContext->setVar(param.name.getValue().asString(), result.value(), true))
+					if(!m_currentContext->declareVar(param.name.getValue().asString(), result.value(), true))
 						THROW_TYPING_ERROR(AlreadyDefinedVariableError(functionExpr.getPosition(),
 								param.name.getValue().asString()));
 				}
@@ -298,7 +299,7 @@ void TypeChecker::visitDeclarationStmt(DeclarationStmt& declarationStmt) {
 			// TODO: this is necessary for recursion to work
 			// Is types aren't explicitly annotated, this code won't run
 			if(expectedType->isFunction())
-				m_currentContext->setVar(name, expectedType, declarationStmt.isMutable());
+				m_currentContext->declareVar(name, expectedType, declarationStmt.isMutable());
 			EXPR_ACCEPT(declarationStmt.getInitializer(), *this, Type::Ptr initType);
 			if(expectedType->isFunction())
 				m_currentContext->removeVar(name);
@@ -307,7 +308,7 @@ void TypeChecker::visitDeclarationStmt(DeclarationStmt& declarationStmt) {
 						WrongTypeError(declarationStmt.getPosition(), expectedType->getName(), initType->getName()));
 		}
 	}
-	if(!m_currentContext->setVar(name, expectedType, declarationStmt.isMutable())) {
+	if(!m_currentContext->declareVar(name, expectedType, declarationStmt.isMutable())) {
 		if(m_currentClassName != nullptr)
 			THROW_TYPING_ERROR(
 					AlreadyDefinedMemberError(declarationStmt.getPosition(), std::string(m_currentClassName), name));
@@ -333,7 +334,7 @@ void TypeChecker::visitClassDeclarationStmt(ClassDeclarationStmt& classDeclarati
 						THROW_TYPING_ERROR(
 								UndefinedTypeError(classDeclarationStmt.getPosition(), result.value()->getName()));
 					constructorParams.push_back(result.value());
-					if(!m_currentContext->setVar(param.name.getValue().asString(), result.value(), true))
+					if(!m_currentContext->declareVar(param.name.getValue().asString(), result.value(), true))
 						THROW_TYPING_ERROR(AlreadyDefinedVariableError(classDeclarationStmt.getPosition(),
 								param.name.getValue().asString()));
 				}
@@ -348,10 +349,9 @@ void TypeChecker::visitClassDeclarationStmt(ClassDeclarationStmt& classDeclarati
 			m_currentContext,
 			paramScope);
 
-	m_currentContext->setType(name, Type::makePtr<ClassType>(name, declScope->getVariables(), constructorParams));
+	m_currentContext->declareType(name, Type::makePtr<ClassType>(name, declScope->getVariables(), constructorParams));
 	m_currentClassName = nullptr;
 }
-
 void TypeChecker::visitExpressionStmt(ExpressionStmt& expressionStmt) { expressionStmt.getExpr()->accept(*this); }
 
 void TypeChecker::visitPrintStmt(PrintStmt& printStmt) { EXPR_ACCEPT(printStmt.getExpr(), *this, Type::Ptr type); }

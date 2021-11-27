@@ -34,15 +34,17 @@ void Klass::instantiate(const std::vector<Value::Ptr>& constructorArguments) {
 	m_instanceContext = RuntimeContext::makePtr<RuntimeContext>();
 	for(unsigned long i = 0; i < constructorArguments.size(); ++i) {
 		assert(m_declarationStmt.getConstructorParameters()[i].type == constructorArguments[i]->getType());
-		m_instanceContext->declareVar(m_declarationStmt.getConstructorParameters()[i].name.getValue().asString(),
-				constructorArguments[i],
-				m_declarationStmt.getConstructorParameters()[i].isMutable);
+		if(!m_instanceContext->declareVar(m_declarationStmt.getConstructorParameters()[i].name.getValue().asString(),
+				   constructorArguments[i],
+				   m_declarationStmt.getConstructorParameters()[i].isMutable))
+			assert(false);
 	}
 	for(const auto& decl : m_declarationStmt.getDeclarations()) {
 		Value::Ptr init = Value::makePtr<Nothing>();
 		if(decl->getInitializer() != nullptr)
 			init = Runtime::getInstance().executeExpression(decl->getInitializer(), m_instanceContext);
-		m_instanceContext->declareVar(decl->getIdentifier().getValue().asString(), init, decl->isMutable());
+		if(!m_instanceContext->declareVar(decl->getIdentifier().getValue().asString(), init, decl->isMutable()))
+			assert(false);
 	}
 }
 }

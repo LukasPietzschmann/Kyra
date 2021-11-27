@@ -1,4 +1,4 @@
-add_library(LibSlg AstLogger.hpp Exceptions.hpp Variable.hpp HasPtrAlias.hpp
+add_library(LibSlg AstLogger.hpp Context.hpp Exceptions.hpp Variable.hpp HasPtrAlias.hpp
 		TokenType.hpp Token.hpp Lexer.cpp Lexer.hpp Parser.cpp Parser.hpp Interpreter.hpp
 		Interpreter.cpp Position.hpp
 		Expressions/AssignmentExpr.hpp Expressions/CallExpr.hpp Expressions/Expression.hpp Expressions/UnaryExpr.hpp
