@@ -334,7 +334,7 @@ void TypeChecker::visitClassDeclarationStmt(ClassDeclarationStmt& classDeclarati
 						THROW_TYPING_ERROR(
 								UndefinedTypeError(classDeclarationStmt.getPosition(), result.value()->getName()));
 					constructorParams.push_back(result.value());
-					if(!m_currentContext->declareVar(param.name.getValue().asString(), result.value(), true))
+					if(!m_currentContext->declareVar(param.name.getValue().asString(), result.value(), param.isMutable))
 						THROW_TYPING_ERROR(AlreadyDefinedVariableError(classDeclarationStmt.getPosition(),
 								param.name.getValue().asString()));
 				}
