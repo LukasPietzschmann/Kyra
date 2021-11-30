@@ -17,10 +17,8 @@ Value::Ptr Function::exec(std::vector<Value::Ptr> arguments) const {
 	RuntimeContext::Ptr runtimeContext = m_definitionContext;
 	for(unsigned long i = 0; i < arguments.size(); ++i) {
 		const auto& name = m_functionExpr.getParameters()[i].name.getValue().asString();
-		if(!runtimeContext->mutateVar(name, arguments[i])) {
-			if(!runtimeContext->declareVar(name, arguments[i]))
-				assert(false);
-		}
+		if(!runtimeContext->mutateVar(name, arguments[i]) && !runtimeContext->declareVar(name, arguments[i]))
+			assert(false);
 	}
 	try {
 		Runtime::getInstance().executeStatement(m_functionExpr.getImplementation(), runtimeContext);

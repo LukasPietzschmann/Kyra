@@ -27,8 +27,7 @@ public:
 	}
 
 	virtual std::optional<VT> getVar(const std::string& name) const {
-		const auto& it = m_variables.find(name);
-		if(it != m_variables.end())
+		if(const auto& it = m_variables.find(name); it != m_variables.end())
 			return it->second;
 		if(m_parent != nullptr)
 			return m_parent->getVar(name);
@@ -36,8 +35,7 @@ public:
 	}
 
 	virtual std::optional<TT> getType(const std::string& name) const {
-		const auto& it = m_types.find(name);
-		if(it != m_types.end())
+		if(const auto& it = m_types.find(name); it != m_types.end())
 			return it->second;
 		if(m_parent != nullptr)
 			return m_parent->getType(name);
@@ -61,8 +59,7 @@ public:
 	}
 
 	virtual bool mutateVar(const std::string& name, VT value) {
-		const auto& it = m_variables.find(name);
-		if(it != m_variables.end()) {
+		if(const auto& it = m_variables.find(name); it != m_variables.end()) {
 			it->second = value;
 			return true;
 		}
