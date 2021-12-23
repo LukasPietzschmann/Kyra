@@ -98,6 +98,11 @@ void Lexer::nameOrKeyword() {
 		advance();
 
 	std::string string = m_source.substr(m_startCharacter, m_currentCharacter - m_startCharacter);
+	if(string == "operator") {
+		while(!isWhitespace(peek()))
+			advance();
+	}
+	string = m_source.substr(m_startCharacter, m_currentCharacter - m_startCharacter);
 	std::string literal;
 	TokenType type = TokenType::NAME;
 	if(const auto& it = m_keywords.find(string); it != m_keywords.end())
@@ -156,6 +161,8 @@ bool Lexer::isDigit(char character) const { return character >= '0' && character
 bool Lexer::isAlpha(char character) const {
 	return (character >= 'a' && character <= 'z') || (character >= 'A' && character <= 'Z');
 }
+
+bool Lexer::isWhitespace(char character) const { return isspace(character); }
 
 bool Lexer::isAtEnd() const { return (unsigned long)m_currentCharacter >= m_source.size(); }
 }

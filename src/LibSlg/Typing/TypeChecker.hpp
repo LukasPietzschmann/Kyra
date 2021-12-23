@@ -1,8 +1,10 @@
 #pragma once
 
 #include <iosfwd>
+#include <iostream>
 #include <optional>
 #include <type_traits>
+#include <utility>
 #include <vector>
 
 #include "../Expressions/Expression.hpp"
@@ -32,6 +34,30 @@ class TypeExpr;
 class UnaryExpr;
 class VariableExpr;
 
+class TypeReprHelper {
+public:
+	TypeReprHelper() = default;
+	TypeReprHelper(const Type::Repr& repr) : repr(repr) {}
+
+	TypeReprHelper& operator=(const Type::Repr& r) {
+		repr = r;
+		return *this;
+	}
+
+	Type::Ptr operator->() const { return TypeProvider::the().decode(repr); }
+	Type::Ptr operator*() const { return TypeProvider::the().decode(repr); }
+
+	bool operator==(Type::Ptr type) const { return **this == type; }
+	bool operator==(const TypeReprHelper& type) const { return **this == *type; }
+
+	const Type::Repr& getRepr() const { return repr; }
+
+	bool hasValue() const { return !repr.empty(); }
+
+private:
+	Type::Repr repr;
+};
+
 class TypeChecker : public ExpressionVisitor, public StatementVisitor {
 #define THROW_TYPING_ERROR(error)               \
 	do {                                        \
@@ -39,7 +65,7 @@ class TypeChecker : public ExpressionVisitor, public StatementVisitor {
 		return;                                 \
 	} while(0)
 
-	EXPR_NEEDS_VISIT_RETURN_OF_TYPE(Type::Ptr);
+	EXPR_NEEDS_VISIT_RETURN_OF_TYPE(TypeReprHelper);
 
 public:
 	class Result {

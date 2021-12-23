@@ -49,6 +49,7 @@ private:
 	void addToken(TokenType type, const std::string& literal = "");
 	bool isDigit(char character) const;
 	bool isAlpha(char character) const;
+	bool isWhitespace(char character) const;
 	bool isAtEnd() const;
 };
 }

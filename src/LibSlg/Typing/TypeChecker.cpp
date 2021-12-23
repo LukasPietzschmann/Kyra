@@ -31,7 +31,6 @@
 #include "../Variable.hpp"
 #include "ClassType.hpp"
 #include "FunctionType.hpp"
-#include "NativeTypes.hpp"
 
 namespace Slanguage {
 TypeChecker& TypeChecker::getInstance() {
@@ -72,7 +71,7 @@ TypeContext::Ptr TypeChecker::runInNewContext(const Callback& function,
 }
 
 void TypeChecker::visitAccessExpr(AccessExpr& accessExpr) {
-	EXPR_ACCEPT(accessExpr.getOwner(), *this, Type::Ptr ownerType);
+	EXPR_ACCEPT(accessExpr.getOwner(), *this, TypeReprHelper ownerType);
 	const std::string& name = accessExpr.getName().getValue().asString();
 	const auto& result = ownerType->knowsAbout(name);
 	if(!result.has_value())
@@ -81,71 +80,42 @@ void TypeChecker::visitAccessExpr(AccessExpr& accessExpr) {
 }
 
 void TypeChecker::visitAssignmentExpr(AssignmentExpr& assignmentExpr) {
-	Type::Ptr assignedValueType;
+	TypeReprHelper assignedValueType;
 	const std::string& name = assignmentExpr.getName().getValue().asString();
 
 	if(assignmentExpr.getOwner() != nullptr) {
-		EXPR_ACCEPT(assignmentExpr.getOwner(), *this, Type::Ptr ownerType);
+		EXPR_ACCEPT(assignmentExpr.getOwner(), *this, TypeReprHelper ownerType);
 		assignedValueType = ownerType->knowsAbout(name)->value;
 	} else
 		assignedValueType = m_currentContext->getVar(name)->value;
 
-	if(assignedValueType == nullptr)
+	if(!assignedValueType.hasValue())
 		THROW_TYPING_ERROR(UndefinedVariableError(assignmentExpr.getPosition(), name));
 	if(!m_currentContext->getVar(name)->isMutable)
 		THROW_TYPING_ERROR(AssignmentToConstError(assignmentExpr.getPosition(), name));
-	EXPR_ACCEPT(assignmentExpr.getNewValue(), *this, Type::Ptr newValueType);
-	if(!newValueType->canBeAssignedTo(assignedValueType))
+	EXPR_ACCEPT(assignmentExpr.getNewValue(), *this, TypeReprHelper newValueType);
+	if(!newValueType->canBeAssignedTo(*assignedValueType))
 		THROW_TYPING_ERROR(
 				WrongTypeError(assignmentExpr.getPosition(), assignedValueType->getName(), newValueType->getName()));
 	EXPR_RETURN_FROM_VISIT(newValueType);
 }
 
-// TODO: It should be possible to override specific slg-functions to implement those oprrators
 void TypeChecker::visitBinaryExpr(BinaryExpr& binaryExpr) {
-	const Type::Ptr& num = NativeTypes::make(Value::NativeTypes::Number);
-	const Type::Ptr& str = NativeTypes::make(Value::NativeTypes::String);
-	const Type::Ptr& boolean = NativeTypes::make(Value::NativeTypes::Bool);
-	const Token& oper = binaryExpr.getOperator();
-	EXPR_ACCEPT(binaryExpr.getLhs(), *this, Type::Ptr lhs);
-	EXPR_ACCEPT(binaryExpr.getRhs(), *this, Type::Ptr rhs);
+	EXPR_ACCEPT(binaryExpr.getLhs(), *this, TypeReprHelper lhs);
+	EXPR_ACCEPT(binaryExpr.getRhs(), *this, TypeReprHelper rhs);
 
-	switch(oper.getType()) {
-		case TokenType::EQUAL_EQUAL:
-		case TokenType::BANG_EQUAL:
-		case TokenType::GREATER:
-		case TokenType::GREATER_EQUAL:
-		case TokenType::LESS:
-		case TokenType::LESS_EQUAL: EXPR_RETURN_FROM_VISIT(boolean);
-		case TokenType::SLASH:
-		case TokenType::MINUS:
-			if(*lhs == num && *rhs == num)
-				EXPR_RETURN_FROM_VISIT(num);
-			THROW_TYPING_ERROR(
-					UnsupportedOperator(binaryExpr.getPosition(), lhs->getName(), oper.getLexeme(), rhs->getName()));
-		case TokenType::PLUS:
-			if(*lhs == num && *rhs == num)
-				EXPR_RETURN_FROM_VISIT(num);
-			if(*lhs == str && *rhs == str)
-				EXPR_RETURN_FROM_VISIT(str);
-			THROW_TYPING_ERROR(
-					UnsupportedOperator(binaryExpr.getPosition(), lhs->getName(), oper.getLexeme(), rhs->getName()));
-		case TokenType::STAR:
-			if(*lhs == num && *rhs == num)
-				EXPR_RETURN_FROM_VISIT(num);
-			if(*lhs == str && *rhs == num)
-				EXPR_RETURN_FROM_VISIT(str);
-			THROW_TYPING_ERROR(
-					UnsupportedOperator(binaryExpr.getPosition(), lhs->getName(), oper.getLexeme(), rhs->getName()));
-		default:
-			THROW_TYPING_ERROR(
-					UnsupportedOperator(binaryExpr.getPosition(), lhs->getName(), oper.getLexeme(), rhs->getName()));
+	const std::string expectedFunctionName = "operator" + binaryExpr.getOperator().getLexeme();
+	if(const auto& res = lhs->knowsAbout(expectedFunctionName); res.has_value()) {
+		TypeReprHelper type = res->value;
+		if(type->canBeCalledWith({rhs.getRepr()}))
+			EXPR_RETURN_FROM_VISIT(std::dynamic_pointer_cast<FunctionType>(*type)->getReturnType());
 	}
+	THROW_TYPING_ERROR(UndefinedMemberError(binaryExpr.getPosition(), lhs->getName(), expectedFunctionName));
 }
 
 void TypeChecker::visitCallExpr(CallExpr& callExpr) {
-	EXPR_ACCEPT(callExpr.getFunction(), *this, Type::Ptr gFunction);
-	const auto& function = std::dynamic_pointer_cast<FunctionType>(gFunction);
+	EXPR_ACCEPT(callExpr.getFunction(), *this, TypeReprHelper gFunction);
+	const auto& function = std::dynamic_pointer_cast<FunctionType>(*gFunction);
 	if(gFunction == nullptr)
 		return;
 	if(function == nullptr)
@@ -156,9 +126,9 @@ void TypeChecker::visitCallExpr(CallExpr& callExpr) {
 				callExpr.getArguments().size(),
 				function->getName()));
 	for(unsigned long i = 0; i < function->getParameters().size(); ++i) {
-		const Type::Ptr param = function->getParameters()[i];
-		EXPR_ACCEPT(callExpr.getArguments()[i], *this, Type::Ptr arg);
-		if(!arg->canBeAssignedTo(param))
+		const TypeReprHelper param = function->getParameters()[i];
+		EXPR_ACCEPT(callExpr.getArguments()[i], *this, TypeReprHelper arg);
+		if(!arg->canBeAssignedTo(*param))
 			THROW_TYPING_ERROR(WrongTypeError(callExpr.getPosition(), param->getName(), arg->getName()));
 	}
 
@@ -167,16 +137,17 @@ void TypeChecker::visitCallExpr(CallExpr& callExpr) {
 
 void TypeChecker::visitFunction(FunctionExpr& functionExpr) {
 	FunctionType* enclosingFunctionType = m_currentFunction;
-	EXPR_ACCEPT(functionExpr.getReturnType(), *this, Type::Ptr returnType);
-	std::vector<Type::Ptr> parameters;
+	EXPR_ACCEPT(functionExpr.getReturnType(), *this, TypeReprHelper returnType);
+	std::vector<Type::Repr> parameters;
 	TypeContext::Ptr paramScope = runInNewContext(
 			[&functionExpr, &parameters, this]() {
 				for(const auto& param : functionExpr.getParameters()) {
 					const auto& result = m_currentContext->getType(param.type);
 					if(!result.has_value())
 						THROW_TYPING_ERROR(UndefinedTypeError(functionExpr.getPosition(), param.type));
-					if(!result.value()->isApplicableForDeclaration())
-						THROW_TYPING_ERROR(UndefinedTypeError(functionExpr.getPosition(), result.value()->getName()));
+					TypeReprHelper type = result.value();
+					if(!type->isApplicableForDeclaration())
+						THROW_TYPING_ERROR(UndefinedTypeError(functionExpr.getPosition(), type->getName()));
 					parameters.push_back(result.value());
 					if(!m_currentContext->declareVar(param.name.getValue().asString(), result.value(), true))
 						THROW_TYPING_ERROR(AlreadyDefinedVariableError(functionExpr.getPosition(),
@@ -185,25 +156,26 @@ void TypeChecker::visitFunction(FunctionExpr& functionExpr) {
 			},
 			m_currentContext);
 
-	Type::Ptr functionType = Type::makePtr<FunctionType>(returnType, parameters);
+	Type::Ptr functionType = Type::makePtr<FunctionType>(returnType.getRepr(), parameters);
 	m_currentFunction = std::dynamic_pointer_cast<FunctionType>(functionType).get();
 
 	runInNewContext([&functionExpr, this]() { functionExpr.getImplementation()->accept(*this); },
 			m_currentContext,
 			paramScope);
 
-	if(!m_doesCurrentFunctionReturn && m_currentFunction->getReturnType()->getName() != Value::NativeTypes::Nothing)
+	TypeReprHelper currentFunctionReturnType = m_currentFunction->getReturnType();
+	if(!m_doesCurrentFunctionReturn && currentFunctionReturnType->getName() != Value::NativeTypes::Nothing)
 		THROW_TYPING_ERROR(WrongTypeError(functionExpr.getPosition(),
-				m_currentFunction->getReturnType()->getName(),
+				currentFunctionReturnType->getName(),
 				Value::NativeTypes::Nothing));
 
 	m_doesCurrentFunctionReturn = false;
 	m_currentFunction = enclosingFunctionType;
-	EXPR_RETURN_FROM_VISIT(functionType);
+	EXPR_RETURN_FROM_VISIT(TypeProvider::the().encode(functionType));
 }
 
 void TypeChecker::visitGroupExpr(GroupExpr& groupExpr) {
-	EXPR_ACCEPT(groupExpr.getExpr(), *this, Type::Ptr type);
+	EXPR_ACCEPT(groupExpr.getExpr(), *this, TypeReprHelper type);
 	EXPR_RETURN_FROM_VISIT(type);
 }
 
@@ -211,16 +183,16 @@ void TypeChecker::visitInstantiationExpr(InstantiationExpr& instantiationExpr) {
 	const auto& result = m_currentContext->getType(instantiationExpr.getName());
 	if(!result.has_value())
 		THROW_TYPING_ERROR(UndefinedTypeError(instantiationExpr.getPosition(), instantiationExpr.getName()));
-	auto classType = std::dynamic_pointer_cast<ClassType>(result.value());
+	auto classType = std::dynamic_pointer_cast<ClassType>(TypeProvider::the().decode(result.value()));
 	if(instantiationExpr.getArguments().size() != classType->getArity())
 		THROW_TYPING_ERROR(ArityError(instantiationExpr.getPosition(),
 				classType->getArity(),
 				instantiationExpr.getArguments().size(),
 				"Constructor of class " + instantiationExpr.getName()));
 	for(unsigned long i = 0; i < classType->getArity(); ++i) {
-		const Type::Ptr& expected = classType->getConstructorParameter()[i];
-		EXPR_ACCEPT(instantiationExpr.getArguments()[i], *this, Type::Ptr provided);
-		if(*expected != provided)
+		TypeReprHelper expected = classType->getConstructorParameter()[i];
+		EXPR_ACCEPT(instantiationExpr.getArguments()[i], *this, TypeReprHelper provided);
+		if(expected != provided)
 			THROW_TYPING_ERROR(
 					WrongTypeError(instantiationExpr.getPosition(), expected->getName(), provided->getName()));
 	}
@@ -233,13 +205,14 @@ void TypeChecker::visitLiteral(LiteralExpr& literalExpr) {
 
 void TypeChecker::visitTypeExpr(TypeExpr& typeExpr) {
 	if(typeExpr.isFunction()) {
-		EXPR_ACCEPT(typeExpr.getReturnType(), *this, Type::Ptr returnType);
-		std::vector<Type::Ptr> paramTypes;
+		EXPR_ACCEPT(typeExpr.getReturnType(), *this, TypeReprHelper returnType);
+		std::vector<Type::Repr> paramTypes;
 		for(const auto& param : typeExpr.getParameterTypes()) {
-			EXPR_ACCEPT(param, *this, Type::Ptr paramType);
-			paramTypes.push_back(paramType);
+			EXPR_ACCEPT(param, *this, TypeReprHelper paramType);
+			paramTypes.push_back(paramType.getRepr());
 		}
-		EXPR_RETURN_FROM_VISIT(Type::makePtr<FunctionType>(returnType, paramTypes));
+		EXPR_RETURN_FROM_VISIT(
+				TypeProvider::the().encode(Type::makePtr<FunctionType>(returnType.getRepr(), paramTypes)));
 	}
 	const auto& result = m_currentContext->getType(typeExpr.getName());
 	if(!result.has_value())
@@ -248,20 +221,15 @@ void TypeChecker::visitTypeExpr(TypeExpr& typeExpr) {
 }
 
 void TypeChecker::visitUnaryExpr(UnaryExpr& unaryExpr) {
-	// TODO check for function in type. This allows for overriding those functions
-	const TokenType& oper = unaryExpr.getOperator().getType();
-	EXPR_ACCEPT(unaryExpr.getRhs(), *this, Type::Ptr rhs);
-	switch(oper) {
-		case TokenType::BANG: EXPR_RETURN_FROM_VISIT(m_currentContext->getType(Value::NativeTypes::Bool).value());
-		case TokenType::MINUS:
-			if(rhs->getName() == Value::NativeTypes::Number)
-				EXPR_RETURN_FROM_VISIT(NativeTypes::make(Value::NativeTypes::Number));
-			else
-				THROW_TYPING_ERROR(UnsupportedOperator(unaryExpr.getPosition(),
-						unaryExpr.getOperator().getValue().asString(),
-						rhs->getName()));
-		default: assert(false);
+	EXPR_ACCEPT(unaryExpr.getRhs(), *this, TypeReprHelper rhs);
+
+	const std::string expectedFunctionName = "operator" + unaryExpr.getOperator().getLexeme();
+	if(const auto& res = rhs->knowsAbout(expectedFunctionName); res.has_value()) {
+		Type::Ptr type = TypeProvider::the().decode(res->value);
+		if(type->canBeCalledWith({}))
+			EXPR_RETURN_FROM_VISIT(std::dynamic_pointer_cast<FunctionType>(type)->getReturnType());
 	}
+	THROW_TYPING_ERROR(UndefinedMemberError(unaryExpr.getPosition(), rhs->getName(), expectedFunctionName));
 }
 
 void TypeChecker::visitVariable(VariableExpr& variableExpr) {
@@ -288,7 +256,7 @@ void TypeChecker::visitBlockStmt(BlockStmt& blockStmt) {
 void TypeChecker::visitDeclarationStmt(DeclarationStmt& declarationStmt) {
 	const std::string& name = declarationStmt.getIdentifier().getValue().asString();
 
-	Type::Ptr expectedType{};
+	TypeReprHelper expectedType{};
 	if(declarationStmt.getType() == nullptr) {
 		if(declarationStmt.getInitializer() == nullptr)
 			THROW_TYPING_ERROR(TypingError(declarationStmt.getPosition(),
@@ -299,19 +267,17 @@ void TypeChecker::visitDeclarationStmt(DeclarationStmt& declarationStmt) {
 		if(!expectedType->isApplicableForDeclaration())
 			THROW_TYPING_ERROR(UndefinedTypeError(declarationStmt.getPosition(), expectedType->getName()));
 		if(declarationStmt.getInitializer() != nullptr) {
-			// TODO: this is necessary for recursion to work
-			// Is types aren't explicitly annotated, this code won't run
 			if(expectedType->isFunction())
-				m_currentContext->declareVar(name, expectedType, declarationStmt.isMutable());
-			EXPR_ACCEPT(declarationStmt.getInitializer(), *this, Type::Ptr initType);
+				m_currentContext->declareVar(name, expectedType.getRepr(), declarationStmt.isMutable());
+			EXPR_ACCEPT(declarationStmt.getInitializer(), *this, TypeReprHelper initType);
 			if(expectedType->isFunction())
 				m_currentContext->removeVar(name);
-			if(!initType->canBeAssignedTo(expectedType))
+			if(!initType->canBeAssignedTo(*expectedType))
 				THROW_TYPING_ERROR(
 						WrongTypeError(declarationStmt.getPosition(), expectedType->getName(), initType->getName()));
 		}
 	}
-	if(!m_currentContext->declareVar(name, expectedType, declarationStmt.isMutable())) {
+	if(!m_currentContext->declareVar(name, expectedType.getRepr(), declarationStmt.isMutable())) {
 		if(m_currentClassName != nullptr)
 			THROW_TYPING_ERROR(
 					AlreadyDefinedMemberError(declarationStmt.getPosition(), std::string(m_currentClassName), name));
@@ -326,16 +292,18 @@ void TypeChecker::visitClassDeclarationStmt(ClassDeclarationStmt& classDeclarati
 	if(m_currentContext->getType(name).has_value())
 		THROW_TYPING_ERROR(AlreadyDefinedTypeError(classDeclarationStmt.getPosition(), name));
 
-	std::vector<Type::Ptr> constructorParams;
+	std::vector<Type::Repr> constructorParams;
+
 	TypeContext::Ptr paramScope = runInNewContext(
 			[&classDeclarationStmt, &constructorParams, this]() {
 				for(const auto& param : classDeclarationStmt.getConstructorParameters()) {
 					const auto& result = m_currentContext->getType(param.type);
 					if(!result.has_value())
 						THROW_TYPING_ERROR(UndefinedTypeError(classDeclarationStmt.getPosition(), param.type));
-					if(!result.value()->isApplicableForDeclaration())
+					TypeReprHelper resultType = result.value();
+					if(!resultType->isApplicableForDeclaration())
 						THROW_TYPING_ERROR(
-								UndefinedTypeError(classDeclarationStmt.getPosition(), result.value()->getName()));
+								UndefinedTypeError(classDeclarationStmt.getPosition(), resultType->getName()));
 					constructorParams.push_back(result.value());
 					if(!m_currentContext->declareVar(param.name.getValue().asString(), result.value(), param.isMutable))
 						THROW_TYPING_ERROR(AlreadyDefinedVariableError(classDeclarationStmt.getPosition(),
@@ -352,20 +320,21 @@ void TypeChecker::visitClassDeclarationStmt(ClassDeclarationStmt& classDeclarati
 			m_currentContext,
 			paramScope);
 
-	m_currentContext->declareType(name, Type::makePtr<ClassType>(name, declScope->getVariables(), constructorParams));
+	m_currentContext->declareType(name,
+			TypeProvider::the().encode(Type::makePtr<ClassType>(name, declScope->getVariables(), constructorParams)));
 	m_currentClassName = nullptr;
 }
 void TypeChecker::visitExpressionStmt(ExpressionStmt& expressionStmt) { expressionStmt.getExpr()->accept(*this); }
 
-void TypeChecker::visitPrintStmt(PrintStmt& printStmt) { EXPR_ACCEPT(printStmt.getExpr(), *this, Type::Ptr type); }
+void TypeChecker::visitPrintStmt(PrintStmt& printStmt) { EXPR_ACCEPT(printStmt.getExpr(), *this, TypeReprHelper type); }
 
 void TypeChecker::visitReturnStmt(ReturnStmt& returnStmt) {
 	if(m_currentFunction == nullptr)
 		THROW_TYPING_ERROR(InvalidReturnError(returnStmt.getPosition()));
-	EXPR_ACCEPT(returnStmt.getExpr(), *this, Type::Ptr returnedType);
-	if(*returnedType != m_currentFunction->getReturnType())
+	EXPR_ACCEPT(returnStmt.getExpr(), *this, TypeReprHelper returnedType);
+	if(returnedType != m_currentFunction->getReturnType())
 		THROW_TYPING_ERROR(WrongTypeError(returnStmt.getPosition(),
-				m_currentFunction->getReturnType()->getName(),
+				TypeProvider::the().decode(m_currentFunction->getReturnType())->getName(),
 				returnedType->getName()));
 	m_doesCurrentFunctionReturn = true;
 }

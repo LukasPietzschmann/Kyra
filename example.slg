@@ -35,7 +35,12 @@ class Human(var height: Number){
 	val printHeight: Function()->Nothing = fun()->Nothing{
 		print height;
 	};
+
+	val operator+ = fun(other: Human)->Number{
+		return height + other.height;
+	};
 }
 
 var luke: Human = instantiate Human(185);
 luke.printHeight();
+print luke + luke;

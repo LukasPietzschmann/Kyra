@@ -9,19 +9,19 @@
 #include "../HasPtrAlias.hpp"
 #include "../Values/Value.hpp"
 #include "../Variable.hpp"
-#include "NativeTypes.hpp"
 #include "Type.hpp"
+#include "TypeProvider.hpp"
 
 namespace Slanguage {
-class TypeContext : public Context<TypeContext, Variable<Type::Ptr>, Type::Ptr> {
+class TypeContext : public Context<TypeContext, Variable<Type::Repr>, Type::Repr> {
 public:
 	explicit TypeContext(TypeContext::Ptr parent = nullptr) :
-		Context<TypeContext, Variable<Type::Ptr>, Type::Ptr>(parent) {
-		for(const auto& nativeType : Value::NativeTypes::All)
-			m_types.try_emplace(nativeType, NativeTypes::make(nativeType));
+		Context<TypeContext, Variable<Type::Repr>, Type::Repr>(parent) {
+		for(const auto& nt : TypeProvider::nativeTypes())
+			m_types.try_emplace(TypeProvider::the().decode(nt)->getName(), nt);
 	}
 
 	using Context::declareVar;
-	bool declareVar(const std::string& name, Type::Ptr varType, bool isMutable);
+	bool declareVar(const std::string& name, Type::Repr varType, bool isMutable);
 };
 }
