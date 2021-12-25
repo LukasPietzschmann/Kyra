@@ -24,6 +24,12 @@ public:
 		return it->second;
 	}
 
+	void addConstructorParam(const Type::Repr& param) { m_constructorParameter.push_back(param); }
+
+	void addDeclaration(const std::string& name, const Variable<Type::Repr>& value) {
+		m_declarations.emplace(name, value);
+	}
+
 	const std::vector<Type::Repr>& getConstructorParameter() const { return m_constructorParameter; }
 	unsigned long getArity() const { return m_constructorParameter.size(); }
 

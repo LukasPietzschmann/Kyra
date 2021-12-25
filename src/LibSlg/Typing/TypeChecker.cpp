@@ -292,10 +292,11 @@ void TypeChecker::visitClassDeclarationStmt(ClassDeclarationStmt& classDeclarati
 	if(m_currentContext->getType(name).has_value())
 		THROW_TYPING_ERROR(AlreadyDefinedTypeError(classDeclarationStmt.getPosition(), name));
 
-	std::vector<Type::Repr> constructorParams;
+	ClassType* klass = new ClassType(name);
+	m_currentContext->declareType(name, TypeProvider::the().encode(ClassType::Ptr(klass)));
 
 	TypeContext::Ptr paramScope = runInNewContext(
-			[&classDeclarationStmt, &constructorParams, this]() {
+			[&classDeclarationStmt, &klass, this]() {
 				for(const auto& param : classDeclarationStmt.getConstructorParameters()) {
 					const auto& result = m_currentContext->getType(param.type);
 					if(!result.has_value())
@@ -304,7 +305,9 @@ void TypeChecker::visitClassDeclarationStmt(ClassDeclarationStmt& classDeclarati
 					if(!resultType->isApplicableForDeclaration())
 						THROW_TYPING_ERROR(
 								UndefinedTypeError(classDeclarationStmt.getPosition(), resultType->getName()));
-					constructorParams.push_back(result.value());
+					klass->addConstructorParam(result.value());
+					klass->addDeclaration(param.name.getValue().asString(),
+							Variable<Type::Repr>(result.value(), param.isMutable));
 					if(!m_currentContext->declareVar(param.name.getValue().asString(), result.value(), param.isMutable))
 						THROW_TYPING_ERROR(AlreadyDefinedVariableError(classDeclarationStmt.getPosition(),
 								param.name.getValue().asString()));
@@ -320,8 +323,9 @@ void TypeChecker::visitClassDeclarationStmt(ClassDeclarationStmt& classDeclarati
 			m_currentContext,
 			paramScope);
 
-	m_currentContext->declareType(name,
-			TypeProvider::the().encode(Type::makePtr<ClassType>(name, declScope->getVariables(), constructorParams)));
+	for(const auto& [declName, decl] : declScope->getVariables())
+		klass->addDeclaration(declName, decl);
+
 	m_currentClassName = nullptr;
 }
 void TypeChecker::visitExpressionStmt(ExpressionStmt& expressionStmt) { expressionStmt.getExpr()->accept(*this); }
