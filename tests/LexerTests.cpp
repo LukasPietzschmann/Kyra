@@ -1,43 +1,42 @@
 #include <gtest/gtest.h>
 
-#include "../src/LibSlg/Lexer.hpp"
-#include "../src/LibSlg/Position.hpp"
+#include "../src/LibKyra/Lexer.hpp"
+#include "../src/LibKyra/Position.hpp"
 
 TEST(lexer, AllTokens) {
-	Slanguage::Lexer lexer(
-			"(){},;.-+/*= ==! != < <= > >= -> : name\"string\"123var fun print nothing true false return");
-	std::vector<Slanguage::TokenType> expected{Slanguage::TokenType::LEFT_PAREN,
-			Slanguage::TokenType::RIGHT_PAREN,
-			Slanguage::TokenType::LEFT_CURLY,
-			Slanguage::TokenType::RIGHT_CURLY,
-			Slanguage::TokenType::COMMA,
-			Slanguage::TokenType::SEMICOLON,
-			Slanguage::TokenType::DOT,
-			Slanguage::TokenType::MINUS,
-			Slanguage::TokenType::PLUS,
-			Slanguage::TokenType::SLASH,
-			Slanguage::TokenType::STAR,
-			Slanguage::TokenType::EQUAL,
-			Slanguage::TokenType::EQUAL_EQUAL,
-			Slanguage::TokenType::BANG,
-			Slanguage::TokenType::BANG_EQUAL,
-			Slanguage::TokenType::LESS,
-			Slanguage::TokenType::LESS_EQUAL,
-			Slanguage::TokenType::GREATER,
-			Slanguage::TokenType::GREATER_EQUAL,
-			Slanguage::TokenType::ARROW,
-			Slanguage::TokenType::COLON,
-			Slanguage::TokenType::NAME,
-			Slanguage::TokenType::STRING,
-			Slanguage::TokenType::NUMBER,
-			Slanguage::TokenType::VAR,
-			Slanguage::TokenType::FUN,
-			Slanguage::TokenType::PRINT,
-			Slanguage::TokenType::NOTHING,
-			Slanguage::TokenType::TRUE,
-			Slanguage::TokenType::FALSE,
-			Slanguage::TokenType::RETURN,
-			Slanguage::TokenType::END_OF_FILE};
+	Kyra::Lexer lexer("(){},;.-+/*= ==! != < <= > >= -> : name\"string\"123var fun print nothing true false return");
+	std::vector<Kyra::TokenType> expected{Kyra::TokenType::LEFT_PAREN,
+			Kyra::TokenType::RIGHT_PAREN,
+			Kyra::TokenType::LEFT_CURLY,
+			Kyra::TokenType::RIGHT_CURLY,
+			Kyra::TokenType::COMMA,
+			Kyra::TokenType::SEMICOLON,
+			Kyra::TokenType::DOT,
+			Kyra::TokenType::MINUS,
+			Kyra::TokenType::PLUS,
+			Kyra::TokenType::SLASH,
+			Kyra::TokenType::STAR,
+			Kyra::TokenType::EQUAL,
+			Kyra::TokenType::EQUAL_EQUAL,
+			Kyra::TokenType::BANG,
+			Kyra::TokenType::BANG_EQUAL,
+			Kyra::TokenType::LESS,
+			Kyra::TokenType::LESS_EQUAL,
+			Kyra::TokenType::GREATER,
+			Kyra::TokenType::GREATER_EQUAL,
+			Kyra::TokenType::ARROW,
+			Kyra::TokenType::COLON,
+			Kyra::TokenType::NAME,
+			Kyra::TokenType::STRING,
+			Kyra::TokenType::NUMBER,
+			Kyra::TokenType::VAR,
+			Kyra::TokenType::FUN,
+			Kyra::TokenType::PRINT,
+			Kyra::TokenType::NOTHING,
+			Kyra::TokenType::TRUE,
+			Kyra::TokenType::FALSE,
+			Kyra::TokenType::RETURN,
+			Kyra::TokenType::END_OF_FILE};
 	const auto& actual = lexer.scanTokens();
 	ASSERT_EQ(expected.size(), actual.size())
 			<< "The number of parsed Tokens does not match the number of expected Tokens";
@@ -46,28 +45,28 @@ TEST(lexer, AllTokens) {
 }
 
 TEST(lexer, EmptyInput) {
-	Slanguage::Lexer lexer("");
+	Kyra::Lexer lexer("");
 	const auto& tokens = lexer.scanTokens();
 	ASSERT_EQ(tokens.size(), 1) << "Only one Token should be generated";
-	EXPECT_EQ(tokens[0].getType(), Slanguage::TokenType::END_OF_FILE);
+	EXPECT_EQ(tokens[0].getType(), Kyra::TokenType::END_OF_FILE);
 }
 
 TEST(lexer, MultiLineString) {
-	Slanguage::Lexer lexer(R"("Multiline
+	Kyra::Lexer lexer(R"("Multiline
 String")");
 	auto tokens = lexer.scanTokens();
 	ASSERT_EQ(tokens.size(), 2);
 	EXPECT_EQ(tokens[0],
-			Slanguage::Token(Slanguage::TokenType::STRING,
-					Slanguage::Position(1, 1, 2, 19),
+			Kyra::Token(Kyra::TokenType::STRING,
+					Kyra::Position(1, 1, 2, 19),
 					"\"Multiline\nString\"",
 					"Multiline\nString"));
 }
 
 TEST(lexer, DifferKeywordFromIdentifier) {
-	Slanguage::Lexer lexer("return keyword");
+	Kyra::Lexer lexer("return keyword");
 	auto tokens = lexer.scanTokens();
 	ASSERT_EQ(tokens.size(), 3);
-	EXPECT_EQ(tokens[0].getType(), Slanguage::TokenType::RETURN);
-	EXPECT_EQ(tokens[1].getType(), Slanguage::TokenType::NAME);
+	EXPECT_EQ(tokens[0].getType(), Kyra::TokenType::RETURN);
+	EXPECT_EQ(tokens[1].getType(), Kyra::TokenType::NAME);
 }

@@ -1,30 +1,25 @@
-# The Slanguage programming language
+# The Kyra programming language
 
-[![SonarCloud](https://github.com/LukasPietzschmann/Slanguage/actions/workflows/sonarcloud.yml/badge.svg?branch=master)](https://github.com/LukasPietzschmann/Slanguage/actions/workflows/sonarcloud.yml)
-[![Lines of Code](https://sonarcloud.io/api/project_badges/measure?project=LukasPietzschmann_Slanguage&metric=ncloc)](https://sonarcloud.io/dashboard?id=LukasPietzschmann_Slanguage)
-[![Bugs](https://sonarcloud.io/api/project_badges/measure?project=LukasPietzschmann_Slanguage&metric=bugs)](https://sonarcloud.io/dashboard?id=LukasPietzschmann_Slanguage)
-[![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=LukasPietzschmann_Slanguage&metric=code_smells)](https://sonarcloud.io/dashboard?id=LukasPietzschmann_Slanguage)
+[![SonarCloud](https://github.com/LukasPietzschmann/Kyra/actions/workflows/sonarcloud.yml/badge.svg?branch=master)](https://github.com/LukasPietzschmann/Kyra/actions/workflows/sonarcloud.yml)
+[![Lines of Code](https://sonarcloud.io/api/project_badges/measure?project=LukasPietzschmann_Kyra&metric=ncloc)](https://sonarcloud.io/dashboard?id=LukasPietzschmann_Kyra)
+[![Bugs](https://sonarcloud.io/api/project_badges/measure?project=LukasPietzschmann_Kyra&metric=bugs)](https://sonarcloud.io/dashboard?id=LukasPietzschmann_Kyra)
+[![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=LukasPietzschmann_Kyra&metric=code_smells)](https://sonarcloud.io/dashboard?id=LukasPietzschmann_Kyra)
 ![works on my machine](https://cdn.jsdelivr.net/gh/nikku/works-on-my-machine@v0.2.0/badge.svg)
-
-
-<p align=center>
-It's <code>Slang-(g)uage</code> not <code>S-language</code>!
-</p>
 
 ```
 print "Hello, World";
 ```
 
-## What is Slanguage?
+## What is Kyra?
 
 ### For me:
 
-Slanguage is just a Hobby Project of mine. Don't expect to come across any new industry-disrupting features. I'm trying
-to implement a basic language to become more familiar with C++ and the magic behind compilers and interpreters.
+Kyra is just a Hobby Project of mine. Don't expect to come across any new industry-disrupting features. I'm trying to
+implement a basic language to become more familiar with C++ and the magic behind compilers and interpreters.
 
 ### For others:
 
-Slanguage is a **very** basic statically typed language, currently supporting:
+Kyra is a **very** basic statically typed language, currently supporting:
 
 - classes
 - first-class functions
@@ -37,9 +32,9 @@ Slanguage is a **very** basic statically typed language, currently supporting:
     - arithmetic
     - and of course comments
 
-See [example.slg](https://github.com/LukasPietzschmann/Slanguage/blob/master/example.slg) for a simple example.
+See [example.ky](https://github.com/LukasPietzschmann/Kyra/blob/master/example.ky) for a simple example.
 
-For more details visit the [Wiki](https://github.com/LukasPietzschmann/Slanguage/wiki).
+For more details visit the [Wiki](https://github.com/LukasPietzschmann/Kyra/wiki).
 
 ## Compile the Project
 
@@ -48,7 +43,7 @@ To compile the Code yourself, execute the following steps:
 1. Navigate to the projects root
 2. Create a new folder (e.g. Debug) with `mkdir Debug && cd Debug`
 3. Within this folder, issue the command `cmake .. -DCMAKE_BUILD_TYPE=Release`
-4. Now you can build the project by calling `make Slanguage`. The resulting executable can be found under `./bin`
+4. Now you can build the project by calling `make Kyra`. The resulting executable can be found under `./bin`
 
 ## Run Tests
 

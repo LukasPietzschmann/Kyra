@@ -7,7 +7,7 @@
 #include <memory>
 #include <string>
 
-#include "LibSlg/Interpreter.hpp"
+#include "LibKyra/Interpreter.hpp"
 
 #ifdef HAS_READLINE
 #include <readline/readline.h>
@@ -18,11 +18,11 @@ void simpleRepl();
 void niceRepl();
 
 static bool verbose = false;
-static std::string defaultPrompt = "SLG > ";
+static std::string defaultPrompt = "KYRA > ";
 
 int main(int argc, char** argv) {
 	std::ostream::sync_with_stdio(false);
-	std::string desc("The Slanguage programming language");
+	std::string desc("The Kyra programming language");
 	cxxopts::Options options(argv[0], desc + " - Version " + PROJECT_VERSION);
 	options.add_options()("f,file", "The file to execute", cxxopts::value<std::string>())("verbose",
 			"Prints as much information as available",
@@ -39,12 +39,12 @@ int main(int argc, char** argv) {
 		}
 
 		if(result.count("version")) {
-			std::cout << "Slanguage " << PROJECT_VERSION << std::endl;
+			std::cout << "Kyra " << PROJECT_VERSION << std::endl;
 			return 0;
 		}
 
 		if(!result.count("file")) {
-			std::cout << "Slanguage " << PROJECT_VERSION << " by Lukas Pietzschmann"
+			std::cout << "Kyra " << PROJECT_VERSION << " by Lukas Pietzschmann"
 					  << "\n";
 			std::cout << R"(Type "exit" or press "CTRL-C" to exit the REPL)" << std::endl;
 #ifdef HAS_READLINE
@@ -66,7 +66,7 @@ int main(int argc, char** argv) {
 				fileContent << line << "\n";
 			fileStream.close();
 
-			Slanguage::Interpreter::execute(fileContent.str(), verbose);
+			Kyra::Interpreter::execute(fileContent.str(), verbose);
 		}
 	} catch(const cxxopts::OptionException& exception) {
 		std::cout << exception.what() << "\n" << options.help() << std::endl;
@@ -84,7 +84,7 @@ void simpleRepl() {
 		if(line == "exit")
 			break;
 
-		Slanguage::Interpreter::getInstance().execute(line, verbose);
+		Kyra::Interpreter::getInstance().execute(line, verbose);
 
 		std::cout << defaultPrompt;
 	}
@@ -107,14 +107,14 @@ void niceRepl() {
 		}
 
 		completeCode += inputLine;
-		unfinished = Slanguage::Interpreter::isIncompleteStatement(completeCode);
+		unfinished = Kyra::Interpreter::isIncompleteStatement(completeCode);
 
 		if(unfinished) {
 			prompt = ".... ";
 			completeCode += "\n";
 		} else {
 			add_history(completeCode.c_str());
-			Slanguage::Interpreter::execute(completeCode, verbose);
+			Kyra::Interpreter::execute(completeCode, verbose);
 			completeCode.clear();
 			prompt = defaultPrompt;
 		}

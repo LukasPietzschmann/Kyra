@@ -1,4 +1,4 @@
-add_subdirectory(LibSlg)
+add_subdirectory(LibKyra)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR}/cmake)
 
@@ -23,24 +23,24 @@ if (NORMALIZED_BUILD_TYPE STREQUAL "DEBUG")
 	FetchContent_MakeAvailable(backward-cpp)
 endif (NORMALIZED_BUILD_TYPE STREQUAL "DEBUG")
 
-add_executable(Slanguage main.cpp ${PROJECT_SOURCE_DIR}/include/config.h ${BACKWARD_ENABLE})
+add_executable(Kyra main.cpp ${PROJECT_SOURCE_DIR}/include/config.h ${BACKWARD_ENABLE})
 
-target_include_directories(Slanguage PRIVATE ${PROJECT_SOURCE_DIR}/include)
-target_link_libraries(Slanguage LibSlg cxxopts)
+target_include_directories(Kyra PRIVATE ${PROJECT_SOURCE_DIR}/include)
+target_link_libraries(Kyra LibKyra cxxopts)
 
 option(IWYU "Adds Include-What-You-Use to the Toolchain" OFF)
 if (IWYU)
 	find_program(iwyu_path NAMES include-what-you-use iwyu REQUIRED)
-	set(iwyu_path_and_options ${iwyu_path} -Xiwyu --check_also="${PROJECT_SOURCE_DIR}/src/LibSlg/Token.hpp")
-	set_property(TARGET LibSlg Slanguage PROPERTY CXX_INCLUDE_WHAT_YOU_USE ${iwyu_path_and_options})
-	set_property(TARGET LibSlg Slanguage PROPERTY C_INCLUDE_WHAT_YOU_USE ${iwyu_path_and_options})
+	set(iwyu_path_and_options ${iwyu_path} -Xiwyu --check_also="${PROJECT_SOURCE_DIR}/src/LibKyra/Token.hpp")
+	set_property(TARGET LibKyra Kyra PROPERTY CXX_INCLUDE_WHAT_YOU_USE ${iwyu_path_and_options})
+	set_property(TARGET LibKyra Kyra PROPERTY C_INCLUDE_WHAT_YOU_USE ${iwyu_path_and_options})
 endif ()
 
 if (CMAKE_BUILD_TYPE MATCHES DEBUG)
-	add_backward(Slanguage)
+	add_backward(Kyra)
 endif (CMAKE_BUILD_TYPE MATCHES DEBUG)
 
 if (READLINE_FOUND)
-	target_link_libraries(Slanguage ${Readline_LIBRARY})
+	target_link_libraries(Kyra ${Readline_LIBRARY})
 	add_compile_definitions(HAS_READLINE)
 endif (READLINE_FOUND)
