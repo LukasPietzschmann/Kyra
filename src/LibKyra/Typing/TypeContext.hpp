@@ -22,6 +22,6 @@ public:
 	}
 
 	using Context::declareVar;
-	bool declareVar(const std::string& name, Type::Repr varType, bool isMutable);
+	bool declareVar(const std::string& name, const Type::Repr& varType, bool isMutable);
 };
 }

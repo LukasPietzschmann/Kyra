@@ -27,7 +27,7 @@ public:
 	void addConstructorParam(const Type::Repr& param) { m_constructorParameter.push_back(param); }
 
 	void addDeclaration(const std::string& name, const Variable<Type::Repr>& value) {
-		m_declarations.emplace(name, value);
+		m_declarations.try_emplace(name, value);
 	}
 
 	const std::vector<Type::Repr>& getConstructorParameter() const { return m_constructorParameter; }

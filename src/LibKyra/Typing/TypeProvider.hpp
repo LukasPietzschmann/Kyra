@@ -33,7 +33,7 @@ public:
 		Repr repr = type->getName();
 		auto it = m_types.find(repr);
 		if(it == m_types.end())
-			m_types.emplace(repr, type);
+			m_types.try_emplace(repr, type);
 		else
 			it->second = type;
 		return repr;
