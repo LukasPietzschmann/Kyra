@@ -6,6 +6,8 @@
 [![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=LukasPietzschmann_Kyra&metric=code_smells)](https://sonarcloud.io/dashboard?id=LukasPietzschmann_Kyra)
 ![works on my machine](https://cdn.jsdelivr.net/gh/nikku/works-on-my-machine@v0.2.0/badge.svg)
 
+<img src="https://github.com/LukasPietzschmann/Kyra/blob/master/Logo.png" style="display: block; margin-left: auto; margin-right: auto; width: 200px" />
+
 ```
 print "Hello, World";
 ```
