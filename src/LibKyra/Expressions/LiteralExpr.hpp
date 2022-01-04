@@ -6,10 +6,11 @@
 namespace Kyra {
 class LiteralExpr : public Expression {
 public:
-	LiteralExpr(const Position& position, const Value::Ptr& value) : Expression(position), m_value(value) {}
+	LiteralExpr(const Position& position, const Value::Ptr& value);
 	~LiteralExpr() override = default;
-	void accept(ExpressionVisitor& visitor) override { return visitor.visitLiteral(*this); }
-	Value::Ptr getValue() const { return m_value; }
+
+	void accept(ExpressionVisitor& visitor) override;
+	Value::Ptr getValue() const;
 
 private:
 	Value::Ptr m_value;

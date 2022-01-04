@@ -8,12 +8,12 @@
 namespace Kyra {
 class AccessExpr : public Expression {
 public:
-	AccessExpr(const Position& position, const Expression::Ptr& owner, Token name) :
-		Expression(position), m_owner(owner), m_name(std::move(name)) {}
+	AccessExpr(const Position& position, const Expression::Ptr& owner, Token name);
 	~AccessExpr() override = default;
-	void accept(ExpressionVisitor& visitor) override { return visitor.visitAccessExpr(*this); }
-	Expression::Ptr getOwner() const { return m_owner; }
-	const Token& getName() const { return m_name; }
+
+	void accept(ExpressionVisitor& visitor) override;
+	Expression::Ptr getOwner() const;
+	const Token& getName() const;
 
 private:
 	Expression::Ptr m_owner;

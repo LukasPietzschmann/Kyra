@@ -3,46 +3,24 @@
 #include <string>
 
 #include "Nothing.hpp"
+#include "Number.hpp"
 #include "Value.hpp"
 
 namespace Kyra {
 class String : public Value {
 public:
-	explicit String(std::string string) : m_string(std::move(string)) {}
+	explicit String(std::string string);
 	~String() override = default;
-	bool isImplicitlyTrue() const override { return true; }
-	std::string getType() const override { return Value::NativeTypes::String; }
-	std::string toString() const override { return m_string; }
 
-	bool operator==(const Value::Ptr& other) const override {
-		if(getType() != other->getType())
-			return false;
-		return m_string == Value::as<String>(other)->m_string;
-	}
+	bool isImplicitlyTrue() const override;
+	std::string getType() const override;
+	std::string toString() const override;
 
-	bool operator<(const Value::Ptr& other) const override {
-		if(getType() != other->getType())
-			return false;
-		return m_string.compare(Value::as<String>(other)->m_string) < 0;
-	}
-
-	bool operator>(const Value::Ptr& other) const override {
-		if(getType() != other->getType())
-			return false;
-		return m_string.compare(Value::as<String>(other)->m_string) > 0;
-	}
-
-	Value::Ptr operator+(const Value::Ptr& other) const override {
-		return Value::makePtr<String>(m_string + other->toString());
-	}
-
-	Value::Ptr operator*(const Value::Ptr& other) const override {
-		assert(other->getType() == Value::NativeTypes::Number);
-		std::string output;
-		for(int i = 0; i < Value::as<Number>(other)->getNumber(); ++i)
-			output += m_string;
-		return Value::makePtr<String>(output);
-	}
+	bool operator==(const Value::Ptr& other) const override;
+	bool operator<(const Value::Ptr& other) const override;
+	bool operator>(const Value::Ptr& other) const override;
+	Value::Ptr operator+(const Value::Ptr& other) const override;
+	Value::Ptr operator*(const Value::Ptr& other) const override;
 
 private:
 	std::string m_string;

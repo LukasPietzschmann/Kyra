@@ -8,17 +8,13 @@
 namespace Kyra {
 class AssignmentExpr : public Expression {
 public:
-	AssignmentExpr(const Position& position,
-			const Expression::Ptr& owner,
-			Token name,
-			const Expression::Ptr& newValue) :
-		Expression(position),
-		m_owner(owner), m_name(std::move(name)), m_newValue(newValue) {}
+	AssignmentExpr(const Position& position, const Expression::Ptr& owner, Token name, const Expression::Ptr& newValue);
 	~AssignmentExpr() override = default;
-	void accept(ExpressionVisitor& visitor) override { return visitor.visitAssignmentExpr(*this); }
-	Expression::Ptr getOwner() const { return m_owner; }
-	const Token& getName() const { return m_name; }
-	Expression::Ptr getNewValue() const { return m_newValue; }
+
+	void accept(ExpressionVisitor& visitor) override;
+	Expression::Ptr getOwner() const;
+	const Token& getName() const;
+	Expression::Ptr getNewValue() const;
 
 private:
 	Expression::Ptr m_owner;

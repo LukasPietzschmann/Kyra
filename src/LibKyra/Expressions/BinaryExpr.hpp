@@ -8,13 +8,13 @@
 namespace Kyra {
 class BinaryExpr : public Expression {
 public:
-	BinaryExpr(const Position& position, const Expression::Ptr& lhs, Token oper, const Expression::Ptr& rhs) :
-		Expression(position), m_operator(std::move(oper)), m_lhs(lhs), m_rhs(rhs) {}
+	BinaryExpr(const Position& position, const Expression::Ptr& lhs, Token oper, const Expression::Ptr& rhs);
 	~BinaryExpr() override = default;
-	void accept(ExpressionVisitor& visitor) override { return visitor.visitBinaryExpr(*this); }
-	const Token& getOperator() const { return m_operator; }
-	Expression::Ptr getLhs() const { return m_lhs; }
-	Expression::Ptr getRhs() const { return m_rhs; }
+
+	void accept(ExpressionVisitor& visitor) override;
+	const Token& getOperator() const;
+	Expression::Ptr getLhs() const;
+	Expression::Ptr getRhs() const;
 
 private:
 	Token m_operator;

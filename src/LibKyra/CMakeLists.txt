@@ -1,16 +1,12 @@
-add_library(LibKyra AstLogger.hpp Context.hpp Exceptions.hpp Variable.hpp HasPtrAlias.hpp
-		TokenType.hpp Token.hpp Lexer.cpp Lexer.hpp Parser.cpp Parser.hpp Interpreter.hpp
-		Interpreter.cpp Position.hpp
-		Expressions/AssignmentExpr.hpp Expressions/CallExpr.hpp Expressions/Expression.hpp Expressions/UnaryExpr.hpp
-		Expressions/BinaryExpr.hpp Expressions/LiteralExpr.hpp Expressions/VariableExpr.hpp Expressions/FunctionExpr.hpp
-		Expressions/AccessExpr.hpp Expressions/GroupExpr.hpp Expressions/InstantiationExpr.hpp Expressions/TypeExpr.hpp
-		Expressions/Forward.hpp
-		Statements/BlockStmt.hpp Statements/DeclarationStmt.hpp Statements/ClassDeclarationStmt.hpp
-		Statements/ExpressionStmt.hpp Statements/PrintStmt.hpp Statements/PrintStmt.hpp Statements/ReturnStmt.hpp
-		Statements/Statement.hpp Statements/Forward.hpp
-		Typing/TypeChecker.hpp Typing/TypeChecker.cpp Typing/Type.hpp Typing/ClassType.hpp Typing/FunctionType.hpp
-		Typing/NothingType.hpp Typing/TypeProvider.hpp Typing/TypingErrors.hpp Typing/TypeContext.hpp Typing/TypeContext.cpp
-		Values/Value.hpp Values/Value.cpp Values/Bool.hpp Values/Function.hpp Values/Function.cpp Values/Number.hpp
-		Values/Nothing.hpp Values/String.hpp Values/Klass.hpp Values/Klass.cpp Values/Forward.hpp
-		Runtime/Runtime.hpp Runtime/Runtime.cpp Runtime/RuntimeContext.hpp Runtime/RuntimeContext.cpp)
+add_library(LibKyra AstLogger.cpp Exceptions.cpp Token.cpp Lexer.cpp Parser.cpp Interpreter.cpp Position.cpp
+		Expressions/AssignmentExpr.cpp Expressions/CallExpr.cpp Expressions/UnaryExpr.cpp Expressions/BinaryExpr.cpp
+		Expressions/LiteralExpr.cpp Expressions/VariableExpr.cpp Expressions/FunctionExpr.cpp Expressions/AccessExpr.cpp
+		Expressions/GroupExpr.cpp Expressions/InstantiationExpr.cpp Expressions/TypeExpr.cpp
+		Statements/BlockStmt.cpp Statements/DeclarationStmt.cpp Statements/ClassDeclarationStmt.cpp
+		Statements/ExpressionStmt.cpp Statements/PrintStmt.cpp Statements/ReturnStmt.cpp
+		Typing/TypeChecker.cpp Typing/Type.cpp Typing/ClassType.cpp Typing/FunctionType.cpp Typing/NothingType.cpp
+		Typing/TypeProvider.cpp Typing/TypingErrors.cpp Typing/TypeContext.cpp
+		Values/Value.cpp Values/Bool.cpp Values/Function.cpp Values/Number.cpp Values/Nothing.cpp Values/String.cpp
+		Values/Klass.cpp
+		Runtime/Runtime.cpp Runtime/RuntimeContext.cpp)
 set_target_properties(LibKyra PROPERTIES LINKER_LANGUAGE CXX)

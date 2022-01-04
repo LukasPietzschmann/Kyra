@@ -12,8 +12,7 @@ namespace Kyra {
 class ClassDeclarationStmt : public Statement {
 public:
 	struct ConstructorParameter {
-		ConstructorParameter(Token name, bool isMutable, std::string type) :
-			name(std::move(std::move(name))), isMutable(isMutable), type(std::move(std::move(type))) {}
+		ConstructorParameter(Token name, bool isMutable, std::string type);
 		Token name;
 		bool isMutable;
 		std::string type;
@@ -22,15 +21,13 @@ public:
 	ClassDeclarationStmt(const Position& position,
 			Token identifier,
 			std::vector<ConstructorParameter> parameters,
-			std::vector<std::shared_ptr<DeclarationStmt>> declarations) :
-		Statement(position),
-		m_identifier(std::move(identifier)), m_parameters(std::move(parameters)),
-		m_declarations(std::move(declarations)) {}
+			std::vector<std::shared_ptr<DeclarationStmt>> declarations);
 	~ClassDeclarationStmt() override = default;
-	void accept(StatementVisitor& visitor) override { visitor.visitClassDeclarationStmt(*this); }
-	const Token& getIdentifier() const { return m_identifier; }
-	const std::vector<ConstructorParameter>& getConstructorParameters() const { return m_parameters; }
-	const std::vector<std::shared_ptr<DeclarationStmt>>& getDeclarations() const { return m_declarations; }
+
+	void accept(StatementVisitor& visitor) override;
+	const Token& getIdentifier() const;
+	const std::vector<ConstructorParameter>& getConstructorParameters() const;
+	const std::vector<std::shared_ptr<DeclarationStmt>>& getDeclarations() const;
 
 private:
 	Token m_identifier;

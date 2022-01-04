@@ -9,13 +9,9 @@
 namespace Kyra {
 class TypingError {
 public:
-	TypingError(const Position& position, std::string message) : m_position(position), m_message(std::move(message)) {}
+	TypingError(const Position& position, std::string message);
 
-	std::string getCause() const {
-		std::stringstream ss;
-		ss << m_message << " [" << m_position.start << " - " << m_position.end << "]";
-		return ss.str();
-	}
+	std::string getCause() const;
 
 private:
 	Position m_position;
@@ -24,76 +20,61 @@ private:
 
 class WrongTypeError : public TypingError {
 public:
-	WrongTypeError(const Position& position, const std::string& expected, const std::string& provided) :
-		TypingError(position, "Expected type " + expected + " does not equal provided type " + provided) {}
+	WrongTypeError(const Position& position, const std::string& expected, const std::string& provided);
 };
 
 class UnsupportedOperator : public TypingError {
 public:
-	UnsupportedOperator(const Position& position, const std::string& unaryOper, const std::string& type) :
-		TypingError(position, "Unsupported operator " + unaryOper + " on type " + type) {}
+	UnsupportedOperator(const Position& position, const std::string& unaryOper, const std::string& type);
 
 	UnsupportedOperator(const Position& position,
 			const std::string& lhsType,
 			const std::string& binaryOper,
-			const std::string& rhsType) :
-		TypingError(position,
-				"Unsupported operator " + binaryOper + " on left type " + lhsType + " with right type " + rhsType) {}
+			const std::string& rhsType);
 };
 
 class UndefinedTypeError : public TypingError {
 public:
-	explicit UndefinedTypeError(const Position& position, const std::string& type) :
-		TypingError(position, "Undefined type " + type) {}
+	explicit UndefinedTypeError(const Position& position, const std::string& type);
 };
 
 class AlreadyDefinedTypeError : public TypingError {
 public:
-	explicit AlreadyDefinedTypeError(const Position& position, const std::string& type) :
-		TypingError(position, "Already defined type " + type) {}
+	explicit AlreadyDefinedTypeError(const Position& position, const std::string& type);
 };
 
 class UndefinedMemberError : public TypingError {
 public:
-	UndefinedMemberError(const Position& position, const std::string& owner, const std::string& member) :
-		TypingError(position, "Undefined member " + member + " in " + owner) {}
+	UndefinedMemberError(const Position& position, const std::string& owner, const std::string& member);
 };
 
 class AlreadyDefinedMemberError : public TypingError {
 public:
-	AlreadyDefinedMemberError(const Position& position, const std::string& owner, const std::string& member) :
-		TypingError(position, "Already defined member " + member + " in " + owner) {}
+	AlreadyDefinedMemberError(const Position& position, const std::string& owner, const std::string& member);
 };
 
 class UndefinedVariableError : public TypingError {
 public:
-	explicit UndefinedVariableError(const Position& position, const std::string& var) :
-		TypingError(position, "Undefined variable " + var) {}
+	explicit UndefinedVariableError(const Position& position, const std::string& var);
 };
 
 class AlreadyDefinedVariableError : public TypingError {
 public:
-	explicit AlreadyDefinedVariableError(const Position& position, const std::string& var) :
-		TypingError(position, "Already defined variable " + var) {}
+	explicit AlreadyDefinedVariableError(const Position& position, const std::string& var);
 };
 
 class AssignmentToConstError : public TypingError {
 public:
-	explicit AssignmentToConstError(const Position& position, const std::string& var) :
-		TypingError(position, "Constant variable " + var + " can not be mutated") {}
+	explicit AssignmentToConstError(const Position& position, const std::string& var);
 };
 
 class ArityError : public TypingError {
 public:
-	ArityError(const Position& position, unsigned int expected, unsigned int provided, const std::string& name) :
-		TypingError(position,
-				"The function " + name + " requires " + std::to_string(expected) + " arguments, but you provided " +
-						std::to_string(provided)) {}
+	ArityError(const Position& position, unsigned int expected, unsigned int provided, const std::string& name);
 };
 
 class InvalidReturnError : public TypingError {
 public:
-	explicit InvalidReturnError(const Position& position) :
-		TypingError(position, "You can only return from a function context") {}
+	explicit InvalidReturnError(const Position& position);
 };
 }

@@ -1,14 +1,16 @@
 #pragma once
 
+#include "../Expressions/Expression.hpp"
 #include "Statement.hpp"
 
 namespace Kyra {
 class ReturnStmt : public Statement {
 public:
-	ReturnStmt(const Position& position, const Expression::Ptr& expr) : Statement(position), m_expr(expr) {}
+	ReturnStmt(const Position& position, const Expression::Ptr& expr);
 	~ReturnStmt() override = default;
-	void accept(StatementVisitor& visitor) override { visitor.visitReturnStmt(*this); }
-	Expression::Ptr getExpr() const { return m_expr; }
+
+	void accept(StatementVisitor& visitor) override;
+	Expression::Ptr getExpr() const;
 
 private:
 	Expression::Ptr m_expr;

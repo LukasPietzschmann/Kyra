@@ -8,12 +8,12 @@
 namespace Kyra {
 class CallExpr : public Expression {
 public:
-	CallExpr(const Position& position, const Expression::Ptr& function, std::vector<Expression::Ptr> arguments) :
-		Expression(position), m_function(function), m_arguments(std::move(arguments)) {}
+	CallExpr(const Position& position, const Expression::Ptr& function, std::vector<Expression::Ptr> arguments);
 	~CallExpr() override = default;
-	void accept(ExpressionVisitor& visitor) override { return visitor.visitCallExpr(*this); }
-	Expression::Ptr getFunction() const { return m_function; }
-	const std::vector<Expression::Ptr>& getArguments() const { return m_arguments; }
+
+	void accept(ExpressionVisitor& visitor) override;
+	Expression::Ptr getFunction() const;
+	const std::vector<Expression::Ptr>& getArguments() const;
 
 private:
 	Expression::Ptr m_function;

@@ -11,21 +11,21 @@ namespace Kyra {
 class FunctionExpr : public Expression {
 public:
 	struct Parameter {
-		Parameter(Token name, std::string type) : name(std::move(std::move(name))), type(std::move(std::move(type))) {}
+		Parameter(Token name, std::string type);
 		Token name;
 		std::string type;
 	};
+
 	FunctionExpr(const Position& position,
 			std::vector<Parameter> parameters,
 			const Expression::Ptr& returnType,
-			const Statement::Ptr& impl) :
-		Expression(position),
-		m_parameters(std::move(parameters)), m_returnType(returnType), m_implementation(impl) {}
+			const Statement::Ptr& impl);
 	~FunctionExpr() override = default;
-	void accept(ExpressionVisitor& visitor) override { return visitor.visitFunction(*this); }
-	const std::vector<Parameter>& getParameters() const { return m_parameters; }
-	Expression::Ptr getReturnType() const { return m_returnType; }
-	Statement::Ptr getImplementation() const { return m_implementation; }
+
+	void accept(ExpressionVisitor& visitor) override;
+	const std::vector<Parameter>& getParameters() const;
+	Expression::Ptr getReturnType() const;
+	Statement::Ptr getImplementation() const;
 
 private:
 	std::vector<Parameter> m_parameters;

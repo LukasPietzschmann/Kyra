@@ -7,10 +7,11 @@
 namespace Kyra {
 class GroupExpr : public Expression {
 public:
-	GroupExpr(const Position& position, const Expression::Ptr& expr) : Expression(position), m_expr(expr) {}
+	GroupExpr(const Position& position, const Expression::Ptr& expr);
 	~GroupExpr() override = default;
-	Expression::Ptr getExpr() const { return m_expr; }
-	void accept(ExpressionVisitor& visitor) override { return visitor.visitGroupExpr(*this); }
+
+	Expression::Ptr getExpr() const;
+	void accept(ExpressionVisitor& visitor) override;
 
 private:
 	Expression::Ptr m_expr;
