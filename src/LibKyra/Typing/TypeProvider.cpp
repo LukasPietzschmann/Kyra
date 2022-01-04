@@ -30,8 +30,7 @@ Type::Ptr TypeProvider::decode(const TypeProvider::Repr& repr) const {
 
 TypeProvider::Repr TypeProvider::encode(Type::Ptr type) {
 	Repr repr = type->getName();
-	auto it = m_types.find(repr);
-	if(it == m_types.end())
+	if(auto it = m_types.find(repr); it == m_types.end())
 		m_types.try_emplace(repr, type);
 	else
 		it->second = type;

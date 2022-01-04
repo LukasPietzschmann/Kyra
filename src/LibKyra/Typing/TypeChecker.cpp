@@ -145,8 +145,7 @@ void TypeChecker::visitFunction(FunctionExpr& functionExpr) {
 					const auto& result = m_currentContext->getType(param.type);
 					if(!result.has_value())
 						THROW_TYPING_ERROR(UndefinedTypeError(functionExpr.getPosition(), param.type));
-					TypeReprHelper type = result.value();
-					if(!type->isApplicableForDeclaration())
+					if(TypeReprHelper type = result.value(); !type->isApplicableForDeclaration())
 						THROW_TYPING_ERROR(UndefinedTypeError(functionExpr.getPosition(), type->getName()));
 					parameters.push_back(result.value());
 					if(!m_currentContext->declareVar(param.name.getValue().asString(), result.value(), true))
@@ -162,9 +161,8 @@ void TypeChecker::visitFunction(FunctionExpr& functionExpr) {
 	runInNewContext([&functionExpr, this]() { functionExpr.getImplementation()->accept(*this); },
 			m_currentContext,
 			paramScope);
-
-	TypeReprHelper currentFunctionReturnType = m_currentFunction->getReturnType();
-	if(!m_doesCurrentFunctionReturn && currentFunctionReturnType->getName() != Value::NativeTypes::Nothing)
+	if(TypeReprHelper currentFunctionReturnType = m_currentFunction->getReturnType();
+			!m_doesCurrentFunctionReturn && currentFunctionReturnType->getName() != Value::NativeTypes::Nothing)
 		THROW_TYPING_ERROR(WrongTypeError(functionExpr.getPosition(),
 				currentFunctionReturnType->getName(),
 				Value::NativeTypes::Nothing));
@@ -301,8 +299,7 @@ void TypeChecker::visitClassDeclarationStmt(ClassDeclarationStmt& classDeclarati
 					const auto& result = m_currentContext->getType(param.type);
 					if(!result.has_value())
 						THROW_TYPING_ERROR(UndefinedTypeError(classDeclarationStmt.getPosition(), param.type));
-					TypeReprHelper resultType = result.value();
-					if(!resultType->isApplicableForDeclaration())
+					if(TypeReprHelper resultType = result.value(); !resultType->isApplicableForDeclaration())
 						THROW_TYPING_ERROR(
 								UndefinedTypeError(classDeclarationStmt.getPosition(), resultType->getName()));
 					klass->addConstructorParam(result.value());
