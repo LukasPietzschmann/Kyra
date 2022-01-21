@@ -11,7 +11,7 @@
 
 #ifdef HAS_READLINE
 #include <readline/readline.h>
-
+#include<readline/history.h>
 #endif
 
 void simpleRepl();
