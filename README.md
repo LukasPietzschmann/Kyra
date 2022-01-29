@@ -17,7 +17,7 @@ print "Hello, World";
 ### For me:
 
 Kyra is just a Hobby Project of mine. Don't expect to come across any new industry-disrupting features. I'm trying to
-implement a basic language to become more familiar with C++ and the magic behind compilers and interpreters.
+implement a basic language to become more familiar with the magic 🪄 behind compilers and interpreters.
 
 ### For others:
 
@@ -28,15 +28,14 @@ Kyra is a **very** basic statically typed language, currently supporting:
 - mutable and immutable variables
     - strings, signed integers, booleans and empty (nil) values
 - closures
-- little things like
-    - console logging
-    - comparisons
-    - arithmetic
-    - and of course comments
+- basic arithmetic expressions
 
 See [example.ky](https://github.com/LukasPietzschmann/Kyra/blob/master/example.ky) for a simple example.
 
-For more details visit the [Wiki](https://github.com/LukasPietzschmann/Kyra/wiki).
+For more details visit the [Wiki](https://github.com/LukasPietzschmann/Kyra/wiki). There you can also see some ideas I have or what I'm currently implementing.
+
+## Contribute
+If you want to hack on Kyra yourselfe, please read [the contribution guide](https://github.com/LukasPietzschmann/Kyra/blob/master/CONTRIBUTING.md) first. But in general, I would love other people to join this project 😆
 
 ## Compile the Project
 
