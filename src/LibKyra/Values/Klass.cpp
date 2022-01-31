@@ -14,23 +14,8 @@
 
 namespace Kyra {
 class DeclarationStmt;
-
-bool Klass::knowsIdentifier(const std::string& identifier) const {
-	bool declarationsContainIdentifier = std::any_of(m_declarationStmt.getDeclarations().begin(),
-			m_declarationStmt.getDeclarations().end(),
-			[&identifier](const std::shared_ptr<DeclarationStmt>& decl) {
-				return decl->getIdentifier().getValue().asString() == identifier;
-			});
-	bool constructorContainsIdentifier = std::any_of(m_declarationStmt.getConstructorParameters().begin(),
-			m_declarationStmt.getConstructorParameters().end(),
-			[&identifier](const ClassDeclarationStmt::ConstructorParameter& param) {
-				return param.name.getValue().asString() == identifier;
-			});
-	return declarationsContainIdentifier || constructorContainsIdentifier;
-}
-
 void Klass::instantiate(const std::vector<Value::Ptr>& constructorArguments) {
-	assert(constructorArguments.size() == getArity());
+	assert(constructorArguments.size() == m_declarationStmt.getConstructorParameters().size());
 	m_instanceContext = RuntimeContext::makePtr<RuntimeContext>();
 	for(unsigned long i = 0; i < constructorArguments.size(); ++i) {
 		assert(m_declarationStmt.getConstructorParameters()[i].type == constructorArguments[i]->getType());

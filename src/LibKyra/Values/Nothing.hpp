@@ -11,7 +11,6 @@ public:
 	~Nothing() override = default;
 	bool isImplicitlyTrue() const override;
 	std::string getType() const override;
-	bool hasCorrectTypeForAssignment(const std::string&) const override;
 	std::string toString() const override;
 
 	bool operator==(const Value::Ptr& other) const override;

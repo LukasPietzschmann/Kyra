@@ -5,8 +5,6 @@ bool Nothing::isImplicitlyTrue() const { return false; }
 
 std::string Nothing::getType() const { return Value::NativeTypes::Nothing; }
 
-bool Nothing::hasCorrectTypeForAssignment(const std::string&) const { return true; }
-
 std::string Nothing::toString() const { return "nothing"; }
 
 bool Nothing::operator==(const HasPtrAlias::Ptr& other) const {

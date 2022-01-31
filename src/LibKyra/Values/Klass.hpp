@@ -18,9 +18,7 @@ class Klass : public Value {
 public:
 	explicit Klass(const ClassDeclarationStmt& declarationStmt) : m_declarationStmt(declarationStmt) {}
 
-	bool knowsIdentifier(const std::string& identifier) const;
 	RuntimeContext::Ptr getInstanceContext() const { return m_instanceContext; }
-	unsigned long getArity() const { return m_declarationStmt.getConstructorParameters().size(); }
 	void instantiate(const std::vector<Value::Ptr>& constructorArguments);
 
 	bool isImplicitlyTrue() const override { return true; }
