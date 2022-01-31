@@ -20,6 +20,7 @@ public:
 
 	RuntimeContext::Ptr getInstanceContext() const { return m_instanceContext; }
 	void instantiate(const std::vector<Value::Ptr>& constructorArguments);
+	Value::Ptr getDecl(const std::string& name);
 
 	bool isNative() const override { return false; }
 	bool isImplicitlyTrue() const override { return true; }
