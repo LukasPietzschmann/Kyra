@@ -21,6 +21,7 @@ public:
 	RuntimeContext::Ptr getInstanceContext() const { return m_instanceContext; }
 	void instantiate(const std::vector<Value::Ptr>& constructorArguments);
 
+	bool isNative() const override { return false; }
 	bool isImplicitlyTrue() const override { return true; }
 	std::string getType() const override { return m_declarationStmt.getIdentifier().getValue().asString(); }
 	std::string toString() const override { return "[Object of type " + getType() + "]"; }

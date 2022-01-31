@@ -30,6 +30,8 @@ public:
 		return std::dynamic_pointer_cast<R>(value);
 	}
 
+	virtual bool isNative() const { return true; }
+
 	virtual bool operator==(const Value::Ptr&) const = 0;
 	virtual bool operator<(const Value::Ptr&) const = 0;
 	virtual bool operator>(const Value::Ptr&) const = 0;
