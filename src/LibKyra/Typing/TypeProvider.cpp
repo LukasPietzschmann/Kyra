@@ -11,8 +11,11 @@ TypeProvider::TypeProvider() {
 
 	Type::Ptr function = Type::makePtr<FunctionType>(Value::NativeTypes::Number,
 			std::vector<Type::Repr>{Value::NativeTypes::Number});
+	Type::Ptr function2 =
+			Type::makePtr<FunctionType>(Value::NativeTypes::Bool, std::vector<Type::Repr>{Value::NativeTypes::Number});
 	std::unordered_map<std::string, Variable<Type::Repr>> declarations = {
-			{"operator+", Variable<Type::Repr>(encode(function), true)}};
+			{"operator+", Variable<Type::Repr>(encode(function), true)},
+			{"operator<", Variable<Type::Repr>(encode(function2), true)}};
 	encode(Type::makePtr<ClassType>(Value::NativeTypes::Number, declarations));
 }
 
