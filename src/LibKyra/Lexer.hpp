@@ -26,7 +26,8 @@ private:
 			{"true", TokenType::TRUE},
 			{"false", TokenType::FALSE},
 			{"return", TokenType::RETURN},
-			{"instantiate", TokenType::INSTANTIATE}};
+			{"instantiate", TokenType::INSTANTIATE},
+			{"while", TokenType::WHILE}};
 	const std::string m_source;
 	std::vector<Token> m_tokens;
 	int m_currentCharacter{};

@@ -11,6 +11,12 @@ val f: Function(Number)->Nothing = fun(a: Number)->Nothing{
 
 # f(1);
 
+var counter = 0;
+while(counter < 10){
+	print counter;
+	counter = counter + 1;
+}
+
 var closure: Function()->Number= fun(a: Number)->Function()->Number{
 	return fun()->Number{
 		return a;

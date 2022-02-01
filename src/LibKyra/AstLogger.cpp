@@ -63,6 +63,17 @@ void AstLogger::visitReturnStmt(ReturnStmt& returnStmt) {
 	--m_indent;
 }
 
+void AstLogger::visitWhileStmt(WhileStmt& whileStmt) {
+	COUT << "While" << std::endl;
+	++m_indent;
+	whileStmt.getCondition()->accept(*this);
+	--m_indent;
+	COUT << "Do" << std::endl;
+	++m_indent;
+	whileStmt.getStatement()->accept(*this);
+	--m_indent;
+}
+
 void AstLogger::visitAccessExpr(AccessExpr& accessExpr) {
 	COUT << "Get Variable " << accessExpr.getName().getValue().asString() << " from " << std::endl;
 	++m_indent;

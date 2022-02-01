@@ -29,6 +29,7 @@ private:                                      \
 	virtual void visitExpressionStmt(ExpressionStmt& expressionStmt) = 0;
 	virtual void visitPrintStmt(PrintStmt& printStmt) = 0;
 	virtual void visitReturnStmt(ReturnStmt& returnStmt) = 0;
+	virtual void visitWhileStmt(WhileStmt& whileStmt) = 0;
 };
 
 class Statement : public HasPtrAlias<Statement> {

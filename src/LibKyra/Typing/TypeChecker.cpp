@@ -25,6 +25,7 @@
 #include "../Statements/PrintStmt.hpp"
 #include "../Statements/ReturnStmt.hpp"
 #include "../Statements/Statement.hpp"
+#include "../Statements/WhileStmt.hpp"
 #include "../Token.hpp"
 #include "../TokenType.hpp"
 #include "../Values/Value.hpp"
@@ -338,5 +339,9 @@ void TypeChecker::visitReturnStmt(ReturnStmt& returnStmt) {
 				TypeProvider::the().decode(m_currentFunction->getReturnType())->getName(),
 				returnedType->getName()));
 	m_doesCurrentFunctionReturn = true;
+}
+void TypeChecker::visitWhileStmt(WhileStmt& whileStmt) {
+	EXPR_ACCEPT(whileStmt.getCondition(), *this, TypeReprHelper condition);
+	whileStmt.getStatement()->accept(*this);
 }
 }

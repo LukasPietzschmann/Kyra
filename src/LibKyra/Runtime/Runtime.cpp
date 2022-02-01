@@ -26,6 +26,7 @@
 #include "../Statements/PrintStmt.hpp"
 #include "../Statements/ReturnStmt.hpp"
 #include "../Statements/Statement.hpp"
+#include "../Statements/WhileStmt.hpp"
 #include "../Token.hpp"
 #include "../TokenType.hpp"
 #include "../Values/Bool.hpp"
@@ -204,6 +205,14 @@ void Runtime::visitPrintStmt(PrintStmt& printStmt) {
 void Runtime::visitReturnStmt(ReturnStmt& returnStmt) {
 	EXPR_ACCEPT(returnStmt.getExpr(), *this, Value::Ptr value);
 	throw ReturnException(value);
+}
+
+void Runtime::visitWhileStmt(WhileStmt& whileStmt) {
+	EXPR_ACCEPT(whileStmt.getCondition(), *this, Value::Ptr condition);
+	while(condition->isImplicitlyTrue()) {
+		whileStmt.getStatement()->accept(*this);
+		EXPR_ACCEPT(whileStmt.getCondition(), *this, condition);
+	}
 }
 
 template <typename Callback>

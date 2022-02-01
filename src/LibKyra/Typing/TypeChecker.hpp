@@ -30,6 +30,7 @@ class InstantiationExpr;
 class LiteralExpr;
 class PrintStmt;
 class ReturnStmt;
+class WhileStmt;
 class TypeExpr;
 class UnaryExpr;
 class VariableExpr;
@@ -109,6 +110,7 @@ public:
 	void visitExpressionStmt(ExpressionStmt& expressionStmt) override;
 	void visitPrintStmt(PrintStmt& printStmt) override;
 	void visitReturnStmt(ReturnStmt& returnStmt) override;
+	void visitWhileStmt(WhileStmt& whileStmt) override;
 
 private:
 	TypeChecker() = default;

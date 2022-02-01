@@ -22,6 +22,7 @@
 #include "Statements/PrintStmt.hpp"
 #include "Statements/ReturnStmt.hpp"
 #include "Statements/Statement.hpp"
+#include "Statements/WhileStmt.hpp"
 #include "TokenType.hpp"
 
 #define COUT std::cout << std::string(m_indent * 4, ' ')
@@ -39,6 +40,7 @@ public:
 	void visitExpressionStmt(ExpressionStmt& expressionStmt) override;
 	void visitPrintStmt(PrintStmt& printStmt) override;
 	void visitReturnStmt(ReturnStmt& returnStmt) override;
+	void visitWhileStmt(WhileStmt& whileStmt) override;
 	void visitAccessExpr(AccessExpr& accessExpr) override;
 	void visitAssignmentExpr(AssignmentExpr& assignmentExpr) override;
 	void visitBinaryExpr(BinaryExpr& binaryExpr) override;

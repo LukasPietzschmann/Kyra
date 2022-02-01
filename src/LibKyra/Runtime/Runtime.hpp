@@ -24,6 +24,7 @@ class ReturnStmt;
 class TypeExpr;
 class UnaryExpr;
 class VariableExpr;
+class WhileStmt;
 
 class Runtime : public ExpressionVisitor, public StatementVisitor {
 	EXPR_NEEDS_VISIT_RETURN_OF_TYPE(Value::Ptr);
@@ -57,6 +58,7 @@ public:
 	void visitExpressionStmt(ExpressionStmt& expressionStmt) override;
 	void visitPrintStmt(PrintStmt& printStmt) override;
 	void visitReturnStmt(ReturnStmt& returnStmt) override;
+	void visitWhileStmt(WhileStmt& whileStmt) override;
 
 private:
 	Runtime() = default;

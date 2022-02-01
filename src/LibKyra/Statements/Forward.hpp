@@ -7,5 +7,6 @@ class ClassDeclarationStmt;
 class ExpressionStmt;
 class PrintStmt;
 class ReturnStmt;
+class WhileStmt;
 class Statement;
 }

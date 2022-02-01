@@ -19,6 +19,7 @@ enum class TokenType {
 
 	//Keywords
 	VAR, VAL, FUN, CLASS, PRINT, NOTHING, TRUE, FALSE, RETURN, INSTANTIATE,
+	WHILE,
 
 	END_OF_FILE
 	// clang-format on
@@ -61,6 +62,7 @@ public:
 				"FALSE",
 				"RETURN",
 				"INSTANTIATE",
+				"WHILE",
 				"EOF"};
 		return names[static_cast<std::underlying_type_t<TokenType>>(type)];
 	}

@@ -24,6 +24,7 @@
 #include "Statements/ExpressionStmt.hpp"
 #include "Statements/PrintStmt.hpp"
 #include "Statements/ReturnStmt.hpp"
+#include "Statements/WhileStmt.hpp"
 #include "Values/Bool.hpp"
 #include "Values/Nothing.hpp"
 #include "Values/Number.hpp"
@@ -105,6 +106,8 @@ Statement::Ptr Parser::statement() {
 		return print();
 	if(match(TokenType::RETURN))
 		return ret();
+	if(match(TokenType::WHILE))
+		return while_loop();
 	return expression();
 }
 
@@ -134,6 +137,15 @@ Statement::Ptr Parser::ret() {
 	const Token& semicolon = consume(TokenType::SEMICOLON);
 
 	return Statement::makePtr<ReturnStmt>(Position(returnKW.getPosition(), semicolon.getPosition()), expr);
+}
+
+Statement::Ptr Parser::while_loop() {
+	const Token& whileKW = consume(TokenType::WHILE);
+	const Token& leftParen = consume(TokenType::LEFT_PAREN);
+	Expression::Ptr condition = assignment();
+	const Token& rightParen = consume(TokenType::RIGHT_PAREN);
+	const auto stmt = statement();
+	return Statement::makePtr<WhileStmt>(Position(whileKW.getPosition(), stmt->getPosition()), condition, stmt);
 }
 
 Statement::Ptr Parser::expression() {
@@ -261,6 +273,7 @@ Expression::Ptr Parser::call() {
 
 Expression::Ptr Parser::primary() {
 	if(match(TokenType::LEFT_PAREN)) {
+		// TODO extra group function. Also needed in while_loop
 		const Token& leftParen = consume(TokenType::LEFT_PAREN);
 		Expression::Ptr expr = assignment();
 		const Token& rightParen = consume(TokenType::RIGHT_PAREN);

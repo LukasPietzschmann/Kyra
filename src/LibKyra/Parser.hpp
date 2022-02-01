@@ -30,6 +30,7 @@ private:
 	Statement::Ptr block();
 	Statement::Ptr print();
 	Statement::Ptr ret();
+	Statement::Ptr while_loop();
 
 	Expression::Ptr assignment();
 	Expression::Ptr equality();

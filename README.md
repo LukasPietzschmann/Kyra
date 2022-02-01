@@ -29,13 +29,18 @@ Kyra is a **very** basic statically typed language, currently supporting:
     - strings, signed integers, booleans and empty (nil) values
 - closures
 - basic arithmetic expressions
+- classic while loop
 
 See [example.ky](https://github.com/LukasPietzschmann/Kyra/blob/master/example.ky) for a simple example.
 
-For more details visit the [Wiki](https://github.com/LukasPietzschmann/Kyra/wiki). There you can also see some ideas I have or what I'm currently implementing.
+For more details visit the [Wiki](https://github.com/LukasPietzschmann/Kyra/wiki). There you can also see some ideas I
+have or what I'm currently implementing.
 
 ## Contribute
-If you want to hack on Kyra yourselfe, please read [the contribution guide](https://github.com/LukasPietzschmann/Kyra/blob/master/CONTRIBUTING.md) first. But in general, I would love other people to join this project 😆
+
+If you want to hack on Kyra yourselfe, please
+read [the contribution guide](https://github.com/LukasPietzschmann/Kyra/blob/master/CONTRIBUTING.md) first. But in
+general, I would love other people to join this project 😆
 
 ## Compile the Project
 
