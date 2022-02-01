@@ -212,7 +212,6 @@ RuntimeContext::Ptr Runtime::runInNewContext(const Callback& callback, RuntimeCo
 	m_currentContext = RuntimeContext::makePtr<RuntimeContext>(parent);
 	callback();
 	RuntimeContext::Ptr modifiedContext = m_currentContext;
-	m_currentContext = contextCopy;
 	return modifiedContext;
 }
 }
