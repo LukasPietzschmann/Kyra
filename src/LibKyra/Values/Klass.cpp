@@ -33,11 +33,9 @@ void Klass::instantiate(const std::vector<Value::Ptr>& constructorArguments) {
 	}
 }
 
-Value::Ptr Klass::getDecl(const std::string& name) {
+Value::Ptr Klass::getDeclaration(const std::string& name) const {
 	const auto res = m_instanceContext->getVar(name);
-	// FIXME res should always have a value
-	if(!res.has_value())
-		return nullptr;
+	assert(res.has_value());
 	return res->value;
 }
 }

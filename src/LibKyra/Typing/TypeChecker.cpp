@@ -290,7 +290,7 @@ void TypeChecker::visitClassDeclarationStmt(ClassDeclarationStmt& classDeclarati
 	if(m_currentContext->getType(name).has_value())
 		THROW_TYPING_ERROR(AlreadyDefinedTypeError(classDeclarationStmt.getPosition(), name));
 
-	auto klass = new ClassType(name);
+	auto* klass = new ClassType(name);
 	m_currentContext->declareType(name, TypeProvider::the().encode(ClassType::Ptr(klass)));
 
 	TypeContext::Ptr paramScope = runInNewContext(

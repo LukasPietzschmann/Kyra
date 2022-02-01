@@ -88,8 +88,8 @@ void Runtime::visitBinaryExpr(BinaryExpr& binaryExpr) {
 	EXPR_ACCEPT(binaryExpr.getLhs(), *this, Value::Ptr lhs);
 	EXPR_ACCEPT(binaryExpr.getRhs(), *this, Value::Ptr rhs);
 	if(!lhs->isNative()) {
-		const auto& gFunction = Value::as<Klass>(lhs)->getDecl("operator" + binaryExpr.getOperator().getLexeme());
-		assert(gFunction != nullptr);
+		const auto& gFunction =
+				Value::as<Klass>(lhs)->getDeclaration("operator" + binaryExpr.getOperator().getLexeme());
 		auto function = Value::as<Function>(gFunction);
 		const auto result = function->exec({rhs});
 		EXPR_RETURN_FROM_VISIT(result);
