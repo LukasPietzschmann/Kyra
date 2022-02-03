@@ -141,9 +141,9 @@ Statement::Ptr Parser::ret() {
 
 Statement::Ptr Parser::while_loop() {
 	const Token& whileKW = consume(TokenType::WHILE);
-	const Token& leftParen = consume(TokenType::LEFT_PAREN);
+	consume(TokenType::LEFT_PAREN);
 	Expression::Ptr condition = assignment();
-	const Token& rightParen = consume(TokenType::RIGHT_PAREN);
+	consume(TokenType::RIGHT_PAREN);
 	const auto stmt = statement();
 	return Statement::makePtr<WhileStmt>(Position(whileKW.getPosition(), stmt->getPosition()), condition, stmt);
 }
