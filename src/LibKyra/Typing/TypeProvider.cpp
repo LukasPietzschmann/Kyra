@@ -9,14 +9,43 @@ TypeProvider::TypeProvider() {
 
 	m_native_type_reprs = {encode(boolType), encode(numberType), encode(stringType), encode(nothingType)};
 
-	Type::Ptr function = Type::makePtr<FunctionType>(Value::NativeTypes::Number,
-			std::vector<Type::Repr>{Value::NativeTypes::Number});
-	Type::Ptr function2 =
-			Type::makePtr<FunctionType>(Value::NativeTypes::Bool, std::vector<Type::Repr>{Value::NativeTypes::Number});
-	std::unordered_map<std::string, Variable<Type::Repr>> declarations = {
-			{"operator+", Variable<Type::Repr>(encode(function), true)},
-			{"operator<", Variable<Type::Repr>(encode(function2), true)}};
-	encode(Type::makePtr<ClassType>(Value::NativeTypes::Number, declarations));
+	const auto& a_to_b = [&](const Type::Repr& a, const Type::Repr& b) {
+		return Variable<Type::Repr>(encode(Type::makePtr<FunctionType>(b, std::vector<Type::Repr>{a})), true);
+	};
+
+	std::unordered_map<std::string, Variable<Type::Repr>> numDecls = {
+			{"operator+", a_to_b(Value::NativeTypes::Number, Value::NativeTypes::Number)},
+			{"operator-", a_to_b(Value::NativeTypes::Number, Value::NativeTypes::Number)},
+			{"operator*", a_to_b(Value::NativeTypes::Number, Value::NativeTypes::Number)},
+			{"operator/", a_to_b(Value::NativeTypes::Number, Value::NativeTypes::Number)},
+			{"operator<", a_to_b(Value::NativeTypes::Number, Value::NativeTypes::Bool)},
+			{"operator<=", a_to_b(Value::NativeTypes::Number, Value::NativeTypes::Bool)},
+			{"operator>", a_to_b(Value::NativeTypes::Number, Value::NativeTypes::Bool)},
+			{"operator>=", a_to_b(Value::NativeTypes::Number, Value::NativeTypes::Bool)},
+			{"operator==", a_to_b(Value::NativeTypes::Number, Value::NativeTypes::Bool)},
+			{"operator!=", a_to_b(Value::NativeTypes::Number, Value::NativeTypes::Bool)},
+	};
+	std::unordered_map<std::string, Variable<Type::Repr>> stringDecls = {
+			{"operator+", a_to_b(Value::NativeTypes::String, Value::NativeTypes::String)},
+			{"operator*", a_to_b(Value::NativeTypes::Number, Value::NativeTypes::String)},
+			{"operator<", a_to_b(Value::NativeTypes::String, Value::NativeTypes::Bool)},
+			{"operator<=", a_to_b(Value::NativeTypes::String, Value::NativeTypes::Bool)},
+			{"operator>", a_to_b(Value::NativeTypes::String, Value::NativeTypes::Bool)},
+			{"operator>=", a_to_b(Value::NativeTypes::String, Value::NativeTypes::Bool)},
+			{"operator==", a_to_b(Value::NativeTypes::String, Value::NativeTypes::Bool)},
+			{"operator!=", a_to_b(Value::NativeTypes::String, Value::NativeTypes::Bool)},
+	};
+	std::unordered_map<std::string, Variable<Type::Repr>> boolDecls = {
+			{"operator<", a_to_b(Value::NativeTypes::Bool, Value::NativeTypes::Bool)},
+			{"operator<=", a_to_b(Value::NativeTypes::Bool, Value::NativeTypes::Bool)},
+			{"operator>", a_to_b(Value::NativeTypes::Bool, Value::NativeTypes::Bool)},
+			{"operator>=", a_to_b(Value::NativeTypes::Bool, Value::NativeTypes::Bool)},
+			{"operator==", a_to_b(Value::NativeTypes::Bool, Value::NativeTypes::Bool)},
+			{"operator!=", a_to_b(Value::NativeTypes::Bool, Value::NativeTypes::Bool)},
+	};
+	encode(Type::makePtr<ClassType>(Value::NativeTypes::Number, numDecls));
+	encode(Type::makePtr<ClassType>(Value::NativeTypes::String, stringDecls));
+	encode(Type::makePtr<ClassType>(Value::NativeTypes::Bool, boolDecls));
 }
 
 TypeProvider& TypeProvider::the() {

@@ -105,7 +105,7 @@ void TypeChecker::visitBinaryExpr(BinaryExpr& binaryExpr) {
 	EXPR_ACCEPT(binaryExpr.getLhs(), *this, TypeReprHelper lhs);
 	EXPR_ACCEPT(binaryExpr.getRhs(), *this, TypeReprHelper rhs);
 
-	const std::string expectedFunctionName = "operator" + binaryExpr.getOperator().getLexeme();
+	const std::string& expectedFunctionName = "operator" + binaryExpr.getOperator().getLexeme();
 	if(const auto& res = lhs->knowsAbout(expectedFunctionName); res.has_value()) {
 		TypeReprHelper type = res->value;
 		if(type->canBeCalledWith({rhs.getRepr()}))
