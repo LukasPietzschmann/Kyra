@@ -1,10 +1,12 @@
 #pragma once
 
+#include <string>
 #include <vector>
 
 #include "Expression.hpp"
 
 namespace Kyra {
+struct Position;
 class InstantiationExpr : public Expression {
 public:
 	InstantiationExpr(const Position& position, std::string name, std::vector<Expression::Ptr> arguments);

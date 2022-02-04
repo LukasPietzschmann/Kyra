@@ -1,6 +1,9 @@
 #include "InstantiationExpr.hpp"
 
+#include <utility>
+
 namespace Kyra {
+struct Position;
 InstantiationExpr::InstantiationExpr(const Position& position,
 		std::string name,
 		std::vector<Expression::Ptr> arguments) :

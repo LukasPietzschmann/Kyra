@@ -1,6 +1,9 @@
 #include "AccessExpr.hpp"
 
+#include <utility>
+
 namespace Kyra {
+struct Position;
 AccessExpr::AccessExpr(const Position& position, const HasPtrAlias::Ptr& owner, Token name) :
 	Expression(position), m_owner(owner), m_name(std::move(name)) {}
 

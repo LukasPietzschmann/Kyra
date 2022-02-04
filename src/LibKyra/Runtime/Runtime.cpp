@@ -3,8 +3,7 @@
 #include <cassert>
 #include <iostream>
 #include <memory>
-#include <optional>
-#include <type_traits>
+#include <string>
 #include <vector>
 
 #include "../Exceptions.hpp"
@@ -12,20 +11,17 @@
 #include "../Expressions/AssignmentExpr.hpp"
 #include "../Expressions/BinaryExpr.hpp"
 #include "../Expressions/CallExpr.hpp"
-#include "../Expressions/Expression.hpp"
 #include "../Expressions/GroupExpr.hpp"
 #include "../Expressions/InstantiationExpr.hpp"
 #include "../Expressions/LiteralExpr.hpp"
 #include "../Expressions/UnaryExpr.hpp"
 #include "../Expressions/VariableExpr.hpp"
-#include "../HasPtrAlias.hpp"
 #include "../Statements/BlockStmt.hpp"
 #include "../Statements/ClassDeclarationStmt.hpp"
 #include "../Statements/DeclarationStmt.hpp"
 #include "../Statements/ExpressionStmt.hpp"
 #include "../Statements/PrintStmt.hpp"
 #include "../Statements/ReturnStmt.hpp"
-#include "../Statements/Statement.hpp"
 #include "../Statements/WhileStmt.hpp"
 #include "../Token.hpp"
 #include "../TokenType.hpp"

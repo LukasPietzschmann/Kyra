@@ -4,6 +4,7 @@
 #include "Statement.hpp"
 
 namespace Kyra {
+struct Position;
 class ReturnStmt : public Statement {
 public:
 	ReturnStmt(const Position& position, const Expression::Ptr& expr);

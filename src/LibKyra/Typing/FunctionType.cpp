@@ -1,5 +1,12 @@
 #include "FunctionType.hpp"
 
+#include <algorithm>
+#include <memory>
+#include <numeric>
+#include <string>
+#include <type_traits>
+#include <utility>
+
 namespace Kyra {
 FunctionType::FunctionType(Type::Repr returnType, std::vector<Type::Repr> parameters) :
 	Type(""), m_returnType(std::move(returnType)), m_parameters(std::move(parameters)) {

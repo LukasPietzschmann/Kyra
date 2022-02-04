@@ -4,6 +4,7 @@
 #include "Statement.hpp"
 
 namespace Kyra {
+struct Position;
 class WhileStmt : public Statement {
 public:
 	WhileStmt(const Position& position, Expression::Ptr condition, Statement::Ptr stmt);

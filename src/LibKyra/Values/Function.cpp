@@ -1,14 +1,8 @@
 #include "Function.hpp"
 
 #include <cassert>
-#include <memory>
 
-#include "../Exceptions.hpp"
-#include "../Expressions/FunctionExpr.hpp"
-#include "../HasPtrAlias.hpp"
 #include "../Runtime/Runtime.hpp"
-#include "../Runtime/RuntimeContext.hpp"
-#include "../Token.hpp"
 #include "Nothing.hpp"
 
 namespace Kyra {

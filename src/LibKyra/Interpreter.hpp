@@ -1,6 +1,6 @@
 #pragma once
 
-#include <iosfwd>
+#include <string>
 
 namespace Kyra {
 class Interpreter {

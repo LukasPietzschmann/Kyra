@@ -1,5 +1,7 @@
 #include "Nothing.hpp"
 
+#include <string>
+
 namespace Kyra {
 bool Nothing::isImplicitlyTrue() const { return false; }
 

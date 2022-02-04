@@ -1,8 +1,6 @@
 #pragma once
 
 #include <ostream>
-#include <sstream>
-#include <string>
 
 namespace Kyra {
 struct Position {

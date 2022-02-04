@@ -1,6 +1,9 @@
 #include "FunctionExpr.hpp"
 
+#include <utility>
+
 namespace Kyra {
+struct Position;
 FunctionExpr::Parameter::Parameter(Token name, std::string type) :
 	name(std::move(std::move(name))), type(std::move(std::move(type))) {}
 

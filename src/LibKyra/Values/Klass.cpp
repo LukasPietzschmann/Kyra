@@ -1,19 +1,13 @@
 #include "Klass.hpp"
 
-#include <algorithm>
 #include <cassert>
 #include <memory>
-#include <type_traits>
 
-#include "../HasPtrAlias.hpp"
 #include "../Runtime/Runtime.hpp"
-#include "../Runtime/RuntimeContext.hpp"
-#include "../Statements/ClassDeclarationStmt.hpp"
-#include "../Token.hpp"
+#include "../Statements/DeclarationStmt.hpp"
 #include "Nothing.hpp"
 
 namespace Kyra {
-class DeclarationStmt;
 void Klass::instantiate(const std::vector<Value::Ptr>& constructorArguments) {
 	assert(constructorArguments.size() == m_declarationStmt.getConstructorParameters().size());
 	m_instanceContext = RuntimeContext::makePtr<RuntimeContext>();

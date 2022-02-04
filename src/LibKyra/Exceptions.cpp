@@ -1,5 +1,7 @@
 #include "Exceptions.hpp"
 
+#include <sstream>
+
 namespace Kyra {
 MessageException::MessageException(const Position& position, std::string message) :
 	m_position(position), m_message(std::move(message)) {

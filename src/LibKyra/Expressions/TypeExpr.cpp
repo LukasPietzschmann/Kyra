@@ -1,6 +1,10 @@
 #include "TypeExpr.hpp"
 
+#include <cassert>
+#include <utility>
+
 namespace Kyra {
+struct Position;
 TypeExpr::TypesForFunctions::TypesForFunctions(std::vector<Expression::Ptr> parameterTypes,
 		Expression::Ptr returnType) :
 	parameterTypes(std::move(parameterTypes)),

@@ -1,8 +1,6 @@
 #pragma once
 
-#include <cassert>
 #include <memory>
-#include <string>
 
 namespace Kyra {
 template <typename C>

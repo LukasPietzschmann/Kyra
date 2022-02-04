@@ -1,11 +1,10 @@
 #pragma once
 
-#include <utility>
-
 #include "../Token.hpp"
 #include "Expression.hpp"
 
 namespace Kyra {
+struct Position;
 class AssignmentExpr : public Expression {
 public:
 	AssignmentExpr(const Position& position, const Expression::Ptr& owner, Token name, const Expression::Ptr& newValue);

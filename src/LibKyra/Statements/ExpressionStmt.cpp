@@ -1,6 +1,7 @@
 #include "ExpressionStmt.hpp"
 
 namespace Kyra {
+struct Position;
 ExpressionStmt::ExpressionStmt(const Position& position, const Expression::Ptr& expr) :
 	Statement(position), m_expr(expr) {}
 

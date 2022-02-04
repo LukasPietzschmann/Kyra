@@ -1,10 +1,8 @@
 #pragma once
 
-#include <cassert>
-#include <iostream>
 #include <string>
-#include <type_traits>
 #include <unordered_map>
+#include <utility>
 #include <vector>
 
 #include "Token.hpp"

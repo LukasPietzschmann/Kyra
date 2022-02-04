@@ -1,40 +1,22 @@
 #pragma once
 
-#include <iosfwd>
-#include <iostream>
+#include <memory>
 #include <optional>
-#include <type_traits>
+#include <string>
 #include <utility>
 #include <vector>
 
 #include "../Expressions/Expression.hpp"
-#include "../HasPtrAlias.hpp"
+#include "../Expressions/Forward.hpp"
+#include "../Statements/Forward.hpp"
 #include "../Statements/Statement.hpp"
 #include "Type.hpp"
 #include "TypeContext.hpp"
+#include "TypeProvider.hpp"
 #include "TypingErrors.hpp"
 
 namespace Kyra {
-class AccessExpr;
-class AssignmentExpr;
-class BinaryExpr;
-class BlockStmt;
-class CallExpr;
-class ClassDeclarationStmt;
-class DeclarationStmt;
-class ExpressionStmt;
-class FunctionExpr;
 class FunctionType;
-class GroupExpr;
-class InstantiationExpr;
-class LiteralExpr;
-class PrintStmt;
-class ReturnStmt;
-class WhileStmt;
-class TypeExpr;
-class UnaryExpr;
-class VariableExpr;
-
 class TypeReprHelper {
 public:
 	TypeReprHelper() = default;

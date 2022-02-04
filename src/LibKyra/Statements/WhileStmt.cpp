@@ -1,6 +1,7 @@
 #include "WhileStmt.hpp"
 
 namespace Kyra {
+struct Position;
 WhileStmt::WhileStmt(const Position& position, Expression::Ptr condition, Statement::Ptr stmt) :
 	Statement(position), m_condition(condition), m_stmt(stmt) {}
 

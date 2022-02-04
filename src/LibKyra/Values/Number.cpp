@@ -1,5 +1,8 @@
 #include "Number.hpp"
 
+#include <cassert>
+#include <string>
+
 namespace Kyra {
 Number::Number(int number) : m_number(number) {}
 

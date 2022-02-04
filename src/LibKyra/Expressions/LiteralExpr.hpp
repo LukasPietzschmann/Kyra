@@ -4,6 +4,7 @@
 #include "Expression.hpp"
 
 namespace Kyra {
+struct Position;
 class LiteralExpr : public Expression {
 public:
 	LiteralExpr(const Position& position, const Value::Ptr& value);

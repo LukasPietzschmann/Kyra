@@ -1,6 +1,9 @@
 #include "AssignmentExpr.hpp"
 
+#include <utility>
+
 namespace Kyra {
+struct Position;
 AssignmentExpr::AssignmentExpr(const Position& position,
 		const Expression::Ptr& owner,
 		Token name,

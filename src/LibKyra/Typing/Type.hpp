@@ -1,15 +1,14 @@
 #pragma once
 
+#include <optional>
 #include <string>
-#include <unordered_map>
-#include <utility>
+#include <vector>
 
 #include "../HasPtrAlias.hpp"
-#include "../Values/Function.hpp"
-#include "../Values/Value.hpp"
-#include "../Variable.hpp"
 
 namespace Kyra {
+template <typename ValueType>
+struct Variable;
 class Type : public HasPtrAlias<Type> {
 public:
 	using Repr = std::string;

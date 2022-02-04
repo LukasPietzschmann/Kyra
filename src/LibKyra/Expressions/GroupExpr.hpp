@@ -1,10 +1,9 @@
 #pragma once
 
-#include <utility>
-
 #include "Expression.hpp"
 
 namespace Kyra {
+struct Position;
 class GroupExpr : public Expression {
 public:
 	GroupExpr(const Position& position, const Expression::Ptr& expr);

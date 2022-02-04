@@ -1,5 +1,10 @@
 #include "String.hpp"
 
+#include <cassert>
+#include <utility>
+
+#include "Number.hpp"
+
 namespace Kyra {
 String::String(std::string string) : m_string(std::move(string)) {}
 

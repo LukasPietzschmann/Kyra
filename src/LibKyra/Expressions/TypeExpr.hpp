@@ -1,10 +1,13 @@
 #pragma once
 
+#include <memory>
 #include <string>
+#include <vector>
 
 #include "Expression.hpp"
 
 namespace Kyra {
+struct Position;
 class TypeExpr : public Expression {
 public:
 	TypeExpr(const Position& position, std::string name);

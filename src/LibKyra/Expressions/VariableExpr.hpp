@@ -1,11 +1,10 @@
 #pragma once
 
-#include <utility>
-
 #include "../Token.hpp"
 #include "Expression.hpp"
 
 namespace Kyra {
+struct Position;
 class VariableExpr : public Expression {
 public:
 	VariableExpr(const Position& position, Token name);

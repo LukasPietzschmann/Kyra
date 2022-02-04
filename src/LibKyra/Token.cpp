@@ -1,5 +1,8 @@
 #include "Token.hpp"
 
+#include <string>
+#include <utility>
+
 namespace Kyra {
 Token::Token(const TokenType& type, Position position, std::string lexeme, std::string value) :
 	m_type(type), m_position(position), m_lexeme(std::move(lexeme)), m_value(TokenValue(std::move(value))) {}

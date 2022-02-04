@@ -1,5 +1,7 @@
 #pragma once
 
+#include <string>
+
 #include "Value.hpp"
 
 namespace Kyra {

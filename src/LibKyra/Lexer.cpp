@@ -1,5 +1,7 @@
 #include "Lexer.hpp"
 
+#include <cassert>
+#include <cctype>
 #include <utility>
 
 #include "Exceptions.hpp"

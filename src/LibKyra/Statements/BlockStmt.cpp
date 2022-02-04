@@ -1,6 +1,9 @@
 #include "BlockStmt.hpp"
 
+#include <utility>
+
 namespace Kyra {
+struct Position;
 BlockStmt::BlockStmt(const Position& position, std::vector<Statement::Ptr> statements) :
 	Statement(position), m_statements(std::move(statements)) {}
 

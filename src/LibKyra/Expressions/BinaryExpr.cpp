@@ -1,6 +1,9 @@
 #include "BinaryExpr.hpp"
 
+#include <utility>
+
 namespace Kyra {
+struct Position;
 BinaryExpr::BinaryExpr(const Position& position, const Expression::Ptr& lhs, Token oper, const Expression::Ptr& rhs) :
 	Expression(position), m_operator(std::move(oper)), m_lhs(lhs), m_rhs(rhs) {}
 

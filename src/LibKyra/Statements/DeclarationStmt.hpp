@@ -1,13 +1,11 @@
 #pragma once
 
-#include <string>
-#include <utility>
-
 #include "../Expressions/Expression.hpp"
 #include "../Token.hpp"
 #include "Statement.hpp"
 
 namespace Kyra {
+struct Position;
 class DeclarationStmt : public Statement {
 public:
 	DeclarationStmt(const Position& position,

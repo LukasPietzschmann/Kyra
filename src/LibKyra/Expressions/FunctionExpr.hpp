@@ -1,6 +1,6 @@
 #pragma once
 
-#include <utility>
+#include <string>
 #include <vector>
 
 #include "../Statements/Statement.hpp"
@@ -8,6 +8,7 @@
 #include "Expression.hpp"
 
 namespace Kyra {
+struct Position;
 class FunctionExpr : public Expression {
 public:
 	struct Parameter {

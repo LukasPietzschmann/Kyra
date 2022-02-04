@@ -1,5 +1,28 @@
 #include "AstLogger.hpp"
 
+#include <sstream>
+#include <string>
+
+#include "Expressions/AccessExpr.hpp"
+#include "Expressions/AssignmentExpr.hpp"
+#include "Expressions/BinaryExpr.hpp"
+#include "Expressions/CallExpr.hpp"
+#include "Expressions/FunctionExpr.hpp"
+#include "Expressions/GroupExpr.hpp"
+#include "Expressions/InstantiationExpr.hpp"
+#include "Expressions/LiteralExpr.hpp"
+#include "Expressions/TypeExpr.hpp"
+#include "Expressions/UnaryExpr.hpp"
+#include "Expressions/VariableExpr.hpp"
+#include "Statements/BlockStmt.hpp"
+#include "Statements/ClassDeclarationStmt.hpp"
+#include "Statements/DeclarationStmt.hpp"
+#include "Statements/ExpressionStmt.hpp"
+#include "Statements/PrintStmt.hpp"
+#include "Statements/ReturnStmt.hpp"
+#include "Statements/WhileStmt.hpp"
+#include "TokenType.hpp"
+
 namespace Kyra {
 void AstLogger::logStatement(const Statement::Ptr& statement) {
 	m_indent = 0;

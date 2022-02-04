@@ -1,8 +1,6 @@
 #pragma once
 
 #include <ostream>
-#include <string>
-#include <utility>
 
 #include "Position.hpp"
 #include "TokenType.hpp"

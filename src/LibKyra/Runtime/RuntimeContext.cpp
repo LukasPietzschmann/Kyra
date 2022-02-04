@@ -1,12 +1,6 @@
 #include "RuntimeContext.hpp"
 
-#include <memory>
-#include <type_traits>
-#include <unordered_map>
-
-#include "../HasPtrAlias.hpp"
-#include "../Values/Value.hpp"
-#include "../Variable.hpp"
+#include <utility>
 
 namespace Kyra {
 bool RuntimeContext::mutateVar(const std::string& name, Value::Ptr value) {

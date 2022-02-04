@@ -1,6 +1,7 @@
 #include "PrintStmt.hpp"
 
 namespace Kyra {
+struct Position;
 PrintStmt::PrintStmt(const Position& position, const Expression::Ptr& expr) : Statement(position), m_expr(expr) {}
 
 void PrintStmt::accept(StatementVisitor& visitor) { visitor.visitPrintStmt(*this); }

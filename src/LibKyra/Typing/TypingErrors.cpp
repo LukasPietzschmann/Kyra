@@ -1,5 +1,9 @@
 #include "TypingErrors.hpp"
 
+#include <sstream>
+#include <string>
+#include <utility>
+
 namespace Kyra {
 TypingError::TypingError(const Position& position, std::string message) :
 	m_position(position), m_message(std::move(message)) {}

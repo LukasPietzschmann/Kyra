@@ -1,14 +1,16 @@
 #pragma once
 
+#include <memory>
+#include <string>
 #include <utility>
 #include <vector>
 
-#include "../Statements/DeclarationStmt.hpp"
 #include "../Token.hpp"
-#include "../Values/Value.hpp"
 #include "Statement.hpp"
 
 namespace Kyra {
+struct Position;
+class DeclarationStmt;
 class ClassDeclarationStmt : public Statement {
 public:
 	struct ConstructorParameter {

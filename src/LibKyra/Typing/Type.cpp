@@ -1,5 +1,9 @@
 #include "Type.hpp"
 
+#include <utility>
+
+#include "../Variable.hpp"
+
 namespace Kyra {
 Type::Type(std::string name) : m_name(std::move(name)) {}
 

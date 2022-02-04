@@ -2,8 +2,6 @@
 
 #include <string>
 
-#include "Nothing.hpp"
-#include "Number.hpp"
 #include "Value.hpp"
 
 namespace Kyra {

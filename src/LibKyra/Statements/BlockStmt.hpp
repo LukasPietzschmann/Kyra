@@ -5,6 +5,7 @@
 #include "Statement.hpp"
 
 namespace Kyra {
+struct Position;
 class BlockStmt : public Statement {
 public:
 	BlockStmt(const Position& position, std::vector<Statement::Ptr> statements);

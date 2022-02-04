@@ -1,6 +1,9 @@
 #include "DeclarationStmt.hpp"
 
+#include <utility>
+
 namespace Kyra {
+struct Position;
 DeclarationStmt::DeclarationStmt(const Position& position,
 		Token identifier,
 		const Expression::Ptr& initializer,

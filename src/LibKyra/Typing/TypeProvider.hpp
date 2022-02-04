@@ -1,10 +1,9 @@
 #pragma once
 
 #include <string>
+#include <unordered_map>
+#include <vector>
 
-#include "ClassType.hpp"
-#include "FunctionType.hpp"
-#include "NothingType.hpp"
 #include "Type.hpp"
 
 namespace Kyra {

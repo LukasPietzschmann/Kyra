@@ -1,5 +1,14 @@
 #include "TypeProvider.hpp"
 
+#include <cassert>
+#include <utility>
+
+#include "../Values/Value.hpp"
+#include "../Variable.hpp"
+#include "ClassType.hpp"
+#include "FunctionType.hpp"
+#include "NothingType.hpp"
+
 namespace Kyra {
 TypeProvider::TypeProvider() {
 	const Type::Ptr boolType = Type::makePtr<ClassType>(Value::NativeTypes::Bool);

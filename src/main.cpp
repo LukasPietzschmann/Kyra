@@ -10,8 +10,8 @@
 #include "LibKyra/Interpreter.hpp"
 
 #ifdef HAS_READLINE
+#include <readline/history.h>
 #include <readline/readline.h>
-#include<readline/history.h>
 #endif
 
 void simpleRepl();
