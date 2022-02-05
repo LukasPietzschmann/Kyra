@@ -41,6 +41,7 @@ private:
 	Expression::Ptr primary();
 	Expression::Ptr function();
 	Expression::Ptr instantiation();
+	Expression::Ptr group();
 
 	Expression::Ptr typeIndicator();
 

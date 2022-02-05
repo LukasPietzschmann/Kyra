@@ -140,9 +140,7 @@ Statement::Ptr Parser::ret() {
 
 Statement::Ptr Parser::while_loop() {
 	const Token& whileKW = consume(TokenType::WHILE);
-	consume(TokenType::LEFT_PAREN);
-	Expression::Ptr condition = assignment();
-	consume(TokenType::RIGHT_PAREN);
+	const auto& condition = group();
 	const auto stmt = statement();
 	return Statement::makePtr<WhileStmt>(Position(whileKW.getPosition(), stmt->getPosition()), condition, stmt);
 }
@@ -271,13 +269,8 @@ Expression::Ptr Parser::call() {
 }
 
 Expression::Ptr Parser::primary() {
-	if(match(TokenType::LEFT_PAREN)) {
-		// TODO extra group function. Also needed in while_loop
-		const Token& leftParen = consume(TokenType::LEFT_PAREN);
-		Expression::Ptr expr = assignment();
-		const Token& rightParen = consume(TokenType::RIGHT_PAREN);
-		return Expression::makePtr<GroupExpr>(Position(leftParen.getPosition(), rightParen.getPosition()), expr);
-	}
+	if(match(TokenType::LEFT_PAREN))
+		return group();
 	if(match(TokenType::NOTHING)) {
 		Position position = consume(TokenType::NOTHING).getPosition();
 		return Expression::makePtr<LiteralExpr>(position, Value::makePtr<Nothing>());
@@ -351,6 +344,13 @@ Expression::Ptr Parser::instantiation() {
 
 	Position position(instantiateKW.getPosition(), rightParen.getPosition());
 	return Expression::makePtr<InstantiationExpr>(position, name, parameters);
+}
+
+Expression::Ptr Parser::group() {
+	const Token& leftParen = consume(TokenType::LEFT_PAREN);
+	Expression::Ptr expr = assignment();
+	const Token& rightParen = consume(TokenType::RIGHT_PAREN);
+	return Expression::makePtr<GroupExpr>(Position(leftParen.getPosition(), rightParen.getPosition()), expr);
 }
 
 Expression::Ptr Parser::typeIndicator() {
