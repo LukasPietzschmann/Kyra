@@ -250,7 +250,7 @@ void TypeChecker::visitDeclarationStmt(DeclarationStmt& declarationStmt) {
 	if(declarationStmt.getType() == nullptr) {
 		if(declarationStmt.getInitializer() == nullptr)
 			THROW_TYPING_ERROR(TypingError(declarationStmt.getPosition(),
-					"Varible " + name + " needs to be explicitly typed, as it does not get initialized immediatly"));
+					"Variable " + name + " needs to be explicitly typed, as it does not get initialized immediately"));
 		EXPR_ACCEPT(declarationStmt.getInitializer(), *this, expectedType);
 	} else {
 		EXPR_ACCEPT(declarationStmt.getType(), *this, expectedType);
