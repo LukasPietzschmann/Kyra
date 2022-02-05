@@ -62,15 +62,15 @@ TypeProvider& TypeProvider::the() {
 	return instance;
 }
 
-Type::Ptr TypeProvider::decode(const TypeProvider::Repr& repr) const {
+Type::Ptr TypeProvider::decode(const Type::Repr& repr) const {
 	const auto& it = m_types.find(repr);
 	if(it == m_types.end())
 		assert(false);
 	return it->second;
 }
 
-TypeProvider::Repr TypeProvider::encode(Type::Ptr type) {
-	Repr repr = type->getName();
+Type::Repr TypeProvider::encode(Type::Ptr type) {
+	Type::Repr repr = type->getName();
 	if(auto it = m_types.find(repr); it == m_types.end())
 		m_types.try_emplace(repr, type);
 	else
