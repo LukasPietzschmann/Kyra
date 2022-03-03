@@ -11,9 +11,9 @@ public:
 	~BinaryExpr() override = default;
 
 	void accept(ExpressionVisitor& visitor) override;
-	const Token& getOperator() const;
-	Expression::Ptr getLhs() const;
-	Expression::Ptr getRhs() const;
+	const Token& get_operator() const;
+	Expression::Ptr get_lhs() const;
+	Expression::Ptr get_rhs() const;
 
 private:
 	Token m_operator;

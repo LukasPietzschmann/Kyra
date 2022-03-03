@@ -11,7 +11,7 @@ public:
 	~VariableExpr() override = default;
 
 	void accept(ExpressionVisitor& visitor) override;
-	const Token& getName() const;
+	const Token& get_name() const;
 
 private:
 	Token m_name;

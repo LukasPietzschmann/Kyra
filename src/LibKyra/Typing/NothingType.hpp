@@ -7,7 +7,7 @@ class NothingType : public Type {
 public:
 	NothingType();
 	~NothingType() override = default;
-	bool isApplicableForDeclaration() const override;
-	bool canBeAssignedTo(Type::Ptr) const override;
+	bool is_applicable_for_declaration() const override;
+	bool can_be_assigned_to(Type::Ptr) const override;
 };
 }

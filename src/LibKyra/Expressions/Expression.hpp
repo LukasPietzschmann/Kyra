@@ -24,17 +24,17 @@ private:                                      \
 
 	virtual ~ExpressionVisitor() = default;
 
-	virtual void visitAccessExpr(AccessExpr& accessExpr) = 0;
-	virtual void visitAssignmentExpr(AssignmentExpr& assignmentExpr) = 0;
-	virtual void visitBinaryExpr(BinaryExpr& binaryExpr) = 0;
-	virtual void visitCallExpr(CallExpr& callExpr) = 0;
-	virtual void visitFunction(FunctionExpr& functionExpr) = 0;
-	virtual void visitGroupExpr(GroupExpr& groupExpr) = 0;
-	virtual void visitInstantiationExpr(InstantiationExpr& instantiationExpr) = 0;
-	virtual void visitLiteral(LiteralExpr& literalExpr) = 0;
-	virtual void visitTypeExpr(TypeExpr& typeExpr) = 0;
-	virtual void visitUnaryExpr(UnaryExpr& unaryExpr) = 0;
-	virtual void visitVariable(VariableExpr& variableExpr) = 0;
+	virtual void visit_access_expr(AccessExpr& access_expr) = 0;
+	virtual void visit_assignment_expr(AssignmentExpr& assignment_expr) = 0;
+	virtual void visit_binary_expr(BinaryExpr& binary_expr) = 0;
+	virtual void visit_call_expr(CallExpr& call_expr) = 0;
+	virtual void visit_function(FunctionExpr& function_expr) = 0;
+	virtual void visit_group_expr(GroupExpr& group_expr) = 0;
+	virtual void visit_instantiation_expr(InstantiationExpr& instantiation_expr) = 0;
+	virtual void visit_literal(LiteralExpr& literal_expr) = 0;
+	virtual void visit_type_expr(TypeExpr& type_expr) = 0;
+	virtual void visit_unary_expr(UnaryExpr& unary_expr) = 0;
+	virtual void visit_variable(VariableExpr& variable_expr) = 0;
 };
 
 class Expression : public HasPtrAlias<Expression> {
@@ -44,7 +44,7 @@ public:
 
 	virtual void accept(ExpressionVisitor& visitor) = 0;
 
-	const Position& getPosition() const { return m_position; }
+	const Position& get_position() const { return m_position; }
 
 protected:
 	Position m_position;

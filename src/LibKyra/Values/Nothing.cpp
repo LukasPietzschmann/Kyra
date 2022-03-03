@@ -3,14 +3,14 @@
 #include <string>
 
 namespace Kyra {
-bool Nothing::isImplicitlyTrue() const { return false; }
+bool Nothing::is_implicitly_true() const { return false; }
 
-std::string Nothing::getType() const { return Value::NativeTypes::Nothing; }
+std::string Nothing::get_type() const { return Value::NativeTypes::Nothing; }
 
-std::string Nothing::toString() const { return "nothing"; }
+std::string Nothing::to_string() const { return "nothing"; }
 
 bool Nothing::operator==(const HasPtrAlias::Ptr& other) const {
-	if(getType() != other->getType())
+	if(get_type() != other->get_type())
 		return false;
 	return true;
 }

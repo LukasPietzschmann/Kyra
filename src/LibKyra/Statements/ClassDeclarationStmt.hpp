@@ -14,9 +14,9 @@ class DeclarationStmt;
 class ClassDeclarationStmt : public Statement {
 public:
 	struct ConstructorParameter {
-		ConstructorParameter(Token name, bool isMutable, std::string type);
+		ConstructorParameter(Token name, bool is_mutable, std::string type);
 		Token name;
-		bool isMutable;
+		bool is_mutable;
 		std::string type;
 	};
 
@@ -27,9 +27,9 @@ public:
 	~ClassDeclarationStmt() override = default;
 
 	void accept(StatementVisitor& visitor) override;
-	const Token& getIdentifier() const;
-	const std::vector<ConstructorParameter>& getConstructorParameters() const;
-	const std::vector<std::shared_ptr<DeclarationStmt>>& getDeclarations() const;
+	const Token& get_identifier() const;
+	const std::vector<ConstructorParameter>& get_constructor_parameters() const;
+	const std::vector<std::shared_ptr<DeclarationStmt>>& get_declarations() const;
 
 private:
 	Token m_identifier;

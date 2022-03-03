@@ -4,7 +4,7 @@
 
 namespace Kyra {
 struct Position {
-	Position(unsigned int startLine, unsigned int startColumn, unsigned int endLine, unsigned int endColumn);
+	Position(unsigned int start_line, unsigned int start_column, unsigned int end_line, unsigned int end_column);
 	Position(const Position& start, const Position& end);
 
 	struct PositionPart {

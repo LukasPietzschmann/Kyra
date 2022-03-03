@@ -5,3 +5,4 @@
 
 cmake-build-*/
 Debug/
+build/

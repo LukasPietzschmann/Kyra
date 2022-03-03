@@ -3,7 +3,7 @@
 namespace Kyra {
 NothingType::NothingType() : Type("Nothing") {}
 
-bool NothingType::isApplicableForDeclaration() const { return false; }
+bool NothingType::is_applicable_for_declaration() const { return false; }
 
-bool NothingType::canBeAssignedTo(Type::Ptr) const { return true; }
+bool NothingType::can_be_assigned_to(Type::Ptr) const { return true; }
 }

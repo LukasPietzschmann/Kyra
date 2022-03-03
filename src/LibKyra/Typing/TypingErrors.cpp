@@ -8,7 +8,7 @@ namespace Kyra {
 TypingError::TypingError(const Position& position, std::string message) :
 	m_position(position), m_message(std::move(message)) {}
 
-std::string TypingError::getCause() const {
+std::string TypingError::get_cause() const {
 	std::stringstream ss;
 	ss << m_message << " [" << m_position.start << " - " << m_position.end << "]";
 	return ss.str();
@@ -18,16 +18,16 @@ WrongTypeError::WrongTypeError(const Position& position, const std::string& expe
 	TypingError(position, "Expected type " + expected + " does not equal provided type " + provided) {}
 
 UnsupportedOperator::UnsupportedOperator(const Position& position,
-		const std::string& unaryOper,
+		const std::string& unary_oper,
 		const std::string& type) :
-	TypingError(position, "Unsupported operator " + unaryOper + " on type " + type) {}
+	TypingError(position, "Unsupported operator " + unary_oper + " on type " + type) {}
 
 UnsupportedOperator::UnsupportedOperator(const Position& position,
-		const std::string& lhsType,
-		const std::string& binaryOper,
-		const std::string& rhsType) :
+		const std::string& lhs_type,
+		const std::string& binary_oper,
+		const std::string& rhs_type) :
 	TypingError(position,
-			"Unsupported operator " + binaryOper + " on left type " + lhsType + " with right type " + rhsType) {}
+			"Unsupported operator " + binary_oper + " on left type " + lhs_type + " with right type " + rhs_type) {}
 
 UndefinedTypeError::UndefinedTypeError(const Position& position, const std::string& type) :
 	TypingError(position, "Undefined type " + type) {}

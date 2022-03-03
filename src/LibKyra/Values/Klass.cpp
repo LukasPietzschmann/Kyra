@@ -8,27 +8,28 @@
 #include "Nothing.hpp"
 
 namespace Kyra {
-void Klass::instantiate(const std::vector<Value::Ptr>& constructorArguments) {
-	assert(constructorArguments.size() == m_declarationStmt.getConstructorParameters().size());
-	m_instanceContext = RuntimeContext::makePtr<RuntimeContext>();
-	for(unsigned long i = 0; i < constructorArguments.size(); ++i) {
-		assert(m_declarationStmt.getConstructorParameters()[i].type == constructorArguments[i]->getType());
-		if(!m_instanceContext->declareVar(m_declarationStmt.getConstructorParameters()[i].name.getValue().asString(),
-				   constructorArguments[i],
-				   m_declarationStmt.getConstructorParameters()[i].isMutable))
+void Klass::instantiate(const std::vector<Value::Ptr>& constructor_arguments) {
+	assert(constructor_arguments.size() == m_declaration_stmt.get_constructor_parameters().size());
+	m_instance_context = RuntimeContext::make_ptr<RuntimeContext>();
+	for(unsigned long i = 0; i < constructor_arguments.size(); ++i) {
+		assert(m_declaration_stmt.get_constructor_parameters()[i].type == constructor_arguments[i]->get_type());
+		if(!m_instance_context->declare_var(
+				   m_declaration_stmt.get_constructor_parameters()[i].name.get_value().as_string(),
+				   constructor_arguments[i],
+				   m_declaration_stmt.get_constructor_parameters()[i].is_mutable))
 			assert(false);
 	}
-	for(const auto& decl : m_declarationStmt.getDeclarations()) {
-		Value::Ptr init = Value::makePtr<Nothing>();
-		if(decl->getInitializer() != nullptr)
-			init = Runtime::getInstance().executeExpression(decl->getInitializer(), m_instanceContext);
-		if(!m_instanceContext->declareVar(decl->getIdentifier().getValue().asString(), init, decl->isMutable()))
+	for(const auto& decl : m_declaration_stmt.get_declarations()) {
+		Value::Ptr init = Value::make_ptr<Nothing>();
+		if(decl->get_initializer() != nullptr)
+			init = Runtime::the().execute_expression(decl->get_initializer(), m_instance_context);
+		if(!m_instance_context->declare_var(decl->get_identifier().get_value().as_string(), init, decl->is_mutable()))
 			assert(false);
 	}
 }
 
-Value::Ptr Klass::getDeclaration(const std::string& name) const {
-	const auto res = m_instanceContext->getVar(name);
+Value::Ptr Klass::get_declaration(const std::string& name) const {
+	const auto res = m_instance_context->get_var(name);
 	assert(res.has_value());
 	return res->value;
 }

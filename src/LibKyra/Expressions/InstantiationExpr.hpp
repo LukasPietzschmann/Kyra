@@ -13,8 +13,8 @@ public:
 	~InstantiationExpr() override = default;
 
 	void accept(ExpressionVisitor& visitor) override;
-	const std::string& getName() const;
-	const std::vector<Expression::Ptr>& getArguments() const;
+	const std::string& get_name() const;
+	const std::vector<Expression::Ptr>& get_arguments() const;
 
 private:
 	std::string m_name;

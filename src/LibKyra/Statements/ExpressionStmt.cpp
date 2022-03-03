@@ -5,7 +5,7 @@ struct Position;
 ExpressionStmt::ExpressionStmt(const Position& position, const Expression::Ptr& expr) :
 	Statement(position), m_expr(expr) {}
 
-void ExpressionStmt::accept(StatementVisitor& visitor) { visitor.visitExpressionStmt(*this); }
+void ExpressionStmt::accept(StatementVisitor& visitor) { visitor.visit_expression_stmt(*this); }
 
-Expression::Ptr ExpressionStmt::getExpr() const { return m_expr; }
+Expression::Ptr ExpressionStmt::get_expr() const { return m_expr; }
 }

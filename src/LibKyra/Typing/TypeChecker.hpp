@@ -20,32 +20,32 @@ class FunctionType;
 class TypeReprHelper {
 public:
 	TypeReprHelper() = default;
-	TypeReprHelper(const Type::Repr& repr) : repr(repr) {}
+	TypeReprHelper(const Type::Repr& repr) : m_repr(repr) {}
 
 	TypeReprHelper& operator=(const Type::Repr& r) {
-		repr = r;
+		m_repr = r;
 		return *this;
 	}
 
-	Type::Ptr operator->() const { return TypeProvider::the().decode(repr); }
-	Type::Ptr operator*() const { return TypeProvider::the().decode(repr); }
+	Type::Ptr operator->() const { return TypeProvider::the().decode(m_repr); }
+	Type::Ptr operator*() const { return TypeProvider::the().decode(m_repr); }
 
 	bool operator==(Type::Ptr type) const { return **this == type; }
 	bool operator==(const TypeReprHelper& type) const { return **this == *type; }
 
-	const Type::Repr& getRepr() const { return repr; }
+	const Type::Repr& get_repr() const { return m_repr; }
 
-	bool hasValue() const { return !repr.empty(); }
+	bool has_value() const { return !m_repr.empty(); }
 
 private:
-	Type::Repr repr;
+	Type::Repr m_repr;
 };
 
 class TypeChecker : public ExpressionVisitor, public StatementVisitor {
-#define THROW_TYPING_ERROR(error)               \
-	do {                                        \
-		m_errors.push_back((error).getCause()); \
-		return;                                 \
+#define THROW_TYPING_ERROR(error)                \
+	do {                                         \
+		m_errors.push_back((error).get_cause()); \
+		return;                                  \
 	} while(0)
 
 	EXPR_NEEDS_VISIT_RETURN_OF_TYPE(TypeReprHelper);
@@ -53,20 +53,20 @@ class TypeChecker : public ExpressionVisitor, public StatementVisitor {
 public:
 	class Result {
 	public:
-		bool hasErrors() const { return m_errors.has_value(); }
-		void insertError(std::string message) {
+		bool has_errors() const { return m_errors.has_value(); }
+		void insert_error(std::string message) {
 			if(!m_errors.has_value())
 				m_errors = std::make_optional<std::vector<std::string>>({std::move(message)});
 			else
 				m_errors->push_back(std::move(message));
 		}
-		std::vector<std::string> getErrors() const { return m_errors.value_or(std::vector<std::string>()); }
+		std::vector<std::string> get_errors() const { return m_errors.value_or(std::vector<std::string>()); }
 
 	private:
 		std::optional<std::vector<std::string>> m_errors{std::nullopt};
 	};
 
-	static TypeChecker& getInstance();
+	static TypeChecker& the();
 	TypeChecker(TypeChecker const&) = delete;
 	TypeChecker(TypeChecker&&) = delete;
 	void operator=(TypeChecker const&) = delete;
@@ -74,39 +74,39 @@ public:
 
 	TypeChecker::Result check(const std::vector<Statement::Ptr>& statements);
 
-	void visitAccessExpr(AccessExpr& accessExpr) override;
-	void visitAssignmentExpr(AssignmentExpr& assignmentExpr) override;
-	void visitBinaryExpr(BinaryExpr& binaryExpr) override;
-	void visitCallExpr(CallExpr& callExpr) override;
-	void visitFunction(FunctionExpr& functionExpr) override;
-	void visitGroupExpr(GroupExpr& groupExpr) override;
-	void visitInstantiationExpr(InstantiationExpr& instantiationExpr) override;
-	void visitLiteral(LiteralExpr& literalExpr) override;
-	void visitTypeExpr(TypeExpr& typeExpr) override;
-	void visitUnaryExpr(UnaryExpr& unaryExpr) override;
-	void visitVariable(VariableExpr& variableExpr) override;
+	void visit_access_expr(AccessExpr& access_expr) override;
+	void visit_assignment_expr(AssignmentExpr& assignment_expr) override;
+	void visit_binary_expr(BinaryExpr& binary_expr) override;
+	void visit_call_expr(CallExpr& call_expr) override;
+	void visit_function(FunctionExpr& function_expr) override;
+	void visit_group_expr(GroupExpr& group_expr) override;
+	void visit_instantiation_expr(InstantiationExpr& instantiation_expr) override;
+	void visit_literal(LiteralExpr& literal_expr) override;
+	void visit_type_expr(TypeExpr& type_expr) override;
+	void visit_unary_expr(UnaryExpr& unary_expr) override;
+	void visit_variable(VariableExpr& variable_expr) override;
 
-	void visitBlockStmt(BlockStmt& blockStmt) override;
-	void visitDeclarationStmt(DeclarationStmt& declarationStmt) override;
-	void visitClassDeclarationStmt(ClassDeclarationStmt& classDeclarationStmt) override;
-	void visitExpressionStmt(ExpressionStmt& expressionStmt) override;
-	void visitPrintStmt(PrintStmt& printStmt) override;
-	void visitReturnStmt(ReturnStmt& returnStmt) override;
-	void visitWhileStmt(WhileStmt& whileStmt) override;
+	void visit_block_stmt(BlockStmt& block_stmt) override;
+	void visit_declaration_stmt(DeclarationStmt& declaration_stmt) override;
+	void visit_class_declaration_stmt(ClassDeclarationStmt& class_declaration_stmt) override;
+	void visit_expression_stmt(ExpressionStmt& expression_stmt) override;
+	void visit_print_stmt(PrintStmt& print_stmt) override;
+	void visit_return_stmt(ReturnStmt& return_stmt) override;
+	void visit_while_stmt(WhileStmt& while_stmt) override;
 
 private:
 	TypeChecker() = default;
 
 	std::vector<std::string> m_errors;
-	TypeContext::Ptr m_currentContext{TypeContext::makePtr<TypeContext>()};
-	FunctionType* m_currentFunction{};
-	bool m_doesCurrentFunctionReturn{};
-	char* m_currentClassName{};
+	TypeContext::Ptr m_current_context{TypeContext::make_ptr<TypeContext>()};
+	FunctionType* m_current_function{};
+	bool m_does_current_function_return{};
+	char* m_current_class_name{};
 
 	void check(const Statement::Ptr& statement);
 	template <class Callback>
-	TypeContext::Ptr runInNewContext(const Callback& function,
+	TypeContext::Ptr run_in_new_context(const Callback& function,
 			TypeContext::Ptr parent,
-			TypeContext::Ptr valuesToCopy = nullptr);
+			const TypeContext::Ptr& values_to_copy = nullptr);
 };
 }

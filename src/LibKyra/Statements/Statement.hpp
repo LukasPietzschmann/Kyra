@@ -23,13 +23,13 @@ private:                                      \
 
 	virtual ~StatementVisitor() = default;
 
-	virtual void visitBlockStmt(BlockStmt& blockStmt) = 0;
-	virtual void visitDeclarationStmt(DeclarationStmt& declarationStmt) = 0;
-	virtual void visitClassDeclarationStmt(ClassDeclarationStmt& classDeclarationStmt) = 0;
-	virtual void visitExpressionStmt(ExpressionStmt& expressionStmt) = 0;
-	virtual void visitPrintStmt(PrintStmt& printStmt) = 0;
-	virtual void visitReturnStmt(ReturnStmt& returnStmt) = 0;
-	virtual void visitWhileStmt(WhileStmt& whileStmt) = 0;
+	virtual void visit_block_stmt(BlockStmt& block_stmt) = 0;
+	virtual void visit_declaration_stmt(DeclarationStmt& declaration_stmt) = 0;
+	virtual void visit_class_declaration_stmt(ClassDeclarationStmt& class_declaration_stmt) = 0;
+	virtual void visit_expression_stmt(ExpressionStmt& expression_stmt) = 0;
+	virtual void visit_print_stmt(PrintStmt& print_stmt) = 0;
+	virtual void visit_return_stmt(ReturnStmt& return_stmt) = 0;
+	virtual void visit_while_stmt(WhileStmt& while_stmt) = 0;
 };
 
 class Statement : public HasPtrAlias<Statement> {
@@ -39,7 +39,7 @@ public:
 
 	virtual void accept(StatementVisitor& visitor) = 0;
 
-	const Position& getPosition() const { return m_position; }
+	const Position& get_position() const { return m_position; }
 
 protected:
 	Position m_position;

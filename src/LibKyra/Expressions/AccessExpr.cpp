@@ -7,9 +7,9 @@ struct Position;
 AccessExpr::AccessExpr(const Position& position, const HasPtrAlias::Ptr& owner, Token name) :
 	Expression(position), m_owner(owner), m_name(std::move(name)) {}
 
-void AccessExpr::accept(ExpressionVisitor& visitor) { return visitor.visitAccessExpr(*this); }
+void AccessExpr::accept(ExpressionVisitor& visitor) { return visitor.visit_access_expr(*this); }
 
-Expression::Ptr AccessExpr::getOwner() const { return m_owner; }
+Expression::Ptr AccessExpr::get_owner() const { return m_owner; }
 
-const Token& AccessExpr::getName() const { return m_name; }
+const Token& AccessExpr::get_name() const { return m_name; }
 }

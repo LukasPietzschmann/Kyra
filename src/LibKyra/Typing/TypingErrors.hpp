@@ -7,7 +7,7 @@ class TypingError {
 public:
 	TypingError(const Position& position, std::string message);
 
-	std::string getCause() const;
+	std::string get_cause() const;
 
 private:
 	Position m_position;
@@ -21,12 +21,12 @@ public:
 
 class UnsupportedOperator : public TypingError {
 public:
-	UnsupportedOperator(const Position& position, const std::string& unaryOper, const std::string& type);
+	UnsupportedOperator(const Position& position, const std::string& unary_oper, const std::string& type);
 
 	UnsupportedOperator(const Position& position,
-			const std::string& lhsType,
-			const std::string& binaryOper,
-			const std::string& rhsType);
+			const std::string& lhs_type,
+			const std::string& binary_oper,
+			const std::string& rhs_type);
 };
 
 class UndefinedTypeError : public TypingError {

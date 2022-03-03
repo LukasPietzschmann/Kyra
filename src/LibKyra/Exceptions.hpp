@@ -17,7 +17,7 @@ protected:
 private:
 	Position m_position;
 	std::string m_message;
-	std::string m_computedMessage;
+	std::string m_computed_message;
 };
 
 class LexerException : public MessageException {
@@ -28,7 +28,7 @@ public:
 class ParserException : public MessageException {
 public:
 	ParserException(const Position& position, const std::string& message, bool unfinished = false);
-	bool isUnfinished() const;
+	bool is_unfinished() const;
 
 private:
 	const bool m_unfinished;
@@ -43,10 +43,10 @@ class Value;
 
 class ReturnException : public std::exception {
 public:
-	explicit ReturnException(std::shared_ptr<Value> returnVal);
-	const std::shared_ptr<Value>& getReturnVal() const;
+	explicit ReturnException(std::shared_ptr<Value> return_val);
+	const std::shared_ptr<Value>& get_return_val() const;
 
 private:
-	std::shared_ptr<Value> m_returnVal;
+	std::shared_ptr<Value> m_return_val;
 };
 }

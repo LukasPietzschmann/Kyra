@@ -19,18 +19,18 @@ public:
 
 	FunctionExpr(const Position& position,
 			std::vector<Parameter> parameters,
-			const Expression::Ptr& returnType,
+			const Expression::Ptr& return_type,
 			const Statement::Ptr& impl);
 	~FunctionExpr() override = default;
 
 	void accept(ExpressionVisitor& visitor) override;
-	const std::vector<Parameter>& getParameters() const;
-	Expression::Ptr getReturnType() const;
-	Statement::Ptr getImplementation() const;
+	const std::vector<Parameter>& get_parameters() const;
+	Expression::Ptr get_return_type() const;
+	Statement::Ptr get_implementation() const;
 
 private:
 	std::vector<Parameter> m_parameters;
-	Expression::Ptr m_returnType;
+	Expression::Ptr m_return_type;
 	Statement::Ptr m_implementation;
 };
 }

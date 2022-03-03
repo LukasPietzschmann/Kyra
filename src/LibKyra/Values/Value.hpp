@@ -21,16 +21,16 @@ public:
 		static const std::vector<std::string> All;
 	};
 
-	virtual bool isImplicitlyTrue() const = 0;
-	virtual std::string getType() const = 0;
-	virtual std::string toString() const = 0;
+	virtual bool is_implicitly_true() const = 0;
+	virtual std::string get_type() const = 0;
+	virtual std::string to_string() const = 0;
 
 	template <typename R>
 	static std::shared_ptr<R> as(Value::Ptr value) {
 		return std::dynamic_pointer_cast<R>(value);
 	}
 
-	virtual bool isNative() const { return true; }
+	virtual bool is_native() const { return true; }
 
 	virtual bool operator==(const Value::Ptr&) const = 0;
 	virtual bool operator<(const Value::Ptr&) const = 0;

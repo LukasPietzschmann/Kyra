@@ -13,14 +13,14 @@ public:
 
 		std::string value;
 
-		int asInt() const;
-		std::string asString() const;
+		int as_int() const;
+		std::string as_string() const;
 	};
 	Token(const TokenType& type, Position position, std::string lexeme, std::string value = "");
-	TokenType getType() const;
-	const Position& getPosition() const;
-	std::string getLexeme() const;
-	TokenValue getValue() const;
+	TokenType get_type() const;
+	const Position& get_position() const;
+	std::string get_lexeme() const;
+	TokenValue get_value() const;
 
 	bool operator==(const Token& other) const;
 

@@ -14,11 +14,11 @@
 #include <readline/readline.h>
 #endif
 
-void simpleRepl();
-void niceRepl();
+void simple_repl();
+void nice_repl();
 
 static bool verbose = false;
-static std::string defaultPrompt = "KYRA > ";
+static std::string default_prompt = "KYRA > ";
 
 int main(int argc, char** argv) {
 	std::ostream::sync_with_stdio(false);
@@ -48,25 +48,25 @@ int main(int argc, char** argv) {
 					  << "\n";
 			std::cout << R"(Type "exit" or press "CTRL-C" to exit the REPL)" << std::endl;
 #ifdef HAS_READLINE
-			niceRepl();
+			nice_repl();
 #else
 			simpleRepl();
 #endif
 		} else {
 			// File
-			std::stringstream fileContent;
+			std::stringstream file_content;
 			std::string line;
-			const auto& fileName = result["file"].as<std::string>();
-			std::basic_fstream<char> fileStream(fileName);
-			if(!fileStream.good()) {
-				std::cout << "File " << fileName << " not found" << std::endl;
+			const auto& file_name = result["file"].as<std::string>();
+			std::basic_fstream<char> file_stream(file_name);
+			if(!file_stream.good()) {
+				std::cout << "File " << file_name << " not found" << std::endl;
 				return 1;
 			}
-			while(std::getline(fileStream, line))
-				fileContent << line << "\n";
-			fileStream.close();
+			while(std::getline(file_stream, line))
+				file_content << line << "\n";
+			file_stream.close();
 
-			Kyra::Interpreter::execute(fileContent.str(), verbose);
+			Kyra::Interpreter::execute(file_content.str(), verbose);
 		}
 	} catch(const cxxopts::OptionException& exception) {
 		std::cout << exception.what() << "\n" << options.help() << std::endl;
@@ -92,34 +92,34 @@ void simpleRepl() {
 #endif
 
 #ifdef HAS_READLINE
-void niceRepl() {
+void nice_repl() {
 	static bool unfinished = false;
-	static std::string completeCode;
-	static std::string prompt = defaultPrompt;
+	static std::string complete_code;
+	static std::string prompt = default_prompt;
 
 	rl_bind_key('\t', rl_insert);
 
 	while(true) {
-		char* inputLine = readline(prompt.c_str());
-		if(!inputLine || std::strcmp(inputLine, "exit") == 0) {
-			delete[] inputLine;
+		char* input_line = readline(prompt.c_str());
+		if(!input_line || std::strcmp(input_line, "exit") == 0) {
+			delete[] input_line;
 			break;
 		}
 
-		completeCode += inputLine;
-		unfinished = Kyra::Interpreter::isIncompleteStatement(completeCode);
+		complete_code += input_line;
+		unfinished = Kyra::Interpreter::is_incomplete_statement(complete_code);
 
 		if(unfinished) {
 			prompt = ".... ";
-			completeCode += "\n";
+			complete_code += "\n";
 		} else {
-			add_history(completeCode.c_str());
-			Kyra::Interpreter::execute(completeCode, verbose);
-			completeCode.clear();
-			prompt = defaultPrompt;
+			add_history(complete_code.c_str());
+			Kyra::Interpreter::execute(complete_code, verbose);
+			complete_code.clear();
+			prompt = default_prompt;
 		}
 
-		delete[] inputLine;
+		delete[] input_line;
 	}
 }
 #endif

@@ -35,69 +35,69 @@
 namespace Kyra {
 class FunctionExpr;
 class TypeExpr;
-Runtime& Runtime::getInstance() {
+Runtime& Runtime::the() {
 	static Runtime instance;
 	return instance;
 }
 
-void Runtime::executeStatement(Statement::Ptr statement, RuntimeContext::Ptr contextToExecuteOn) {
-	if(contextToExecuteOn == nullptr) {
+void Runtime::execute_statement(Statement::Ptr statement, RuntimeContext::Ptr context_to_execute_on) {
+	if(context_to_execute_on == nullptr) {
 		statement->accept(*this);
 		return;
 	}
 
-	RuntimeContext::Ptr contextCopy = RuntimeContext::makePtr<RuntimeContext>(*m_currentContext);
-	m_currentContext = contextToExecuteOn;
+	RuntimeContext::Ptr context_copy = RuntimeContext::make_ptr<RuntimeContext>(*m_current_context);
+	m_current_context = context_to_execute_on;
 	statement->accept(*this);
-	m_currentContext = contextCopy;
+	m_current_context = context_copy;
 }
 
-Value::Ptr Runtime::executeExpression(Expression::Ptr expression, RuntimeContext::Ptr contextToExecuteOn) {
-	if(contextToExecuteOn == nullptr) {
+Value::Ptr Runtime::execute_expression(Expression::Ptr expression, RuntimeContext::Ptr context_to_execute_on) {
+	if(context_to_execute_on == nullptr) {
 		EXPR_ACCEPT(expression, *this, Value::Ptr result);
 		return result;
 	}
 
-	RuntimeContext::Ptr contextCopy = RuntimeContext::makePtr<RuntimeContext>(*m_currentContext);
-	m_currentContext = contextToExecuteOn;
+	RuntimeContext::Ptr context_copy = RuntimeContext::make_ptr<RuntimeContext>(*m_current_context);
+	m_current_context = context_to_execute_on;
 	EXPR_ACCEPT(expression, *this, Value::Ptr result);
-	m_currentContext = contextCopy;
+	m_current_context = context_copy;
 	return result;
 }
 
-void Runtime::visitAccessExpr(AccessExpr& accessExpr) {
-	EXPR_ACCEPT(accessExpr.getOwner(), *this, Value::Ptr owner);
+void Runtime::visit_access_expr(AccessExpr& access_expr) {
+	EXPR_ACCEPT(access_expr.get_owner(), *this, Value::Ptr owner);
 	const auto& klass = Value::as<Klass>(owner);
-	const auto& var = klass->getInstanceContext()->getVar(accessExpr.getName().getValue().asString());
+	const auto& var = klass->get_instance_context()->get_var(access_expr.get_name().get_value().as_string());
 	if(!var.has_value())
 		assert(false);
 	EXPR_RETURN_FROM_VISIT(var->value);
 }
 
-void Runtime::visitAssignmentExpr(AssignmentExpr& assignmentExpr) {
-	EXPR_ACCEPT(assignmentExpr.getNewValue(), *this, Value::Ptr newValue);
-	if(!m_currentContext->mutateVar(assignmentExpr.getName().getValue().asString(), newValue))
+void Runtime::visit_assignment_expr(AssignmentExpr& assignment_expr) {
+	EXPR_ACCEPT(assignment_expr.get_new_value(), *this, Value::Ptr new_value);
+	if(!m_current_context->mutate_var(assignment_expr.get_name().get_value().as_string(), new_value))
 		assert(false);
-	EXPR_RETURN_FROM_VISIT(newValue);
+	EXPR_RETURN_FROM_VISIT(new_value);
 }
 
-void Runtime::visitBinaryExpr(BinaryExpr& binaryExpr) {
-	EXPR_ACCEPT(binaryExpr.getLhs(), *this, Value::Ptr lhs);
-	EXPR_ACCEPT(binaryExpr.getRhs(), *this, Value::Ptr rhs);
-	if(!lhs->isNative()) {
-		const auto& gFunction =
-				Value::as<Klass>(lhs)->getDeclaration("operator" + binaryExpr.getOperator().getLexeme());
-		auto function = Value::as<Function>(gFunction);
+void Runtime::visit_binary_expr(BinaryExpr& binary_expr) {
+	EXPR_ACCEPT(binary_expr.get_lhs(), *this, Value::Ptr lhs);
+	EXPR_ACCEPT(binary_expr.get_rhs(), *this, Value::Ptr rhs);
+	if(!lhs->is_native()) {
+		const auto& g_function =
+				Value::as<Klass>(lhs)->get_declaration("operator" + binary_expr.get_operator().get_lexeme());
+		auto function = Value::as<Function>(g_function);
 		const auto result = function->exec({rhs});
 		EXPR_RETURN_FROM_VISIT(result);
 	}
-	switch(binaryExpr.getOperator().getType()) {
-		case TokenType::EQUAL_EQUAL: EXPR_RETURN_FROM_VISIT(Value::makePtr<Bool>(*lhs == rhs));
-		case TokenType::BANG_EQUAL: EXPR_RETURN_FROM_VISIT(Value::makePtr<Bool>(*lhs != rhs));
-		case TokenType::GREATER: EXPR_RETURN_FROM_VISIT(Value::makePtr<Bool>(*lhs > rhs));
-		case TokenType::GREATER_EQUAL: EXPR_RETURN_FROM_VISIT(Value::makePtr<Bool>(*lhs >= rhs));
-		case TokenType::LESS: EXPR_RETURN_FROM_VISIT(Value::makePtr<Bool>(*lhs < rhs));
-		case TokenType::LESS_EQUAL: EXPR_RETURN_FROM_VISIT(Value::makePtr<Bool>(*lhs <= rhs));
+	switch(binary_expr.get_operator().get_type()) {
+		case TokenType::EQUAL_EQUAL: EXPR_RETURN_FROM_VISIT(Value::make_ptr<Bool>(*lhs == rhs));
+		case TokenType::BANG_EQUAL: EXPR_RETURN_FROM_VISIT(Value::make_ptr<Bool>(*lhs != rhs));
+		case TokenType::GREATER: EXPR_RETURN_FROM_VISIT(Value::make_ptr<Bool>(*lhs > rhs));
+		case TokenType::GREATER_EQUAL: EXPR_RETURN_FROM_VISIT(Value::make_ptr<Bool>(*lhs >= rhs));
+		case TokenType::LESS: EXPR_RETURN_FROM_VISIT(Value::make_ptr<Bool>(*lhs < rhs));
+		case TokenType::LESS_EQUAL: EXPR_RETURN_FROM_VISIT(Value::make_ptr<Bool>(*lhs <= rhs));
 		case TokenType::MINUS: EXPR_RETURN_FROM_VISIT(*lhs - rhs);
 		case TokenType::PLUS: EXPR_RETURN_FROM_VISIT(*lhs + rhs);
 		case TokenType::STAR: EXPR_RETURN_FROM_VISIT(*lhs * rhs);
@@ -106,36 +106,36 @@ void Runtime::visitBinaryExpr(BinaryExpr& binaryExpr) {
 	}
 }
 
-void Runtime::visitCallExpr(CallExpr& callExpr) {
-	EXPR_ACCEPT(callExpr.getFunction(), *this, Value::Ptr gFunction);
-	auto function = Value::as<Function>(gFunction);
-	assert(callExpr.getArguments().size() == function->getArity());
+void Runtime::visit_call_expr(CallExpr& call_expr) {
+	EXPR_ACCEPT(call_expr.get_function(), *this, Value::Ptr g_function);
+	auto function = Value::as<Function>(g_function);
+	assert(call_expr.get_arguments().size() == function->get_arity());
 
 	std::vector<Value::Ptr> args;
-	for(const auto& arg : callExpr.getArguments()) {
+	for(const auto& arg : call_expr.get_arguments()) {
 		EXPR_ACCEPT(arg, *this, Value::Ptr value);
 		args.push_back(value);
 	}
-	Value::Ptr returnVal = function->exec(args);
-	EXPR_RETURN_FROM_VISIT(returnVal);
+	Value::Ptr return_val = function->exec(args);
+	EXPR_RETURN_FROM_VISIT(return_val);
 }
 
-void Runtime::visitFunction(FunctionExpr& functionExpr) {
-	EXPR_RETURN_FROM_VISIT(Value::makePtr<Function>(functionExpr, m_currentContext));
+void Runtime::visit_function(FunctionExpr& function_expr) {
+	EXPR_RETURN_FROM_VISIT(Value::make_ptr<Function>(function_expr, m_current_context));
 }
 
-void Runtime::visitGroupExpr(GroupExpr& groupExpr) {
-	EXPR_ACCEPT(groupExpr.getExpr(), *this, Value::Ptr value);
+void Runtime::visit_group_expr(GroupExpr& group_expr) {
+	EXPR_ACCEPT(group_expr.get_expr(), *this, Value::Ptr value);
 	EXPR_RETURN_FROM_VISIT(value);
 }
 
-void Runtime::visitInstantiationExpr(InstantiationExpr& instantiationExpr) {
-	const auto& typeOrError = m_currentContext->getType(instantiationExpr.getName());
-	if(!typeOrError.has_value())
+void Runtime::visit_instantiation_expr(InstantiationExpr& instantiation_expr) {
+	const auto& type_or_error = m_current_context->get_type(instantiation_expr.get_name());
+	if(!type_or_error.has_value())
 		assert(false);
-	Value::Ptr klass = typeOrError.value();
+	Value::Ptr klass = type_or_error.value();
 	std::vector<Value::Ptr> args;
-	for(const auto& arg : instantiationExpr.getArguments()) {
+	for(const auto& arg : instantiation_expr.get_arguments()) {
 		EXPR_ACCEPT(arg, *this, Value::Ptr value);
 		args.emplace_back(value);
 	}
@@ -143,80 +143,80 @@ void Runtime::visitInstantiationExpr(InstantiationExpr& instantiationExpr) {
 	EXPR_RETURN_FROM_VISIT(klass);
 }
 
-void Runtime::visitLiteral(LiteralExpr& literalExpr) { EXPR_RETURN_FROM_VISIT(literalExpr.getValue()); }
+void Runtime::visit_literal(LiteralExpr& literal_expr) { EXPR_RETURN_FROM_VISIT(literal_expr.get_value()); }
 
-void Runtime::visitTypeExpr(TypeExpr&) {
+void Runtime::visit_type_expr(TypeExpr&) {
 	// a type expr. has no effect during runtime
 }
 
-void Runtime::visitUnaryExpr(UnaryExpr& unaryExpr) {
-	EXPR_ACCEPT(unaryExpr.getRhs(), *this, Value::Ptr value);
-	switch(unaryExpr.getOperator().getType()) {
-		case TokenType::BANG: EXPR_RETURN_FROM_VISIT(Value::makePtr<Bool>(!value->isImplicitlyTrue()));
-		case TokenType::MINUS: EXPR_RETURN_FROM_VISIT(*value * Value::makePtr<Number>(-1));
+void Runtime::visit_unary_expr(UnaryExpr& unary_expr) {
+	EXPR_ACCEPT(unary_expr.get_rhs(), *this, Value::Ptr value);
+	switch(unary_expr.get_operator().get_type()) {
+		case TokenType::BANG: EXPR_RETURN_FROM_VISIT(Value::make_ptr<Bool>(!value->is_implicitly_true()));
+		case TokenType::MINUS: EXPR_RETURN_FROM_VISIT(*value * Value::make_ptr<Number>(-1));
 		default: assert(false);
 	}
 }
 
-void Runtime::visitVariable(VariableExpr& variableExpr) {
-	const auto& var = m_currentContext->getVar(variableExpr.getName().getValue().asString());
+void Runtime::visit_variable(VariableExpr& variable_expr) {
+	const auto& var = m_current_context->get_var(variable_expr.get_name().get_value().as_string());
 	if(!var.has_value())
 		assert(false);
 	EXPR_RETURN_FROM_VISIT(var->value);
 }
 
-void Runtime::visitBlockStmt(BlockStmt& blockStmt) {
-	runInNewContext(
-			[&blockStmt, this]() {
-				for(const auto& statement : blockStmt.getStatements())
+void Runtime::visit_block_stmt(BlockStmt& block_stmt) {
+	run_in_new_context(
+			[&block_stmt, this]() {
+				for(const auto& statement : block_stmt.get_statements())
 					statement->accept(*this);
 			},
-			m_currentContext);
+			m_current_context);
 }
 
-void Runtime::visitDeclarationStmt(DeclarationStmt& declarationStmt) {
-	Value::Ptr init = Value::makePtr<Nothing>();
-	if(declarationStmt.getInitializer() != nullptr) {
-		EXPR_ACCEPT(declarationStmt.getInitializer(), *this, init);
+void Runtime::visit_declaration_stmt(DeclarationStmt& declaration_stmt) {
+	Value::Ptr init = Value::make_ptr<Nothing>();
+	if(declaration_stmt.get_initializer() != nullptr) {
+		EXPR_ACCEPT(declaration_stmt.get_initializer(), *this, init);
 	}
 
-	const std::string& name = declarationStmt.getIdentifier().getValue().asString();
-	if(!m_currentContext->declareVar(name, init, declarationStmt.isMutable()))
+	const std::string& name = declaration_stmt.get_identifier().get_value().as_string();
+	if(!m_current_context->declare_var(name, init, declaration_stmt.is_mutable()))
 		assert(false);
 }
 
-void Runtime::visitClassDeclarationStmt(ClassDeclarationStmt& classDeclarationStmt) {
-	const std::string& name = classDeclarationStmt.getIdentifier().getValue().asString();
-	if(!m_currentContext->declareType(name, Value::makePtr<Klass>(classDeclarationStmt)))
+void Runtime::visit_class_declaration_stmt(ClassDeclarationStmt& class_declaration_stmt) {
+	const std::string& name = class_declaration_stmt.get_identifier().get_value().as_string();
+	if(!m_current_context->declare_type(name, Value::make_ptr<Klass>(class_declaration_stmt)))
 		assert(false);
 }
 
-void Runtime::visitExpressionStmt(ExpressionStmt& expressionStmt) { expressionStmt.getExpr()->accept(*this); }
+void Runtime::visit_expression_stmt(ExpressionStmt& expression_stmt) { expression_stmt.get_expr()->accept(*this); }
 
-void Runtime::visitPrintStmt(PrintStmt& printStmt) {
-	EXPR_ACCEPT(printStmt.getExpr(), *this, Value::Ptr value);
-	std::cout << value->toString() << std::endl;
+void Runtime::visit_print_stmt(PrintStmt& print_stmt) {
+	EXPR_ACCEPT(print_stmt.get_expr(), *this, Value::Ptr value);
+	std::cout << value->to_string() << std::endl;
 }
 
-void Runtime::visitReturnStmt(ReturnStmt& returnStmt) {
-	EXPR_ACCEPT(returnStmt.getExpr(), *this, Value::Ptr value);
+void Runtime::visit_return_stmt(ReturnStmt& return_stmt) {
+	EXPR_ACCEPT(return_stmt.get_expr(), *this, Value::Ptr value);
 	throw ReturnException(value);
 }
 
-void Runtime::visitWhileStmt(WhileStmt& whileStmt) {
-	EXPR_ACCEPT(whileStmt.getCondition(), *this, Value::Ptr condition);
-	while(condition->isImplicitlyTrue()) {
-		whileStmt.getStatement()->accept(*this);
-		EXPR_ACCEPT(whileStmt.getCondition(), *this, condition);
+void Runtime::visit_while_stmt(WhileStmt& while_stmt) {
+	EXPR_ACCEPT(while_stmt.get_condition(), *this, Value::Ptr condition);
+	while(condition->is_implicitly_true()) {
+		while_stmt.get_statement()->accept(*this);
+		EXPR_ACCEPT(while_stmt.get_condition(), *this, condition);
 	}
 }
 
 template <typename Callback>
-RuntimeContext::Ptr Runtime::runInNewContext(const Callback& callback, RuntimeContext::Ptr parent) {
-	RuntimeContext::Ptr contextCopy = RuntimeContext::makePtr<RuntimeContext>(*m_currentContext);
-	m_currentContext = RuntimeContext::makePtr<RuntimeContext>(parent);
+RuntimeContext::Ptr Runtime::run_in_new_context(const Callback& callback, RuntimeContext::Ptr parent) {
+	RuntimeContext::Ptr context_copy = RuntimeContext::make_ptr<RuntimeContext>(*m_current_context);
+	m_current_context = RuntimeContext::make_ptr<RuntimeContext>(parent);
 	callback();
-	RuntimeContext::Ptr modifiedContext = m_currentContext;
-	return modifiedContext;
+	RuntimeContext::Ptr modified_context = m_current_context;
+	return modified_context;
 }
 }

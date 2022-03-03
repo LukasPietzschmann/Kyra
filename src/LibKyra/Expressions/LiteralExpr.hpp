@@ -11,7 +11,7 @@ public:
 	~LiteralExpr() override = default;
 
 	void accept(ExpressionVisitor& visitor) override;
-	Value::Ptr getValue() const;
+	Value::Ptr get_value() const;
 
 private:
 	Value::Ptr m_value;

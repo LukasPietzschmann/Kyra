@@ -8,8 +8,8 @@ std::ostream& operator<<(std::ostream& os, const Position::PositionPart& part) {
 	return os;
 }
 
-Position::Position(unsigned int startLine, unsigned int startColumn, unsigned int endLine, unsigned int endColumn) :
-	start(PositionPart(startLine, startColumn)), end(PositionPart(endLine, endColumn)) {}
+Position::Position(unsigned int start_line, unsigned int start_column, unsigned int end_line, unsigned int end_column) :
+	start(PositionPart(start_line, start_column)), end(PositionPart(end_line, end_column)) {}
 
 Position::Position(const Position& start, const Position& end) : start(start.start), end(end.end) {}
 

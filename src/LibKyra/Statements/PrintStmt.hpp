@@ -11,7 +11,7 @@ public:
 	~PrintStmt() override = default;
 
 	void accept(StatementVisitor& visitor) override;
-	Expression::Ptr getExpr() const;
+	Expression::Ptr get_expr() const;
 
 private:
 	Expression::Ptr m_expr;

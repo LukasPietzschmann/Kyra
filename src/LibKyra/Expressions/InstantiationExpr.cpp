@@ -10,9 +10,9 @@ InstantiationExpr::InstantiationExpr(const Position& position,
 	Expression(position),
 	m_name(std::move(name)), m_arguments(std::move(arguments)) {}
 
-void InstantiationExpr::accept(ExpressionVisitor& visitor) { return visitor.visitInstantiationExpr(*this); }
+void InstantiationExpr::accept(ExpressionVisitor& visitor) { return visitor.visit_instantiation_expr(*this); }
 
-const std::string& InstantiationExpr::getName() const { return m_name; }
+const std::string& InstantiationExpr::get_name() const { return m_name; }
 
-const std::vector<Expression::Ptr>& InstantiationExpr::getArguments() const { return m_arguments; }
+const std::vector<Expression::Ptr>& InstantiationExpr::get_arguments() const { return m_arguments; }
 }

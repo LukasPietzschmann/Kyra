@@ -15,11 +15,11 @@ class TypeContext : public Context<TypeContext, Variable<Type::Repr>, Type::Repr
 public:
 	explicit TypeContext(TypeContext::Ptr parent = nullptr) :
 		Context<TypeContext, Variable<Type::Repr>, Type::Repr>(parent) {
-		for(const auto& nt : TypeProvider::nativeTypes())
-			m_types.try_emplace(TypeProvider::the().decode(nt)->getName(), nt);
+		for(const auto& nt : TypeProvider::native_types())
+			m_types.try_emplace(TypeProvider::the().decode(nt)->get_name(), nt);
 	}
 
-	using Context::declareVar;
-	bool declareVar(const std::string& name, const Type::Repr& varType, bool isMutable);
+	using Context::declare_var;
+	bool declare_var(const std::string& name, const Type::Repr& var_type, bool is_mutable);
 };
 }

@@ -11,8 +11,8 @@ public:
 	~AccessExpr() override = default;
 
 	void accept(ExpressionVisitor& visitor) override;
-	Expression::Ptr getOwner() const;
-	const Token& getName() const;
+	Expression::Ptr get_owner() const;
+	const Token& get_name() const;
 
 private:
 	Expression::Ptr m_owner;

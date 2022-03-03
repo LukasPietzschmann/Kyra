@@ -14,44 +14,44 @@
 #include "Typing/TypeChecker.hpp"
 
 namespace Kyra {
-void Interpreter::execute(const std::string& code, bool verboseLogging, bool passThroughExceptions) {
+void Interpreter::execute(const std::string& code, bool verbose_logging, bool pass_through_exceptions) {
 	try {
-		auto tokens = Lexer(code).scanTokens();
+		auto tokens = Lexer(code).scan_tokens();
 		auto statements = Parser(tokens).parse();
-		if(verboseLogging) {
+		if(verbose_logging) {
 			AstLogger logger;
 			for(const auto& statement : statements)
-				logger.logStatement(statement);
+				logger.log_statement(statement);
 		}
 
-		TypeChecker::Result result = TypeChecker::getInstance().check(statements);
-		for(const auto& error : result.getErrors()) {
-			if(passThroughExceptions)
+		TypeChecker::Result result = TypeChecker::the().check(statements);
+		for(const auto& error : result.get_errors()) {
+			if(pass_through_exceptions)
 				throw TypingException(error);
 			std::cout << "[Typing Error] " << error << "\n";
 		}
 		std::cout << std::flush;
-		if(result.hasErrors())
+		if(result.has_errors())
 			return;
 
 		for(const auto& statement : statements)
-			Runtime::getInstance().executeStatement(statement);
+			Runtime::the().execute_statement(statement);
 	} catch(const ParserException& exception) {
-		if(passThroughExceptions)
+		if(pass_through_exceptions)
 			throw ParserException(exception);
 		std::cout << "[Parser Error] " << exception.what() << std::endl;
 	} catch(const LexerException& exception) {
-		if(passThroughExceptions)
+		if(pass_through_exceptions)
 			throw LexerException(exception);
 		std::cout << "[Lexer Error] " << exception.what() << std::endl;
 	}
 }
 
-bool Interpreter::isIncompleteStatement(const std::string& code) {
+bool Interpreter::is_incomplete_statement(const std::string& code) {
 	try {
-		Parser parser(Lexer(code).scanTokens());
+		Parser parser(Lexer(code).scan_tokens());
 		parser.parse();
-	} catch(const ParserException& exception) { return exception.isUnfinished(); } catch(...) {
+	} catch(const ParserException& exception) { return exception.is_unfinished(); } catch(...) {
 		return false;
 	}
 	return false;

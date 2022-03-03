@@ -14,20 +14,20 @@ class ClassType : public Type {
 public:
 	explicit ClassType(const std::string& name,
 			std::unordered_map<std::string, Variable<Type::Repr>> declarations = {},
-			std::vector<Type::Repr> constructorParams = {}) :
+			std::vector<Type::Repr> constructor_params = {}) :
 		Type(name),
-		m_declarations(std::move(declarations)), m_constructorParameter(std::move(constructorParams)) {}
+		m_declarations(std::move(declarations)), m_constructor_parameter(std::move(constructor_params)) {}
 	~ClassType() override = default;
 
-	std::optional<Variable<Type::Repr>> knowsAbout(const std::string& name) const override;
+	std::optional<Variable<Type::Repr>> knows_about(const std::string& name) const override;
 
-	void addConstructorParam(const Type::Repr& param);
-	void addDeclaration(const std::string& name, const Variable<Type::Repr>& value);
-	const std::vector<Type::Repr>& getConstructorParameter() const;
-	unsigned long getArity() const;
+	void add_constructor_param(const Type::Repr& param);
+	void add_declaration(const std::string& name, const Variable<Type::Repr>& value);
+	const std::vector<Type::Repr>& get_constructor_parameter() const;
+	unsigned long get_arity() const;
 
 private:
 	std::unordered_map<std::string, Variable<Type::Repr>> m_declarations;
-	std::vector<Type::Repr> m_constructorParameter;
+	std::vector<Type::Repr> m_constructor_parameter;
 };
 }

@@ -12,8 +12,8 @@ public:
 	~CallExpr() override = default;
 
 	void accept(ExpressionVisitor& visitor) override;
-	Expression::Ptr getFunction() const;
-	const std::vector<Expression::Ptr>& getArguments() const;
+	Expression::Ptr get_function() const;
+	const std::vector<Expression::Ptr>& get_arguments() const;
 
 private:
 	Expression::Ptr m_function;

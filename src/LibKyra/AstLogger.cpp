@@ -24,159 +24,159 @@
 #include "TokenType.hpp"
 
 namespace Kyra {
-void AstLogger::logStatement(const Statement::Ptr& statement) {
+void AstLogger::log_statement(const Statement::Ptr& statement) {
 	m_indent = 0;
 	statement->accept(*this);
 }
 
-void AstLogger::visitBlockStmt(BlockStmt& blockStmt) {
+void AstLogger::visit_block_stmt(BlockStmt& block_stmt) {
 	COUT << "Block" << std::endl;
 	++m_indent;
-	for(const auto& stmt : blockStmt.getStatements())
+	for(const auto& stmt : block_stmt.get_statements())
 		stmt->accept(*this);
 	--m_indent;
 }
 
-void AstLogger::visitDeclarationStmt(DeclarationStmt& declarationStmt) {
-	COUT << "Declaration of variable " << declarationStmt.getIdentifier().getValue().asString();
-	if(declarationStmt.getInitializer()) {
+void AstLogger::visit_declaration_stmt(DeclarationStmt& declaration_stmt) {
+	COUT << "Declaration of variable " << declaration_stmt.get_identifier().get_value().as_string();
+	if(declaration_stmt.get_initializer()) {
 		std::cout << " to " << std::endl;
 		++m_indent;
-		declarationStmt.getInitializer()->accept(*this);
+		declaration_stmt.get_initializer()->accept(*this);
 		--m_indent;
 	} else
 		std::cout << std::endl;
 }
 
-void AstLogger::visitClassDeclarationStmt(ClassDeclarationStmt& classDeclarationStmt) {
-	COUT << "Declaration of class " << classDeclarationStmt.getIdentifier().getValue().asString() << "\n";
+void AstLogger::visit_class_declaration_stmt(ClassDeclarationStmt& class_declaration_stmt) {
+	COUT << "Declaration of class " << class_declaration_stmt.get_identifier().get_value().as_string() << "\n";
 	COUT << "Constructor parameter\n";
 	++m_indent;
 	std::stringstream parameter;
-	for(const auto& param : classDeclarationStmt.getConstructorParameters())
-		parameter << param.name.getValue().asString() << " ";
-	if(!classDeclarationStmt.getConstructorParameters().empty())
+	for(const auto& param : class_declaration_stmt.get_constructor_parameters())
+		parameter << param.name.get_value().as_string() << " ";
+	if(!class_declaration_stmt.get_constructor_parameters().empty())
 		COUT << parameter.str() << "\n";
 	--m_indent;
 	std::cout << "Declarations" << std::endl;
 	++m_indent;
-	for(const auto& decl : classDeclarationStmt.getDeclarations())
+	for(const auto& decl : class_declaration_stmt.get_declarations())
 		decl->accept(*this);
 	--m_indent;
 }
 
-void AstLogger::visitExpressionStmt(ExpressionStmt& expressionStmt) {
+void AstLogger::visit_expression_stmt(ExpressionStmt& expression_stmt) {
 	COUT << "Expression" << std::endl;
 	++m_indent;
-	expressionStmt.getExpr()->accept(*this);
+	expression_stmt.get_expr()->accept(*this);
 	--m_indent;
 }
 
-void AstLogger::visitPrintStmt(PrintStmt& printStmt) {
+void AstLogger::visit_print_stmt(PrintStmt& print_stmt) {
 	COUT << "Print" << std::endl;
 	++m_indent;
-	printStmt.getExpr()->accept(*this);
+	print_stmt.get_expr()->accept(*this);
 	--m_indent;
 }
 
-void AstLogger::visitReturnStmt(ReturnStmt& returnStmt) {
+void AstLogger::visit_return_stmt(ReturnStmt& return_stmt) {
 	COUT << "Return" << std::endl;
 	++m_indent;
-	returnStmt.getExpr()->accept(*this);
+	return_stmt.get_expr()->accept(*this);
 	--m_indent;
 }
 
-void AstLogger::visitWhileStmt(WhileStmt& whileStmt) {
+void AstLogger::visit_while_stmt(WhileStmt& while_stmt) {
 	COUT << "While" << std::endl;
 	++m_indent;
-	whileStmt.getCondition()->accept(*this);
+	while_stmt.get_condition()->accept(*this);
 	--m_indent;
 	COUT << "Do" << std::endl;
 	++m_indent;
-	whileStmt.getStatement()->accept(*this);
+	while_stmt.get_statement()->accept(*this);
 	--m_indent;
 }
 
-void AstLogger::visitAccessExpr(AccessExpr& accessExpr) {
-	COUT << "Get Variable " << accessExpr.getName().getValue().asString() << " from " << std::endl;
+void AstLogger::visit_access_expr(AccessExpr& access_expr) {
+	COUT << "Get Variable " << access_expr.get_name().get_value().as_string() << " from " << std::endl;
 	++m_indent;
-	accessExpr.getOwner()->accept(*this);
+	access_expr.get_owner()->accept(*this);
 	--m_indent;
 }
 
-void AstLogger::visitAssignmentExpr(AssignmentExpr& assignmentExpr) {
-	COUT << "Assignment of variable " << assignmentExpr.getName().getValue().asString() << " to " << std::endl;
+void AstLogger::visit_assignment_expr(AssignmentExpr& assignment_expr) {
+	COUT << "Assignment of variable " << assignment_expr.get_name().get_value().as_string() << " to " << std::endl;
 	++m_indent;
-	assignmentExpr.getNewValue()->accept(*this);
+	assignment_expr.get_new_value()->accept(*this);
 	--m_indent;
 }
 
-void AstLogger::visitBinaryExpr(BinaryExpr& binaryExpr) {
-	COUT << "Binary Expr with Operand " << TokenTypeName::getFor(binaryExpr.getOperator().getType()) << std::endl;
+void AstLogger::visit_binary_expr(BinaryExpr& binary_expr) {
+	COUT << "Binary Expr with Operand " << TokenTypeName::get_for(binary_expr.get_operator().get_type()) << std::endl;
 	COUT << "Lhs: " << std::endl;
 	++m_indent;
-	binaryExpr.getLhs()->accept(*this);
+	binary_expr.get_lhs()->accept(*this);
 	--m_indent;
 	COUT << "Rhs: " << std::endl;
 	++m_indent;
-	binaryExpr.getRhs()->accept(*this);
+	binary_expr.get_rhs()->accept(*this);
 	--m_indent;
 }
 
-void AstLogger::visitCallExpr(CallExpr& callExpr) {
+void AstLogger::visit_call_expr(CallExpr& call_expr) {
 	COUT << "Call to" << std::endl;
 	++m_indent;
-	callExpr.getFunction()->accept(*this);
+	call_expr.get_function()->accept(*this);
 	--m_indent;
 	COUT << "With arguments" << std::endl;
 	++m_indent;
-	for(const auto& argument : callExpr.getArguments())
+	for(const auto& argument : call_expr.get_arguments())
 		argument->accept(*this);
 	--m_indent;
 }
 
-void AstLogger::visitFunction(FunctionExpr& functionExpr) {
+void AstLogger::visit_function(FunctionExpr& function_expr) {
 	std::stringstream parameters;
-	for(const auto& parameter : functionExpr.getParameters())
-		parameters << parameter.name.getValue().asString() << " ";
+	for(const auto& parameter : function_expr.get_parameters())
+		parameters << parameter.name.get_value().as_string() << " ";
 	COUT << "Function" << std::endl;
 	COUT << "Parameter " << parameters.str() << std::endl;
 	COUT << "Implementation" << std::endl;
 	++m_indent;
-	functionExpr.getImplementation()->accept(*this);
+	function_expr.get_implementation()->accept(*this);
 	--m_indent;
 }
 
-void AstLogger::visitGroupExpr(GroupExpr& groupExpr) {
+void AstLogger::visit_group_expr(GroupExpr& group_expr) {
 	COUT << "Group" << std::endl;
 	++m_indent;
-	groupExpr.getExpr()->accept(*this);
+	group_expr.get_expr()->accept(*this);
 	--m_indent;
 }
 
-void AstLogger::visitInstantiationExpr(InstantiationExpr& instantiationExpr) {
-	COUT << "Instantiation of class " + instantiationExpr.getName() + "\n";
+void AstLogger::visit_instantiation_expr(InstantiationExpr& instantiation_expr) {
+	COUT << "Instantiation of class " + instantiation_expr.get_name() + "\n";
 	COUT << "With constructor arguments\n";
 	++m_indent;
-	for(const auto& argument : instantiationExpr.getArguments())
+	for(const auto& argument : instantiation_expr.get_arguments())
 		argument->accept(*this);
 	--m_indent;
 }
 
-void AstLogger::visitLiteral(LiteralExpr& literal) {
-	COUT << "Literal with value of " << literal.getValue()->toString() << std::endl;
+void AstLogger::visit_literal(LiteralExpr& literal) {
+	COUT << "Literal with value of " << literal.get_value()->to_string() << std::endl;
 }
 
-void AstLogger::visitTypeExpr(TypeExpr& typeExpr) { COUT << "Type " << typeExpr.getName(); }
+void AstLogger::visit_type_expr(TypeExpr& type_expr) { COUT << "Type " << type_expr.get_name(); }
 
-void AstLogger::visitUnaryExpr(UnaryExpr& unaryExpr) {
-	COUT << "Unary Expr with Operand " << TokenTypeName::getFor(unaryExpr.getOperator().getType()) << std::endl;
+void AstLogger::visit_unary_expr(UnaryExpr& unary_expr) {
+	COUT << "Unary Expr with Operand " << TokenTypeName::get_for(unary_expr.get_operator().get_type()) << std::endl;
 	COUT << "Rhs: " << std::endl;
 	++m_indent;
-	unaryExpr.getRhs()->accept(*this);
+	unary_expr.get_rhs()->accept(*this);
 	--m_indent;
 }
-void AstLogger::visitVariable(VariableExpr& variableExpr) {
-	COUT << "Variable with identifier " << variableExpr.getName().getValue().asString() << std::endl;
+void AstLogger::visit_variable(VariableExpr& variable_expr) {
+	COUT << "Variable with identifier " << variable_expr.get_name().get_value().as_string() << std::endl;
 }
 }

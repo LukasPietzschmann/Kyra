@@ -12,7 +12,7 @@ public:
 	using Ptr = std::shared_ptr<C>;
 
 	template <typename T, typename... Args>
-	static inline Ptr makePtr(Args... args) {
+	static inline Ptr make_ptr(Args... args) {
 		return std::make_shared<T>(args...);
 	}
 };

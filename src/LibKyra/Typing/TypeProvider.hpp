@@ -20,7 +20,7 @@ public:
 
 	Type::Repr encode(Type::Ptr type);
 
-	static std::vector<Type::Repr> nativeTypes();
+	static std::vector<Type::Repr> native_types();
 
 private:
 	TypeProvider();

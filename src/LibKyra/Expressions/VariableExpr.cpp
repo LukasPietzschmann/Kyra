@@ -6,7 +6,7 @@ namespace Kyra {
 struct Position;
 VariableExpr::VariableExpr(const Position& position, Token name) : Expression(position), m_name(std::move(name)) {}
 
-void VariableExpr::accept(ExpressionVisitor& visitor) { return visitor.visitVariable(*this); }
+void VariableExpr::accept(ExpressionVisitor& visitor) { return visitor.visit_variable(*this); }
 
-const Token& VariableExpr::getName() const { return m_name; }
+const Token& VariableExpr::get_name() const { return m_name; }
 }

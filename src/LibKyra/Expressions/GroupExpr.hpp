@@ -9,7 +9,7 @@ public:
 	GroupExpr(const Position& position, const Expression::Ptr& expr);
 	~GroupExpr() override = default;
 
-	Expression::Ptr getExpr() const;
+	Expression::Ptr get_expr() const;
 	void accept(ExpressionVisitor& visitor) override;
 
 private:

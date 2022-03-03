@@ -8,11 +8,11 @@ public:
 	explicit Number(int number);
 	~Number() override = default;
 
-	bool isImplicitlyTrue() const override;
-	std::string getType() const override;
-	std::string toString() const override;
+	bool is_implicitly_true() const override;
+	std::string get_type() const override;
+	std::string to_string() const override;
 
-	int getNumber() const;
+	int get_number() const;
 
 	bool operator==(const Value::Ptr& other) const override;
 	bool operator<(const Value::Ptr& other) const override;

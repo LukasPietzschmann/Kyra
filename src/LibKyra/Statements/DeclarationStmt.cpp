@@ -8,17 +8,17 @@ DeclarationStmt::DeclarationStmt(const Position& position,
 		Token identifier,
 		const Expression::Ptr& initializer,
 		const Expression::Ptr& type,
-		bool isMutable) :
+		bool is_mutable) :
 	Statement(position),
-	m_identifier(std::move(identifier)), m_initializer(initializer), m_type(type), m_isMutable(isMutable) {}
+	m_identifier(std::move(identifier)), m_initializer(initializer), m_type(type), m_is_mutable(is_mutable) {}
 
-void DeclarationStmt::accept(StatementVisitor& visitor) { visitor.visitDeclarationStmt(*this); }
+void DeclarationStmt::accept(StatementVisitor& visitor) { visitor.visit_declaration_stmt(*this); }
 
-const Token& DeclarationStmt::getIdentifier() const { return m_identifier; }
+const Token& DeclarationStmt::get_identifier() const { return m_identifier; }
 
-Expression::Ptr DeclarationStmt::getInitializer() const { return m_initializer; }
+Expression::Ptr DeclarationStmt::get_initializer() const { return m_initializer; }
 
-Expression::Ptr DeclarationStmt::getType() const { return m_type; }
+Expression::Ptr DeclarationStmt::get_type() const { return m_type; }
 
-bool DeclarationStmt::isMutable() const { return m_isMutable; }
+bool DeclarationStmt::is_mutable() const { return m_is_mutable; }
 }

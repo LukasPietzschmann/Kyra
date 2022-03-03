@@ -27,7 +27,7 @@ enum class TokenType {
 
 class TokenTypeName {
 public:
-	static std::string getFor(TokenType type) {
+	static std::string get_for(TokenType type) {
 		const std::string names[] = {"LEFT_PAREN",
 				"RIGHT_PAREN",
 				"LEFT_CURLY",

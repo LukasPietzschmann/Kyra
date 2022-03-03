@@ -15,14 +15,14 @@ public:
 	explicit Type(std::string name);
 	virtual ~Type() = default;
 
-	virtual std::optional<Variable<Type::Repr>> knowsAbout(const std::string&) const;
-	virtual bool canBeCalledWith(const std::vector<Type::Repr>&) const;
-	virtual bool hasReturnType(const Type::Repr&) const;
-	virtual bool isApplicableForDeclaration() const;
-	virtual bool canBeAssignedTo(Type::Ptr assignee) const;
-	virtual bool isFunction() const;
+	virtual std::optional<Variable<Type::Repr>> knows_about(const std::string&) const;
+	virtual bool can_be_called_with(const std::vector<Type::Repr>&) const;
+	virtual bool has_return_type(const Type::Repr&) const;
+	virtual bool is_applicable_for_declaration() const;
+	virtual bool can_be_assigned_to(Type::Ptr assignee) const;
+	virtual bool is_function() const;
 
-	const std::string& getName() const;
+	const std::string& get_name() const;
 
 	virtual bool operator==(const Type::Ptr& other) const;
 	virtual bool operator!=(const Type::Ptr& other) const;

@@ -9,9 +9,9 @@ class Bool : public Value {
 public:
 	explicit Bool(bool boolean);
 	~Bool() override = default;
-	bool isImplicitlyTrue() const override;
-	std::string getType() const override;
-	std::string toString() const override;
+	bool is_implicitly_true() const override;
+	std::string get_type() const override;
+	std::string to_string() const override;
 
 	bool operator==(const Value::Ptr& other) const override;
 	bool operator<(const Value::Ptr& other) const override;

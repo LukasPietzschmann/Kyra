@@ -12,8 +12,8 @@ public:
 
 	void accept(StatementVisitor& visitor) override;
 
-	Expression::Ptr getCondition() const;
-	Statement::Ptr getStatement() const;
+	Expression::Ptr get_condition() const;
+	Statement::Ptr get_statement() const;
 
 private:
 	Expression::Ptr m_condition;

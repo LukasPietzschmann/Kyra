@@ -1,7 +1,7 @@
 #include "TypeContext.hpp"
 
 namespace Kyra {
-bool TypeContext::declareVar(const std::string& name, const Type::Repr& varType, bool isMutable) {
-	return declareVar(name, Variable(varType, isMutable));
+bool TypeContext::declare_var(const std::string& name, const Type::Repr& var_type, bool is_mutable) {
+	return declare_var(name, Variable(var_type, is_mutable));
 }
 }

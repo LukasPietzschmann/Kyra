@@ -13,9 +13,9 @@ public:
 		Context<RuntimeContext, Variable<Value::Ptr>, Value::Ptr>(parent) {}
 	~RuntimeContext() override = default;
 
-	using Context::mutateVar;
-	bool mutateVar(const std::string& name, Value::Ptr value);
-	using Context::declareVar;
-	bool declareVar(const std::string& name, Value::Ptr value, bool isMutable = true);
+	using Context::mutate_var;
+	bool mutate_var(const std::string& name, Value::Ptr value);
+	using Context::declare_var;
+	bool declare_var(const std::string& name, Value::Ptr value, bool is_mutable = true);
 };
 }

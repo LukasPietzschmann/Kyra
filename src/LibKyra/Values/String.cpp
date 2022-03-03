@@ -8,39 +8,39 @@
 namespace Kyra {
 String::String(std::string string) : m_string(std::move(string)) {}
 
-bool String::isImplicitlyTrue() const { return true; }
+bool String::is_implicitly_true() const { return true; }
 
-std::string String::getType() const { return Value::NativeTypes::String; }
+std::string String::get_type() const { return Value::NativeTypes::String; }
 
-std::string String::toString() const { return m_string; }
+std::string String::to_string() const { return m_string; }
 
 bool String::operator==(const HasPtrAlias::Ptr& other) const {
-	if(getType() != other->getType())
+	if(get_type() != other->get_type())
 		return false;
 	return m_string == Value::as<String>(other)->m_string;
 }
 
 bool String::operator<(const HasPtrAlias::Ptr& other) const {
-	if(getType() != other->getType())
+	if(get_type() != other->get_type())
 		return false;
 	return m_string.compare(Value::as<String>(other)->m_string) < 0;
 }
 
 bool String::operator>(const HasPtrAlias::Ptr& other) const {
-	if(getType() != other->getType())
+	if(get_type() != other->get_type())
 		return false;
 	return m_string.compare(Value::as<String>(other)->m_string) > 0;
 }
 
 Value::Ptr String::operator+(const HasPtrAlias::Ptr& other) const {
-	return Value::makePtr<String>(m_string + other->toString());
+	return Value::make_ptr<String>(m_string + other->to_string());
 }
 
 Value::Ptr String::operator*(const HasPtrAlias::Ptr& other) const {
-	assert(other->getType() == Value::NativeTypes::Number);
+	assert(other->get_type() == Value::NativeTypes::Number);
 	std::string output;
-	for(int i = 0; i < Value::as<Number>(other)->getNumber(); ++i)
+	for(int i = 0; i < Value::as<Number>(other)->get_number(); ++i)
 		output += m_string;
-	return Value::makePtr<String>(output);
+	return Value::make_ptr<String>(output);
 }
 }

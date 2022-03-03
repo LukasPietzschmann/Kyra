@@ -29,42 +29,42 @@ class Runtime : public ExpressionVisitor, public StatementVisitor {
 	EXPR_NEEDS_VISIT_RETURN_OF_TYPE(Value::Ptr);
 
 public:
-	static Runtime& getInstance();
+	static Runtime& the();
 
 	Runtime(Runtime const&) = delete;
 	Runtime(Runtime&&) noexcept = delete;
 	Runtime& operator=(Runtime const&) = delete;
 	Runtime& operator=(Runtime&&) = delete;
 
-	void executeStatement(Statement::Ptr statement, RuntimeContext::Ptr contextToExecuteOn = nullptr);
-	Value::Ptr executeExpression(Expression::Ptr expression, RuntimeContext::Ptr contextToExecuteOn = nullptr);
+	void execute_statement(Statement::Ptr statement, RuntimeContext::Ptr context_to_execute_on = nullptr);
+	Value::Ptr execute_expression(Expression::Ptr expression, RuntimeContext::Ptr context_to_execute_on = nullptr);
 
-	void visitAccessExpr(AccessExpr& accessExpr) override;
-	void visitAssignmentExpr(AssignmentExpr& assignmentExpr) override;
-	void visitBinaryExpr(BinaryExpr& binaryExpr) override;
-	void visitCallExpr(CallExpr& callExpr) override;
-	void visitFunction(FunctionExpr& functionExpr) override;
-	void visitGroupExpr(GroupExpr& groupExpr) override;
-	void visitInstantiationExpr(InstantiationExpr& instantiationExpr) override;
-	void visitLiteral(LiteralExpr& literalExpr) override;
-	void visitTypeExpr(TypeExpr& typeExpr) override;
-	void visitUnaryExpr(UnaryExpr& unaryExpr) override;
-	void visitVariable(VariableExpr& variableExpr) override;
+	void visit_access_expr(AccessExpr& access_expr) override;
+	void visit_assignment_expr(AssignmentExpr& assignment_expr) override;
+	void visit_binary_expr(BinaryExpr& binary_expr) override;
+	void visit_call_expr(CallExpr& call_expr) override;
+	void visit_function(FunctionExpr& function_expr) override;
+	void visit_group_expr(GroupExpr& group_expr) override;
+	void visit_instantiation_expr(InstantiationExpr& instantiation_expr) override;
+	void visit_literal(LiteralExpr& literal_expr) override;
+	void visit_type_expr(TypeExpr& type_expr) override;
+	void visit_unary_expr(UnaryExpr& unary_expr) override;
+	void visit_variable(VariableExpr& variable_expr) override;
 
-	void visitBlockStmt(BlockStmt& blockStmt) override;
-	void visitDeclarationStmt(DeclarationStmt& declarationStmt) override;
-	void visitClassDeclarationStmt(ClassDeclarationStmt& classDeclarationStmt) override;
-	void visitExpressionStmt(ExpressionStmt& expressionStmt) override;
-	void visitPrintStmt(PrintStmt& printStmt) override;
-	void visitReturnStmt(ReturnStmt& returnStmt) override;
-	void visitWhileStmt(WhileStmt& whileStmt) override;
+	void visit_block_stmt(BlockStmt& block_stmt) override;
+	void visit_declaration_stmt(DeclarationStmt& declaration_stmt) override;
+	void visit_class_declaration_stmt(ClassDeclarationStmt& class_declaration_stmt) override;
+	void visit_expression_stmt(ExpressionStmt& expression_stmt) override;
+	void visit_print_stmt(PrintStmt& print_stmt) override;
+	void visit_return_stmt(ReturnStmt& return_stmt) override;
+	void visit_while_stmt(WhileStmt& while_stmt) override;
 
 private:
 	Runtime() = default;
 
-	RuntimeContext::Ptr m_currentContext{RuntimeContext::makePtr<RuntimeContext>()};
+	RuntimeContext::Ptr m_current_context{RuntimeContext::make_ptr<RuntimeContext>()};
 
 	template <typename Callback>
-	RuntimeContext::Ptr runInNewContext(const Callback& callback, RuntimeContext::Ptr parent);
+	RuntimeContext::Ptr run_in_new_context(const Callback& callback, RuntimeContext::Ptr parent);
 };
 }
