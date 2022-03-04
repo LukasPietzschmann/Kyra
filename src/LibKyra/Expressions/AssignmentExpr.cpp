@@ -4,12 +4,8 @@
 
 namespace Kyra {
 struct Position;
-AssignmentExpr::AssignmentExpr(const Position& position,
-		const Expression::Ptr& owner,
-		Token name,
-		const Expression::Ptr& new_value) :
-	Expression(position),
-	m_owner(owner), m_name(std::move(name)), m_new_value(new_value) {}
+AssignmentExpr::AssignmentExpr(const Position& position, Expression::Ptr owner, Token name, Expression::Ptr new_value) :
+	Expression(position), m_owner(std::move(owner)), m_name(std::move(name)), m_new_value(std::move(new_value)) {}
 
 void AssignmentExpr::accept(ExpressionVisitor& visitor) { return visitor.visit_assignment_expr(*this); }
 

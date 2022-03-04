@@ -4,8 +4,8 @@
 
 namespace Kyra {
 struct Position;
-UnaryExpr::UnaryExpr(const Position& position, Token oper, const Expression::Ptr& rhs) :
-	Expression(position), m_operator(std::move(oper)), m_rhs(rhs) {}
+UnaryExpr::UnaryExpr(const Position& position, Token oper, Expression::Ptr rhs) :
+	Expression(position), m_operator(std::move(oper)), m_rhs(std::move(rhs)) {}
 
 void UnaryExpr::accept(ExpressionVisitor& visitor) { return visitor.visit_unary_expr(*this); }
 

@@ -17,9 +17,8 @@ public:
 
 	virtual std::optional<Variable<Type::Repr>> knows_about(const std::string&) const;
 	virtual bool can_be_called_with(const std::vector<Type::Repr>&) const;
-	virtual bool has_return_type(const Type::Repr&) const;
 	virtual bool is_applicable_for_declaration() const;
-	virtual bool can_be_assigned_to(Type::Ptr assignee) const;
+	virtual bool can_be_assigned_to(const Type::Ptr& assignee) const;
 	virtual bool is_function() const;
 
 	const std::string& get_name() const;

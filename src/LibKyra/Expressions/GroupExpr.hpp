@@ -6,7 +6,7 @@ namespace Kyra {
 struct Position;
 class GroupExpr : public Expression {
 public:
-	GroupExpr(const Position& position, const Expression::Ptr& expr);
+	GroupExpr(const Position& position, Expression::Ptr expr);
 	~GroupExpr() override = default;
 
 	Expression::Ptr get_expr() const;

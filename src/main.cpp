@@ -50,7 +50,7 @@ int main(int argc, char** argv) {
 #ifdef HAS_READLINE
 			nice_repl();
 #else
-			simpleRepl();
+			simple_repl();
 #endif
 		} else {
 			// File
@@ -77,16 +77,14 @@ int main(int argc, char** argv) {
 }
 
 #ifndef HAS_READLINE
-void simpleRepl() {
-	std::cout << "Btw: To get the full REPL experience install the GNU readline library!" << std::endl;
-	std::cout << defaultPrompt;
+void simple_repl() {
+	std::cout << "Btw: To get the full REPL experience install the GNU readline library and recompile Kyra!" << std::endl;
+	std::cout << default_prompt;
 	for(std::string line; std::getline(std::cin, line);) {
 		if(line == "exit")
 			break;
-
-		Kyra::Interpreter::getInstance().execute(line, verbose);
-
-		std::cout << defaultPrompt;
+		Kyra::Interpreter::execute(line, verbose);
+		std::cout << default_prompt;
 	}
 }
 #endif

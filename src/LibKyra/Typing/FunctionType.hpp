@@ -17,7 +17,6 @@ public:
 	bool operator==(const Type::Ptr& other) const override;
 	bool is_function() const override;
 	bool can_be_called_with(const std::vector<Type::Repr>& params) const override;
-	bool has_return_type(const Repr& repr) const override;
 
 private:
 	Type::Repr m_return_type;

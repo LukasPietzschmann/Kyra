@@ -36,8 +36,9 @@ public:
 	Runtime& operator=(Runtime const&) = delete;
 	Runtime& operator=(Runtime&&) = delete;
 
-	void execute_statement(Statement::Ptr statement, RuntimeContext::Ptr context_to_execute_on = nullptr);
-	Value::Ptr execute_expression(Expression::Ptr expression, RuntimeContext::Ptr context_to_execute_on = nullptr);
+	void execute_statement(const Statement::Ptr& statement, const RuntimeContext::Ptr& context_to_execute_on = nullptr);
+	Value::Ptr execute_expression(const Expression::Ptr& expression,
+			const RuntimeContext::Ptr& context_to_execute_on = nullptr);
 
 	void visit_access_expr(AccessExpr& access_expr) override;
 	void visit_assignment_expr(AssignmentExpr& assignment_expr) override;

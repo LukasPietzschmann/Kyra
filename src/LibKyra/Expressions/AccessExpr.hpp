@@ -7,7 +7,7 @@ namespace Kyra {
 struct Position;
 class AccessExpr : public Expression {
 public:
-	AccessExpr(const Position& position, const Expression::Ptr& owner, Token name);
+	AccessExpr(const Position& position, Expression::Ptr owner, Token name);
 	~AccessExpr() override = default;
 
 	void accept(ExpressionVisitor& visitor) override;

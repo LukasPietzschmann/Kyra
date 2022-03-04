@@ -4,8 +4,8 @@
 
 namespace Kyra {
 bool RuntimeContext::mutate_var(const std::string& name, Value::Ptr value) {
-	if(m_variables.contains(name)) {
-		m_variables.at(name).value = std::move(value);
+	if(const auto& it = m_variables.find(name); it != m_variables.end()) {
+		it->second.value = std::move(value);
 		return true;
 	} else if(m_parent)
 		return m_parent->mutate_var(name, value);

@@ -1,6 +1,7 @@
 #include "TypeChecker.hpp"
 
 #include <string>
+#include <utility>
 
 #include "../Expressions/AccessExpr.hpp"
 #include "../Expressions/AssignmentExpr.hpp"
@@ -20,7 +21,6 @@
 #include "../Statements/PrintStmt.hpp"
 #include "../Statements/ReturnStmt.hpp"
 #include "../Statements/WhileStmt.hpp"
-#include "../Variable.hpp"
 #include "ClassType.hpp"
 #include "FunctionType.hpp"
 
@@ -48,17 +48,17 @@ template <class Callback>
 TypeContext::Ptr TypeChecker::run_in_new_context(const Callback& function,
 		TypeContext::Ptr parent,
 		const TypeContext::Ptr& values_to_copy) {
-	TypeContext::Ptr context_copy = TypeContext::make_ptr<TypeContext>(*m_current_context);
-	m_current_context = TypeContext::make_ptr<TypeContext>(parent);
+	TypeContext::Ptr context_copy = std::move(m_current_context);
+	m_current_context = TypeContext::make_ptr<TypeContext>(std::move(parent));
 	if(values_to_copy != nullptr) {
-		for(const auto& [name, variable] : values_to_copy->get_variables())
-			m_current_context->declare_var(name, variable);
-		for(const auto& [type_name, type] : values_to_copy->get_types())
-			m_current_context->declare_type(type_name, type);
+		for(auto [name, variable] : values_to_copy->get_variables())
+			m_current_context->declare_var(name, std::move(variable));
+		for(auto [type_name, type] : values_to_copy->get_types())
+			m_current_context->declare_type(type_name, std::move(type));
 	}
 	function();
-	TypeContext::Ptr modified_context = m_current_context;
-	m_current_context = context_copy;
+	TypeContext::Ptr modified_context = std::move(m_current_context);
+	m_current_context = std::move(context_copy);
 	return modified_context;
 }
 

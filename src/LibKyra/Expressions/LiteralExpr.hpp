@@ -7,7 +7,7 @@ namespace Kyra {
 struct Position;
 class LiteralExpr : public Expression {
 public:
-	LiteralExpr(const Position& position, const Value::Ptr& value);
+	LiteralExpr(const Position& position, Value::Ptr value);
 	~LiteralExpr() override = default;
 
 	void accept(ExpressionVisitor& visitor) override;

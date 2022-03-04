@@ -4,9 +4,9 @@
 #include <iostream>
 #include <memory>
 #include <string>
+#include <utility>
 #include <vector>
 
-#include "../Exceptions.hpp"
 #include "../Expressions/AccessExpr.hpp"
 #include "../Expressions/AssignmentExpr.hpp"
 #include "../Expressions/BinaryExpr.hpp"
@@ -23,14 +23,11 @@
 #include "../Statements/PrintStmt.hpp"
 #include "../Statements/ReturnStmt.hpp"
 #include "../Statements/WhileStmt.hpp"
-#include "../Token.hpp"
-#include "../TokenType.hpp"
 #include "../Values/Bool.hpp"
 #include "../Values/Function.hpp"
 #include "../Values/Klass.hpp"
 #include "../Values/Nothing.hpp"
 #include "../Values/Number.hpp"
-#include "../Values/Value.hpp"
 
 namespace Kyra {
 class FunctionExpr;
@@ -40,7 +37,7 @@ Runtime& Runtime::the() {
 	return instance;
 }
 
-void Runtime::execute_statement(Statement::Ptr statement, RuntimeContext::Ptr context_to_execute_on) {
+void Runtime::execute_statement(const Statement::Ptr& statement, const RuntimeContext::Ptr& context_to_execute_on) {
 	if(context_to_execute_on == nullptr) {
 		statement->accept(*this);
 		return;
@@ -52,7 +49,8 @@ void Runtime::execute_statement(Statement::Ptr statement, RuntimeContext::Ptr co
 	m_current_context = context_copy;
 }
 
-Value::Ptr Runtime::execute_expression(Expression::Ptr expression, RuntimeContext::Ptr context_to_execute_on) {
+Value::Ptr Runtime::execute_expression(const Expression::Ptr& expression,
+		const RuntimeContext::Ptr& context_to_execute_on) {
 	if(context_to_execute_on == nullptr) {
 		EXPR_ACCEPT(expression, *this, Value::Ptr result);
 		return result;
@@ -133,7 +131,7 @@ void Runtime::visit_instantiation_expr(InstantiationExpr& instantiation_expr) {
 	const auto& type_or_error = m_current_context->get_type(instantiation_expr.get_name());
 	if(!type_or_error.has_value())
 		assert(false);
-	Value::Ptr klass = type_or_error.value();
+	Value::Ptr klass = Value::make_ptr<Klass>(*Value::as<Klass>(*type_or_error));
 	std::vector<Value::Ptr> args;
 	for(const auto& arg : instantiation_expr.get_arguments()) {
 		EXPR_ACCEPT(arg, *this, Value::Ptr value);
@@ -195,7 +193,7 @@ void Runtime::visit_expression_stmt(ExpressionStmt& expression_stmt) { expressio
 
 void Runtime::visit_print_stmt(PrintStmt& print_stmt) {
 	EXPR_ACCEPT(print_stmt.get_expr(), *this, Value::Ptr value);
-	std::cout << value->to_string() << std::endl;
+	std::cout << value->to_string() << "\n";
 }
 
 void Runtime::visit_return_stmt(ReturnStmt& return_stmt) {
@@ -213,10 +211,11 @@ void Runtime::visit_while_stmt(WhileStmt& while_stmt) {
 
 template <typename Callback>
 RuntimeContext::Ptr Runtime::run_in_new_context(const Callback& callback, RuntimeContext::Ptr parent) {
-	RuntimeContext::Ptr context_copy = RuntimeContext::make_ptr<RuntimeContext>(*m_current_context);
-	m_current_context = RuntimeContext::make_ptr<RuntimeContext>(parent);
+	RuntimeContext::Ptr context_copy = std::move(m_current_context);
+	m_current_context = RuntimeContext::make_ptr<RuntimeContext>(std::move(parent));
 	callback();
-	RuntimeContext::Ptr modified_context = m_current_context;
+	RuntimeContext::Ptr modified_context = std::move(m_current_context);
+	m_current_context = std::move(context_copy);
 	return modified_context;
 }
 }

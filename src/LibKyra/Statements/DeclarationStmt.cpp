@@ -6,11 +6,12 @@ namespace Kyra {
 struct Position;
 DeclarationStmt::DeclarationStmt(const Position& position,
 		Token identifier,
-		const Expression::Ptr& initializer,
-		const Expression::Ptr& type,
+		Expression::Ptr initializer,
+		Expression::Ptr type,
 		bool is_mutable) :
 	Statement(position),
-	m_identifier(std::move(identifier)), m_initializer(initializer), m_type(type), m_is_mutable(is_mutable) {}
+	m_identifier(std::move(identifier)), m_initializer(std::move(initializer)), m_type(std::move(type)),
+	m_is_mutable(is_mutable) {}
 
 void DeclarationStmt::accept(StatementVisitor& visitor) { visitor.visit_declaration_stmt(*this); }
 

@@ -2,7 +2,7 @@
 
 namespace Kyra {
 struct Position;
-GroupExpr::GroupExpr(const Position& position, const HasPtrAlias::Ptr& expr) : Expression(position), m_expr(expr) {}
+GroupExpr::GroupExpr(const Position& position, Expression::Ptr expr) : Expression(position), m_expr(std::move(expr)) {}
 
 Expression::Ptr GroupExpr::get_expr() const { return m_expr; }
 

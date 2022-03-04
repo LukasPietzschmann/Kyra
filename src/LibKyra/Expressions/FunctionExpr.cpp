@@ -9,10 +9,10 @@ FunctionExpr::Parameter::Parameter(Token name, std::string type) :
 
 FunctionExpr::FunctionExpr(const Position& position,
 		std::vector<Parameter> parameters,
-		const Expression::Ptr& return_type,
-		const Statement::Ptr& impl) :
+		Expression::Ptr return_type,
+		Statement::Ptr impl) :
 	Expression(position),
-	m_parameters(std::move(parameters)), m_return_type(return_type), m_implementation(impl) {}
+	m_parameters(std::move(parameters)), m_return_type(std::move(return_type)), m_implementation(std::move(impl)) {}
 
 void FunctionExpr::accept(ExpressionVisitor& visitor) { return visitor.visit_function(*this); }
 

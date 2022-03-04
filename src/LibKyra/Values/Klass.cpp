@@ -8,6 +8,7 @@
 #include "Nothing.hpp"
 
 namespace Kyra {
+// TODO: instantiate should return a new instance instead of being called on a new instance
 void Klass::instantiate(const std::vector<Value::Ptr>& constructor_arguments) {
 	assert(constructor_arguments.size() == m_declaration_stmt.get_constructor_parameters().size());
 	m_instance_context = RuntimeContext::make_ptr<RuntimeContext>();

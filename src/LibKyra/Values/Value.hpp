@@ -18,7 +18,6 @@ public:
 		static const std::string Bool;
 		static const std::string String;
 		static const std::string Function;
-		static const std::vector<std::string> All;
 	};
 
 	virtual bool is_implicitly_true() const = 0;

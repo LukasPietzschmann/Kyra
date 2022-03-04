@@ -11,11 +11,9 @@ std::optional<Variable<Type::Repr>> Type::knows_about(const std::string&) const 
 
 bool Type::can_be_called_with(const std::vector<Type::Repr>&) const { return false; }
 
-bool Type::has_return_type(const Type::Repr&) const { return false; }
-
 bool Type::is_applicable_for_declaration() const { return true; }
 
-bool Type::can_be_assigned_to(Type::Ptr assignee) const { return *this == assignee; }
+bool Type::can_be_assigned_to(const Type::Ptr& assignee) const { return *this == assignee; }
 
 bool Type::is_function() const { return false; }
 

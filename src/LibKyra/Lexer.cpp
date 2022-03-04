@@ -160,13 +160,13 @@ void Lexer::add_token(TokenType type, const std::string& literal) {
 	m_tokens.emplace_back(type, Position(m_start_line, start_column, m_current_line, current_column), lexeme, literal);
 }
 
-bool Lexer::is_digit(char character) const { return character >= '0' && character <= '9'; }
+bool Lexer::is_digit(char character) { return character >= '0' && character <= '9'; }
 
-bool Lexer::is_alpha(char character) const {
+bool Lexer::is_alpha(char character) {
 	return (character >= 'a' && character <= 'z') || (character >= 'A' && character <= 'Z');
 }
 
-bool Lexer::is_whitespace(char character) const { return isspace(character); }
+bool Lexer::is_whitespace(char character) { return isspace(character); }
 
 bool Lexer::is_at_end() const { return (unsigned long)m_current_character >= m_source.size(); }
 }

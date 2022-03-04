@@ -19,8 +19,8 @@ public:
 
 	FunctionExpr(const Position& position,
 			std::vector<Parameter> parameters,
-			const Expression::Ptr& return_type,
-			const Statement::Ptr& impl);
+			Expression::Ptr return_type,
+			Statement::Ptr impl);
 	~FunctionExpr() override = default;
 
 	void accept(ExpressionVisitor& visitor) override;

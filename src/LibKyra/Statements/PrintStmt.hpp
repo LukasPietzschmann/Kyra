@@ -7,7 +7,7 @@ namespace Kyra {
 struct Position;
 class PrintStmt : public Statement {
 public:
-	PrintStmt(const Position& position, const Expression::Ptr& expr);
+	PrintStmt(const Position& position, Expression::Ptr expr);
 	~PrintStmt() override = default;
 
 	void accept(StatementVisitor& visitor) override;

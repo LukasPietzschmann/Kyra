@@ -4,8 +4,8 @@
 
 namespace Kyra {
 struct Position;
-AccessExpr::AccessExpr(const Position& position, const HasPtrAlias::Ptr& owner, Token name) :
-	Expression(position), m_owner(owner), m_name(std::move(name)) {}
+AccessExpr::AccessExpr(const Position& position, Expression::Ptr owner, Token name) :
+	Expression(position), m_owner(std::move(owner)), m_name(std::move(name)) {}
 
 void AccessExpr::accept(ExpressionVisitor& visitor) { return visitor.visit_access_expr(*this); }
 

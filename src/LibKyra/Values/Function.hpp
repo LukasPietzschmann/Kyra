@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "../Expressions/FunctionExpr.hpp"
@@ -11,7 +12,7 @@ namespace Kyra {
 class Function : public Value {
 public:
 	Function(const FunctionExpr& function_expr, RuntimeContext::Ptr definition_context) :
-		m_function_expr(function_expr), m_definition_context(definition_context) {}
+		m_function_expr(function_expr), m_definition_context(std::move(definition_context)) {}
 	~Function() override = default;
 
 	unsigned long get_arity() const { return m_function_expr.get_parameters().size(); }

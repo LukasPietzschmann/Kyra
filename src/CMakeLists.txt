@@ -3,7 +3,9 @@ add_subdirectory(LibKyra)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR}/cmake)
 
 find_package(Readline)
-include_directories(${Readline_INCLUDE_DIR})
+if(READLINE_FOUND)
+	include_directories(${Readline_INCLUDE_DIR})
+endif()
 
 include(FetchContent)
 FetchContent_Declare(

@@ -47,9 +47,9 @@ private:
 	bool match_multiple(const std::string& expected) const;
 	bool match_multiple_and_advance(const std::string& expected);
 	void add_token(TokenType type, const std::string& literal = "");
-	bool is_digit(char character) const;
-	bool is_alpha(char character) const;
-	bool is_whitespace(char character) const;
+	static bool is_digit(char character);
+	static bool is_alpha(char character);
+	static bool is_whitespace(char character);
 	bool is_at_end() const;
 };
 }

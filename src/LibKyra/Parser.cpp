@@ -49,9 +49,9 @@ Statement::Ptr Parser::declaration() {
 
 Statement::Ptr Parser::var_declaration() {
 	const Token& val_var_kw = consume({TokenType::VAL, TokenType::VAR});
-	bool is_mutable = previous().get_type() == TokenType::VAR;
+	const bool is_mutable = previous().get_type() == TokenType::VAR;
 
-	Token identifier = consume(TokenType::NAME);
+	const Token& identifier = consume(TokenType::NAME);
 
 	Expression::Ptr expected_type{};
 	if(match_and_advance(TokenType::COLON))
@@ -66,23 +66,27 @@ Statement::Ptr Parser::var_declaration() {
 		throw ParserException(Position(val_var_kw.get_position(), semicolon.get_position()),
 				"Immutable Variable " + identifier.get_value().as_string() + " needs to be initialized");
 
-	Position position(val_var_kw.get_position(), semicolon.get_position());
-	return Statement::make_ptr<DeclarationStmt>(position, identifier, init, expected_type, is_mutable);
+	const Position position(val_var_kw.get_position(), semicolon.get_position());
+	return Statement::make_ptr<DeclarationStmt>(position,
+			identifier,
+			std::move(init),
+			std::move(expected_type),
+			is_mutable);
 }
 
 Statement::Ptr Parser::class_declaration() {
 	const Token& class_kw = consume(TokenType::CLASS);
-	Token name = consume(TokenType::NAME);
+	const Token& name = consume(TokenType::NAME);
 
 	std::vector<ClassDeclarationStmt::ConstructorParameter> constructor_parameter;
 	consume(TokenType::LEFT_PAREN);
 	if(!match(TokenType::RIGHT_PAREN)) {
 		do {
 			match_and_advance({TokenType::VAR, TokenType::VAL});
-			bool is_mutable = previous().get_type() == TokenType::VAR;
-			Token param_name = consume(TokenType::NAME);
+			const bool is_mutable = previous().get_type() == TokenType::VAR;
+			const Token& param_name = consume(TokenType::NAME);
 			consume(TokenType::COLON);
-			std::string type = consume(TokenType::NAME).get_value().as_string();
+			const std::string& type = consume(TokenType::NAME).get_value().as_string();
 			constructor_parameter.emplace_back(param_name, is_mutable, type);
 		} while(match_and_advance(TokenType::COMMA));
 	}
@@ -94,7 +98,7 @@ Statement::Ptr Parser::class_declaration() {
 		declarations.push_back(std::dynamic_pointer_cast<DeclarationStmt>(var_declaration()));
 
 	const Token& closing_curly = consume(TokenType::RIGHT_CURLY);
-	Position position(class_kw.get_position(), closing_curly.get_position());
+	const Position position(class_kw.get_position(), closing_curly.get_position());
 	return Statement::make_ptr<ClassDeclarationStmt>(position, name, constructor_parameter, declarations);
 }
 
@@ -118,7 +122,6 @@ Statement::Ptr Parser::block() {
 		statements.push_back(declaration());
 
 	const Token& right_curly = consume(TokenType::RIGHT_CURLY);
-
 	return Statement::make_ptr<BlockStmt>(Position(left_curly.get_position(), right_curly.get_position()), statements);
 }
 
@@ -126,29 +129,30 @@ Statement::Ptr Parser::print() {
 	const Token& print_kw = consume(TokenType::PRINT);
 	Expression::Ptr expr = assignment();
 	const Token& semicolon = consume(TokenType::SEMICOLON);
-
-	return Statement::make_ptr<PrintStmt>(Position(print_kw.get_position(), semicolon.get_position()), expr);
+	return Statement::make_ptr<PrintStmt>(Position(print_kw.get_position(), semicolon.get_position()), std::move(expr));
 }
 
 Statement::Ptr Parser::ret() {
 	const Token& return_kw = consume(TokenType::RETURN);
 	Expression::Ptr expr = assignment();
 	const Token& semicolon = consume(TokenType::SEMICOLON);
-
-	return Statement::make_ptr<ReturnStmt>(Position(return_kw.get_position(), semicolon.get_position()), expr);
+	return Statement::make_ptr<ReturnStmt>(Position(return_kw.get_position(), semicolon.get_position()),
+			std::move(expr));
 }
 
 Statement::Ptr Parser::while_loop() {
 	const Token& while_kw = consume(TokenType::WHILE);
-	const auto& condition = group();
-	const auto stmt = statement();
-	return Statement::make_ptr<WhileStmt>(Position(while_kw.get_position(), stmt->get_position()), condition, stmt);
+	Expression::Ptr condition = group();
+	Statement::Ptr stmt = statement();
+	const Position& stmt_pos = stmt->get_position();
+	return Statement::make_ptr<WhileStmt>(Position(while_kw.get_position(), stmt_pos),
+			std::move(condition),
+			std::move(stmt));
 }
 
 Statement::Ptr Parser::expression() {
 	Expression::Ptr expr = assignment();
 	const Token& semicolon = consume(TokenType::SEMICOLON);
-
 	return Statement::make_ptr<ExpressionStmt>(Position(expr->get_position(), semicolon.get_position()), expr);
 }
 
@@ -158,20 +162,19 @@ Expression::Ptr Parser::assignment() {
 	if(match_and_advance(TokenType::EQUAL)) {
 		auto access_expression = std::dynamic_pointer_cast<AccessExpr>(expr);
 		auto variable_expression = std::dynamic_pointer_cast<VariableExpr>(expr);
-		if(access_expression) {	 // FIXME: May god forgive me for using std::dynamic_pointer_cast
+		if(access_expression) {
 			Expression::Ptr new_value = assignment();
-			Position position(expr->get_position(), new_value->get_position());
+			const Position position(expr->get_position(), new_value->get_position());
 			expr = Expression::make_ptr<AssignmentExpr>(position,
 					access_expression->get_owner(),
 					access_expression->get_name(),
 					new_value);
 		} else if(variable_expression) {
 			Expression::Ptr new_value = assignment();
-			Position position(expr->get_position(), new_value->get_position());
+			const Position position(expr->get_position(), new_value->get_position());
 			expr = Expression::make_ptr<AssignmentExpr>(position, nullptr, variable_expression->get_name(), new_value);
 		}
 	}
-
 	return expr;
 }
 
@@ -181,11 +184,12 @@ Expression::Ptr Parser::equality() {
 	while(true) {
 		if(!match_and_advance({TokenType::BANG_EQUAL, TokenType::EQUAL_EQUAL}))
 			break;
-		Token oper = previous();
+		const Token& oper = previous();
 		Expression::Ptr rhs = comparison();
-		expr = Expression::make_ptr<BinaryExpr>(Position(expr->get_position(), rhs->get_position()), expr, oper, rhs);
+		const Position& expr_pos = expr->get_position();
+		const Position& rhs_pos = rhs->get_position();
+		expr = Expression::make_ptr<BinaryExpr>(Position(expr_pos, rhs_pos), std::move(expr), oper, std::move(rhs));
 	}
-
 	return expr;
 }
 
@@ -195,11 +199,12 @@ Expression::Ptr Parser::comparison() {
 	while(true) {
 		if(!(match_and_advance({TokenType::GREATER, TokenType::GREATER_EQUAL, TokenType::LESS, TokenType::LESS_EQUAL})))
 			break;
-		Token oper = previous();
+		const Token& oper = previous();
 		Expression::Ptr rhs = term();
-		expr = Expression::make_ptr<BinaryExpr>(Position(expr->get_position(), rhs->get_position()), expr, oper, rhs);
+		const Position& expr_pos = expr->get_position();
+		const Position& rhs_pos = rhs->get_position();
+		expr = Expression::make_ptr<BinaryExpr>(Position(expr_pos, rhs_pos), std::move(expr), oper, std::move(rhs));
 	}
-
 	return expr;
 }
 
@@ -209,11 +214,12 @@ Expression::Ptr Parser::term() {
 	while(true) {
 		if(!(match_and_advance({TokenType::MINUS, TokenType::PLUS})))
 			break;
-		Token oper = previous();
+		const Token& oper = previous();
 		Expression::Ptr rhs = factor();
-		expr = Expression::make_ptr<BinaryExpr>(Position(expr->get_position(), rhs->get_position()), expr, oper, rhs);
+		const Position& expr_pos = expr->get_position();
+		const Position& rhs_pos = rhs->get_position();
+		expr = Expression::make_ptr<BinaryExpr>(Position(expr_pos, rhs_pos), std::move(expr), oper, std::move(rhs));
 	}
-
 	return expr;
 }
 
@@ -223,11 +229,12 @@ Expression::Ptr Parser::factor() {
 	while(true) {
 		if(!(match_and_advance({TokenType::SLASH, TokenType::STAR})))
 			break;
-		Token oper = previous();
+		const Token& oper = previous();
 		Expression::Ptr rhs = unary();
-		expr = Expression::make_ptr<BinaryExpr>(Position(expr->get_position(), rhs->get_position()), expr, oper, rhs);
+		const Position& expr_pos = expr->get_position();
+		const Position& rhs_pos = rhs->get_position();
+		expr = Expression::make_ptr<BinaryExpr>(Position(expr_pos, rhs_pos), std::move(expr), oper, std::move(rhs));
 	}
-
 	return expr;
 }
 
@@ -235,9 +242,10 @@ Expression::Ptr Parser::unary() {
 	if(!(match_and_advance({TokenType::BANG, TokenType::MINUS})))
 		return call();
 
-	Token oper = previous();
+	const Token& oper = previous();
 	Expression::Ptr rhs = unary();
-	return Expression::make_ptr<UnaryExpr>(Position(oper.get_position(), rhs->get_position()), oper, rhs);
+	const Position& rhs_pos = rhs->get_position();
+	return Expression::make_ptr<UnaryExpr>(Position(oper.get_position(), rhs_pos), oper, std::move(rhs));
 }
 
 Expression::Ptr Parser::call() {
@@ -245,8 +253,9 @@ Expression::Ptr Parser::call() {
 
 	while(true) {
 		if(match_and_advance(TokenType::DOT)) {
-			Token name = consume(TokenType::NAME);
-			expr = Expression::make_ptr<AccessExpr>(Position(expr->get_position(), name.get_position()), expr, name);
+			const Token& name = consume(TokenType::NAME);
+			const Position& expr_pos = expr->get_position();
+			expr = Expression::make_ptr<AccessExpr>(Position(expr_pos, name.get_position()), std::move(expr), name);
 			continue;
 		}
 		if(match_and_advance(TokenType::LEFT_PAREN)) {
@@ -257,14 +266,14 @@ Expression::Ptr Parser::call() {
 				} while(match_and_advance(TokenType::COMMA));
 			}
 			const Token& right_paren = consume(TokenType::RIGHT_PAREN);
-			expr = Expression::make_ptr<CallExpr>(Position(expr->get_position(), right_paren.get_position()),
-					expr,
+			const Position& expr_pos = expr->get_position();
+			expr = Expression::make_ptr<CallExpr>(Position(expr_pos, right_paren.get_position()),
+					std::move(expr),
 					arguments);
 			continue;
 		}
 		break;
 	}
-
 	return expr;
 }
 
@@ -272,27 +281,27 @@ Expression::Ptr Parser::primary() {
 	if(match(TokenType::LEFT_PAREN))
 		return group();
 	if(match(TokenType::NOTHING)) {
-		Position position = consume(TokenType::NOTHING).get_position();
+		const Position& position = consume(TokenType::NOTHING).get_position();
 		return Expression::make_ptr<LiteralExpr>(position, Value::make_ptr<Nothing>());
 	}
 	if(match(TokenType::NUMBER)) {
-		Position position = consume(TokenType::NUMBER).get_position();
+		const Position& position = consume(TokenType::NUMBER).get_position();
 		return Expression::make_ptr<LiteralExpr>(position, Value::make_ptr<Number>(previous().get_value().as_int()));
 	}
 	if(match(TokenType::STRING)) {
-		Position position = consume(TokenType::STRING).get_position();
+		const Position& position = consume(TokenType::STRING).get_position();
 		return Expression::make_ptr<LiteralExpr>(position, Value::make_ptr<String>(previous().get_value().as_string()));
 	}
 	if(match(TokenType::TRUE)) {
-		Position position = consume(TokenType::TRUE).get_position();
+		const Position& position = consume(TokenType::TRUE).get_position();
 		return Expression::make_ptr<LiteralExpr>(position, Value::make_ptr<Bool>(true));
 	}
 	if(match(TokenType::FALSE)) {
-		Position position = consume(TokenType::FALSE).get_position();
+		const Position& position = consume(TokenType::FALSE).get_position();
 		return Expression::make_ptr<LiteralExpr>(position, Value::make_ptr<Bool>(false));
 	}
 	if(match(TokenType::NAME)) {
-		Position position = consume(TokenType::NAME).get_position();
+		const Position& position = consume(TokenType::NAME).get_position();
 		return Expression::make_ptr<VariableExpr>(position, previous());
 	}
 	if(match(TokenType::FUN))
@@ -313,9 +322,9 @@ Expression::Ptr Parser::function() {
 	consume(TokenType::LEFT_PAREN);
 	if(!match(TokenType::RIGHT_PAREN)) {
 		do {
-			Token name = consume(TokenType::NAME);
+			const Token& name = consume(TokenType::NAME);
 			consume(TokenType::COLON);
-			std::string type = consume(TokenType::NAME).get_value().as_string();
+			const std::string& type = consume(TokenType::NAME).get_value().as_string();
 			parameters.emplace_back(name, type);
 		} while(match_and_advance(TokenType::COMMA));
 	}
@@ -325,13 +334,13 @@ Expression::Ptr Parser::function() {
 	Expression::Ptr return_type = type_indicator();
 	Statement::Ptr implementation = block();
 
-	Position position(fun_kw.get_position(), implementation->get_position());
-	return Expression::make_ptr<FunctionExpr>(position, parameters, return_type, implementation);
+	const Position position(fun_kw.get_position(), implementation->get_position());
+	return Expression::make_ptr<FunctionExpr>(position, parameters, std::move(return_type), std::move(implementation));
 }
 
 Expression::Ptr Parser::instantiation() {
 	const Token& instantiate_kw = consume(TokenType::INSTANTIATE);
-	std::string name = consume(TokenType::NAME).get_value().as_string();
+	const std::string& name = consume(TokenType::NAME).get_value().as_string();
 
 	std::vector<Expression::Ptr> parameters;
 	consume(TokenType::LEFT_PAREN);
@@ -342,7 +351,7 @@ Expression::Ptr Parser::instantiation() {
 	}
 	const Token& right_paren = consume(TokenType::RIGHT_PAREN);
 
-	Position position(instantiate_kw.get_position(), right_paren.get_position());
+	const Position position(instantiate_kw.get_position(), right_paren.get_position());
 	return Expression::make_ptr<InstantiationExpr>(position, name, parameters);
 }
 
@@ -350,11 +359,12 @@ Expression::Ptr Parser::group() {
 	const Token& left_paren = consume(TokenType::LEFT_PAREN);
 	Expression::Ptr expr = assignment();
 	const Token& right_paren = consume(TokenType::RIGHT_PAREN);
-	return Expression::make_ptr<GroupExpr>(Position(left_paren.get_position(), right_paren.get_position()), expr);
+	return Expression::make_ptr<GroupExpr>(Position(left_paren.get_position(), right_paren.get_position()),
+			std::move(expr));
 }
 
 Expression::Ptr Parser::type_indicator() {
-	Token type_name = consume(TokenType::NAME);
+	const Token& type_name = consume(TokenType::NAME);
 	if(type_name.get_value().as_string() == Value::NativeTypes::Function) {
 		consume(TokenType::LEFT_PAREN);
 		std::vector<Expression::Ptr> param_types;
@@ -367,8 +377,8 @@ Expression::Ptr Parser::type_indicator() {
 		consume(TokenType::ARROW);
 		Expression::Ptr return_type = type_indicator();
 
-		Position position(type_name.get_position(), return_type->get_position());
-		return Expression::make_ptr<TypeExpr>(position, param_types, return_type);
+		const Position position(type_name.get_position(), return_type->get_position());
+		return Expression::make_ptr<TypeExpr>(position, param_types, std::move(return_type));
 	}
 	return Expression::make_ptr<TypeExpr>(type_name.get_position(), type_name.get_value().as_string());
 }
@@ -385,7 +395,7 @@ Token Parser::consume(std::initializer_list<TokenType> expected) {
 		name += TokenTypeName::get_for(e) + " ";
 	}
 
-	bool unfinished = peek().get_type() == TokenType::END_OF_FILE;
+	const bool unfinished = peek().get_type() == TokenType::END_OF_FILE;
 	throw ParserException(peek().get_position(),
 			"Expected " + name + "but got " + TokenTypeName::get_for(peek().get_type()),
 			unfinished);
@@ -403,7 +413,7 @@ bool Parser::match(std::initializer_list<TokenType> expected) const {
 }
 
 bool Parser::match_and_advance(std::initializer_list<TokenType> expected) {
-	bool res = match(expected);
+	const bool res = match(expected);
 	if(res)
 		advance();
 	return res;

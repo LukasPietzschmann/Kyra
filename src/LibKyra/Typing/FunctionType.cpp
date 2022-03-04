@@ -53,5 +53,4 @@ bool FunctionType::can_be_called_with(const std::vector<Type::Repr>& params) con
 	return std::equal(params.begin(), params.end(), m_parameters.begin());
 }
 
-bool FunctionType::has_return_type(const Type::Repr& repr) const { return m_return_type == repr; }
 }

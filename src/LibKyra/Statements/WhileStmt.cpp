@@ -1,9 +1,11 @@
 #include "WhileStmt.hpp"
 
+#include <utility>
+
 namespace Kyra {
 struct Position;
 WhileStmt::WhileStmt(const Position& position, Expression::Ptr condition, Statement::Ptr stmt) :
-	Statement(position), m_condition(condition), m_stmt(stmt) {}
+	Statement(position), m_condition(std::move(condition)), m_stmt(std::move(stmt)) {}
 
 void WhileStmt::accept(StatementVisitor& visitor) { visitor.visit_while_stmt(*this); }
 

@@ -12,17 +12,17 @@ public:
 	explicit Context(std::shared_ptr<C> parent = nullptr) : m_parent(parent) {}
 	virtual ~Context() = default;
 
-	virtual bool declare_var(const std::string& name, VT value) {
+	virtual bool declare_var(const std::string& name, VT&& value) {
 		if(m_variables.contains(name))
 			return false;
-		m_variables.try_emplace(name, value);
+		m_variables.try_emplace(name, std::forward<VT>(value));
 		return true;
 	}
 
-	virtual bool declare_type(const std::string& name, TT type) {
+	virtual bool declare_type(const std::string& name, TT&& type) {
 		if(m_types.contains(name))
 			return false;
-		m_types.try_emplace(name, type);
+		m_types.try_emplace(name, std::forward<TT>(type));
 		return true;
 	}
 
@@ -50,21 +50,13 @@ public:
 		return true;
 	}
 
-	virtual bool remove_type(const std::string& name) {
-		const auto& it = m_types.find(name);
-		if(it == m_types.end())
-			return false;
-		m_types.erase(it);
-		return true;
-	}
-
-	virtual bool mutate_var(const std::string& name, VT value) {
+	virtual bool mutate_var(const std::string& name, VT&& value) {
 		if(const auto& it = m_variables.find(name); it != m_variables.end()) {
-			it->second = value;
+			it->second = std::forward<VT>(value);
 			return true;
 		}
 		if(m_parent != nullptr) {
-			m_parent->mutate_var(name, value);
+			m_parent->mutate_var(name, std::forward<VT>(value));
 			return true;
 		}
 		return false;

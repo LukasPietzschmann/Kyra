@@ -17,18 +17,6 @@ std::string TypingError::get_cause() const {
 WrongTypeError::WrongTypeError(const Position& position, const std::string& expected, const std::string& provided) :
 	TypingError(position, "Expected type " + expected + " does not equal provided type " + provided) {}
 
-UnsupportedOperator::UnsupportedOperator(const Position& position,
-		const std::string& unary_oper,
-		const std::string& type) :
-	TypingError(position, "Unsupported operator " + unary_oper + " on type " + type) {}
-
-UnsupportedOperator::UnsupportedOperator(const Position& position,
-		const std::string& lhs_type,
-		const std::string& binary_oper,
-		const std::string& rhs_type) :
-	TypingError(position,
-			"Unsupported operator " + binary_oper + " on left type " + lhs_type + " with right type " + rhs_type) {}
-
 UndefinedTypeError::UndefinedTypeError(const Position& position, const std::string& type) :
 	TypingError(position, "Undefined type " + type) {}
 

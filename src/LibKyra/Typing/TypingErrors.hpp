@@ -19,16 +19,6 @@ public:
 	WrongTypeError(const Position& position, const std::string& expected, const std::string& provided);
 };
 
-class UnsupportedOperator : public TypingError {
-public:
-	UnsupportedOperator(const Position& position, const std::string& unary_oper, const std::string& type);
-
-	UnsupportedOperator(const Position& position,
-			const std::string& lhs_type,
-			const std::string& binary_oper,
-			const std::string& rhs_type);
-};
-
 class UndefinedTypeError : public TypingError {
 public:
 	explicit UndefinedTypeError(const Position& position, const std::string& type);

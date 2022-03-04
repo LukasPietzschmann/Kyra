@@ -20,7 +20,7 @@ class FunctionType;
 class TypeReprHelper {
 public:
 	TypeReprHelper() = default;
-	TypeReprHelper(const Type::Repr& repr) : m_repr(repr) {}
+	TypeReprHelper(Type::Repr repr) : m_repr(std::move(repr)) {}
 
 	TypeReprHelper& operator=(const Type::Repr& r) {
 		m_repr = r;
@@ -30,7 +30,7 @@ public:
 	Type::Ptr operator->() const { return TypeProvider::the().decode(m_repr); }
 	Type::Ptr operator*() const { return TypeProvider::the().decode(m_repr); }
 
-	bool operator==(Type::Ptr type) const { return **this == type; }
+	bool operator==(const Type::Ptr& type) const { return **this == type; }
 	bool operator==(const TypeReprHelper& type) const { return **this == *type; }
 
 	const Type::Repr& get_repr() const { return m_repr; }

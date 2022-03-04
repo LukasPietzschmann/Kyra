@@ -7,7 +7,7 @@ namespace Kyra {
 struct Position;
 class BinaryExpr : public Expression {
 public:
-	BinaryExpr(const Position& position, const Expression::Ptr& lhs, Token oper, const Expression::Ptr& rhs);
+	BinaryExpr(const Position& position, Expression::Ptr lhs, Token oper, Expression::Ptr rhs);
 	~BinaryExpr() override = default;
 
 	void accept(ExpressionVisitor& visitor) override;

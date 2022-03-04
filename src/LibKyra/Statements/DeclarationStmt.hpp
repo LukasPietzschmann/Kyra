@@ -10,8 +10,8 @@ class DeclarationStmt : public Statement {
 public:
 	DeclarationStmt(const Position& position,
 			Token identifier,
-			const Expression::Ptr& initializer,
-			const Expression::Ptr& type,
+			Expression::Ptr initializer,
+			Expression::Ptr type,
 			bool is_mutable = true);
 	~DeclarationStmt() override = default;
 

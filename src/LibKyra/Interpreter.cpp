@@ -2,30 +2,27 @@
 
 #include <iostream>
 #include <memory>
-#include <string>
-#include <vector>
 
 #include "AstLogger.hpp"
 #include "Exceptions.hpp"
 #include "Lexer.hpp"
 #include "Parser.hpp"
 #include "Runtime/Runtime.hpp"
-#include "Token.hpp"
 #include "Typing/TypeChecker.hpp"
 
 namespace Kyra {
 void Interpreter::execute(const std::string& code, bool verbose_logging, bool pass_through_exceptions) {
 	try {
-		auto tokens = Lexer(code).scan_tokens();
-		auto statements = Parser(tokens).parse();
+		const std::vector<Token>& tokens = Lexer(code).scan_tokens();
+		const std::vector<Statement::Ptr>& statements = Parser(tokens).parse();
 		if(verbose_logging) {
 			AstLogger logger;
-			for(const auto& statement : statements)
+			for(const Statement::Ptr& statement : statements)
 				logger.log_statement(statement);
 		}
 
-		TypeChecker::Result result = TypeChecker::the().check(statements);
-		for(const auto& error : result.get_errors()) {
+		const TypeChecker::Result& result = TypeChecker::the().check(statements);
+		for(const std::string& error : result.get_errors()) {
 			if(pass_through_exceptions)
 				throw TypingException(error);
 			std::cout << "[Typing Error] " << error << "\n";
@@ -34,7 +31,7 @@ void Interpreter::execute(const std::string& code, bool verbose_logging, bool pa
 		if(result.has_errors())
 			return;
 
-		for(const auto& statement : statements)
+		for(const Statement::Ptr& statement : statements)
 			Runtime::the().execute_statement(statement);
 	} catch(const ParserException& exception) {
 		if(pass_through_exceptions)
