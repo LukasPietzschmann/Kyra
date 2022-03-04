@@ -43,10 +43,15 @@ void Runtime::execute_statement(const Statement::Ptr& statement, const RuntimeCo
 		return;
 	}
 
-	RuntimeContext::Ptr context_copy = RuntimeContext::make_ptr<RuntimeContext>(*m_current_context);
+	RuntimeContext::Ptr context_copy = std::move(m_current_context);
 	m_current_context = context_to_execute_on;
-	statement->accept(*this);
-	m_current_context = context_copy;
+	try {
+		statement->accept(*this);
+	} catch(const ReturnException&) {
+		m_current_context = std::move(context_copy);
+		throw;
+	}
+	m_current_context = std::move(context_copy);
 }
 
 Value::Ptr Runtime::execute_expression(const Expression::Ptr& expression,
@@ -213,7 +218,13 @@ template <typename Callback>
 RuntimeContext::Ptr Runtime::run_in_new_context(const Callback& callback, RuntimeContext::Ptr parent) {
 	RuntimeContext::Ptr context_copy = std::move(m_current_context);
 	m_current_context = RuntimeContext::make_ptr<RuntimeContext>(std::move(parent));
-	callback();
+	try {
+		callback();
+	} catch(const ReturnException&) {
+		RuntimeContext::Ptr modified_context = std::move(m_current_context);
+		m_current_context = std::move(context_copy);
+		throw;
+	}
 	RuntimeContext::Ptr modified_context = std::move(m_current_context);
 	m_current_context = std::move(context_copy);
 	return modified_context;
