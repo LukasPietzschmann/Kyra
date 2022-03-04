@@ -8,7 +8,7 @@
 namespace Kyra {
 Value::Ptr Function::exec(std::vector<Value::Ptr> arguments) const {
 	assert(arguments.size() == get_arity());
-	RuntimeContext::Ptr runtime_context = m_definition_context;	 // TODO: copy definition context
+	RuntimeContext::Ptr runtime_context = RuntimeContext::make_ptr<RuntimeContext>(m_definition_context);
 	for(unsigned long i = 0; i < arguments.size(); ++i) {
 		const auto& name = m_function_expr.get_parameters()[i].name.get_value().as_string();
 		if(!runtime_context->mutate_var(name, arguments[i]) && !runtime_context->declare_var(name, arguments[i]))
