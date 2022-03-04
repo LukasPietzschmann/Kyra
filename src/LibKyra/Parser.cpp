@@ -21,6 +21,7 @@
 #include "Statements/ClassDeclarationStmt.hpp"
 #include "Statements/DeclarationStmt.hpp"
 #include "Statements/ExpressionStmt.hpp"
+#include "Statements/IfStmt.hpp"
 #include "Statements/PrintStmt.hpp"
 #include "Statements/ReturnStmt.hpp"
 #include "Statements/WhileStmt.hpp"
@@ -111,6 +112,8 @@ Statement::Ptr Parser::statement() {
 		return ret();
 	if(match(TokenType::WHILE))
 		return while_loop();
+	if(match(TokenType::IF))
+		return if_stmt();
 	return expression();
 }
 
@@ -148,6 +151,22 @@ Statement::Ptr Parser::while_loop() {
 	return Statement::make_ptr<WhileStmt>(Position(while_kw.get_position(), stmt_pos),
 			std::move(condition),
 			std::move(stmt));
+}
+
+Statement::Ptr Parser::if_stmt() {
+	const Token& if_kw = consume(TokenType::IF);
+	Expression::Ptr condition = group();
+	Statement::Ptr then = statement();
+	Statement::Ptr else_if{};
+	Position end_pos(then->get_position());
+	if(match_and_advance(TokenType::ELSE)) {
+		else_if = statement();
+		end_pos = else_if->get_position();
+	}
+	return Statement::make_ptr<IfStmt>(Position(if_kw.get_position(), end_pos),
+			std::move(condition),
+			std::move(then),
+			std::move(else_if));
 }
 
 Statement::Ptr Parser::expression() {

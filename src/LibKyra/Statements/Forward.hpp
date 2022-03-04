@@ -8,5 +8,6 @@ class ExpressionStmt;
 class PrintStmt;
 class ReturnStmt;
 class WhileStmt;
+class IfStmt;
 class Statement;
 }

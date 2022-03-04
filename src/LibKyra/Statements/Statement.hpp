@@ -30,6 +30,7 @@ private:                                      \
 	virtual void visit_print_stmt(PrintStmt& print_stmt) = 0;
 	virtual void visit_return_stmt(ReturnStmt& return_stmt) = 0;
 	virtual void visit_while_stmt(WhileStmt& while_stmt) = 0;
+	virtual void visit_if_stmt(IfStmt& if_stmt) = 0;
 };
 
 class Statement : public HasPtrAlias<Statement> {

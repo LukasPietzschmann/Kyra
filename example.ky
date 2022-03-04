@@ -13,6 +13,12 @@ val f: Function(Number)->Nothing = fun(a: Number)->Nothing{
 
 var counter = 0;
 while(counter < 10){
+	if(counter < 3)
+		print "wohoo";
+	else if(counter < 7)
+		print "wohee";
+	else
+		print "wohii";
 	print counter;
 	counter = counter + 1;
 }

@@ -93,6 +93,7 @@ public:
 	void visit_print_stmt(PrintStmt& print_stmt) override;
 	void visit_return_stmt(ReturnStmt& return_stmt) override;
 	void visit_while_stmt(WhileStmt& while_stmt) override;
+	void visit_if_stmt(IfStmt& if_stmt) override;
 
 private:
 	TypeChecker() = default;

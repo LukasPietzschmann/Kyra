@@ -18,6 +18,7 @@
 #include "Statements/ClassDeclarationStmt.hpp"
 #include "Statements/DeclarationStmt.hpp"
 #include "Statements/ExpressionStmt.hpp"
+#include "Statements/IfStmt.hpp"
 #include "Statements/PrintStmt.hpp"
 #include "Statements/ReturnStmt.hpp"
 #include "Statements/WhileStmt.hpp"
@@ -95,6 +96,23 @@ void AstLogger::visit_while_stmt(WhileStmt& while_stmt) {
 	++m_indent;
 	while_stmt.get_statement()->accept(*this);
 	--m_indent;
+}
+
+void AstLogger::visit_if_stmt(IfStmt& if_stmt) {
+	COUT << "If" << std::endl;
+	++m_indent;
+	if_stmt.get_condition()->accept(*this);
+	--m_indent;
+	COUT << "Then" << std::endl;
+	++m_indent;
+	if_stmt.get_then()->accept(*this);
+	--m_indent;
+	if(if_stmt.get_else() != nullptr) {
+		COUT << "Else" << std::endl;
+		++m_indent;
+		if_stmt.get_else()->accept(*this);
+		--m_indent;
+	}
 }
 
 void AstLogger::visit_access_expr(AccessExpr& access_expr) {

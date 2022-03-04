@@ -18,6 +18,7 @@
 #include "../Statements/ClassDeclarationStmt.hpp"
 #include "../Statements/DeclarationStmt.hpp"
 #include "../Statements/ExpressionStmt.hpp"
+#include "../Statements/IfStmt.hpp"
 #include "../Statements/PrintStmt.hpp"
 #include "../Statements/ReturnStmt.hpp"
 #include "../Statements/WhileStmt.hpp"
@@ -343,5 +344,12 @@ void TypeChecker::visit_return_stmt(ReturnStmt& return_stmt) {
 void TypeChecker::visit_while_stmt(WhileStmt& while_stmt) {
 	EXPR_ACCEPT(while_stmt.get_condition(), *this, TypeReprHelper condition);
 	while_stmt.get_statement()->accept(*this);
+}
+
+void TypeChecker::visit_if_stmt(IfStmt& if_stmt) {
+	EXPR_ACCEPT(if_stmt.get_condition(), *this, TypeReprHelper condition);
+	if_stmt.get_then()->accept(*this);
+	if(if_stmt.get_else() != nullptr)
+		if_stmt.get_else()->accept(*this);
 }
 }
