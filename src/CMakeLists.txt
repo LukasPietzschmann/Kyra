@@ -25,9 +25,8 @@ if (NORMALIZED_BUILD_TYPE STREQUAL "DEBUG")
 	FetchContent_MakeAvailable(backward-cpp)
 endif (NORMALIZED_BUILD_TYPE STREQUAL "DEBUG")
 
-add_executable(Kyra main.cpp ${PROJECT_SOURCE_DIR}/include/config.h ${BACKWARD_ENABLE})
+add_executable(Kyra main.cpp ${PROJECT_SOURCE_DIR}/src/version.h ${BACKWARD_ENABLE})
 
-target_include_directories(Kyra PRIVATE ${PROJECT_SOURCE_DIR}/include)
 target_link_libraries(Kyra LibKyra cxxopts)
 
 option(IWYU "Adds Include-What-You-Use to the Toolchain" OFF)

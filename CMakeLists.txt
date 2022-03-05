@@ -15,7 +15,7 @@ if (${FORCE_COLORED_OUTPUT})
 	endif ()
 endif ()
 
-configure_file("${PROJECT_SOURCE_DIR}/include/config.h.in" "${PROJECT_SOURCE_DIR}/include/config.h")
+configure_file("${PROJECT_SOURCE_DIR}/src/version.h.in" "${PROJECT_SOURCE_DIR}/src/version.h")
 
 if (MSVC)
 	add_compile_options(/W4)
