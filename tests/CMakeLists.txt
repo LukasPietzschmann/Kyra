@@ -8,6 +8,7 @@ set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(googletest)
 
 add_executable(Tests LexerTests.cpp InterpreterTest.cpp)
+target_include_directories(Tests PRIVATE ../src/LibKyra/include)
 target_link_libraries(Tests gtest_main gmock_main LibKyra)
 
 include(googletest)

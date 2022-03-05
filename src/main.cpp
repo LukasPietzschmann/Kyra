@@ -1,3 +1,4 @@
+#include <Interpreter.hpp>
 #include <cstring>
 #include <cxxopts.hpp>
 #include <fstream>
@@ -5,7 +6,6 @@
 #include <memory>
 #include <string>
 
-#include "LibKyra/Interpreter.hpp"
 #include "version.h"
 
 #ifdef HAS_READLINE

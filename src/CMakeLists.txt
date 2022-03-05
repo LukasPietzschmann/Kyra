@@ -3,9 +3,9 @@ add_subdirectory(LibKyra)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR}/cmake)
 
 find_package(Readline)
-if(READLINE_FOUND)
+if (READLINE_FOUND)
 	include_directories(${Readline_INCLUDE_DIR})
-endif()
+endif ()
 
 include(FetchContent)
 FetchContent_Declare(
@@ -26,6 +26,7 @@ if (NORMALIZED_BUILD_TYPE STREQUAL "DEBUG")
 endif (NORMALIZED_BUILD_TYPE STREQUAL "DEBUG")
 
 add_executable(Kyra main.cpp ${PROJECT_SOURCE_DIR}/src/version.h ${BACKWARD_ENABLE})
+target_include_directories(Kyra PRIVATE LibKyra/include)
 
 target_link_libraries(Kyra LibKyra cxxopts)
 

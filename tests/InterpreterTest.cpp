@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 
-#include "../src/LibKyra/Interpreter.hpp"
+#include <Interpreter.hpp>
 
 using ::testing::internal::CaptureStdout;
 using ::testing::internal::GetCapturedStdout;
