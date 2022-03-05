@@ -11,7 +11,7 @@ include(FetchContent)
 FetchContent_Declare(
 		cxxopts
 		GIT_REPOSITORY https://github.com/jarro2783/cxxopts.git
-		GIT_TAG 302302b30839505703d37fb82f536c53cf9172fa # v2.2.1
+		GIT_TAG c74846a891b3cc3bfa992d588b1295f528d43039 # v3.0.0
 )
 FetchContent_MakeAvailable(cxxopts)
 
@@ -27,7 +27,6 @@ endif (NORMALIZED_BUILD_TYPE STREQUAL "DEBUG")
 
 add_executable(Kyra main.cpp ${PROJECT_SOURCE_DIR}/src/version.h ${BACKWARD_ENABLE})
 target_include_directories(Kyra PRIVATE LibKyra/include)
-
 target_link_libraries(Kyra LibKyra cxxopts)
 
 option(IWYU "Adds Include-What-You-Use to the Toolchain" OFF)
