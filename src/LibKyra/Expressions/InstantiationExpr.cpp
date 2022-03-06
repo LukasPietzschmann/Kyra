@@ -6,7 +6,7 @@ namespace Kyra {
 struct Position;
 InstantiationExpr::InstantiationExpr(const Position& position,
 		std::string name,
-		std::vector<Expression::Ptr> arguments) :
+		std::vector<Expression::Ptr>&& arguments) :
 	Expression(position),
 	m_name(std::move(name)), m_arguments(std::move(arguments)) {}
 

@@ -22,8 +22,8 @@ public:
 
 	ClassDeclarationStmt(const Position& position,
 			Token identifier,
-			std::vector<ConstructorParameter> parameters,
-			std::vector<std::shared_ptr<DeclarationStmt>> declarations);
+			std::vector<ConstructorParameter>&& parameters,
+			std::vector<std::shared_ptr<DeclarationStmt>>&& declarations);
 	~ClassDeclarationStmt() override = default;
 
 	void accept(StatementVisitor& visitor) override;

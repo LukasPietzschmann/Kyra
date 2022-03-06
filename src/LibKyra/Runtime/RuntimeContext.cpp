@@ -8,16 +8,13 @@ bool RuntimeContext::mutate_var(const std::string& name, Value::Ptr value) {
 		it->second.value = std::move(value);
 		return true;
 	} else if(m_parent)
-		return m_parent->mutate_var(name, value);
+		return m_parent->mutate_var(name, std::move(value));
 	else
 		return false;
 }
 
 bool RuntimeContext::declare_var(const std::string& name, Value::Ptr value, bool is_mutable) {
-	if(m_variables.contains(name))
-		return false;
-	m_variables.try_emplace(name, value, is_mutable);
-	return true;
+	return declare_var(name, Variable(std::move(value), is_mutable));
 }
 
 }

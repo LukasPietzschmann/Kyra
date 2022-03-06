@@ -4,7 +4,7 @@
 
 namespace Kyra {
 struct Position;
-BlockStmt::BlockStmt(const Position& position, std::vector<Statement::Ptr> statements) :
+BlockStmt::BlockStmt(const Position& position, std::vector<Statement::Ptr>&& statements) :
 	Statement(position), m_statements(std::move(statements)) {}
 
 void BlockStmt::accept(StatementVisitor& visitor) { visitor.visit_block_stmt(*this); }

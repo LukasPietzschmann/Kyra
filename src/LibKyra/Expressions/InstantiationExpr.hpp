@@ -9,7 +9,7 @@ namespace Kyra {
 struct Position;
 class InstantiationExpr : public Expression {
 public:
-	InstantiationExpr(const Position& position, std::string name, std::vector<Expression::Ptr> arguments);
+	InstantiationExpr(const Position& position, std::string name, std::vector<Expression::Ptr>&& arguments);
 	~InstantiationExpr() override = default;
 
 	void accept(ExpressionVisitor& visitor) override;

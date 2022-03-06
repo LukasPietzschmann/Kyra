@@ -10,14 +10,11 @@ TypeExpr::TypesForFunctions::TypesForFunctions(std::vector<Expression::Ptr> para
 	parameter_types(std::move(parameter_types)),
 	return_type(std::move(return_type)) {}
 
-TypeExpr::TypeExpr(const Position& position, std::string name) :
+TypeExpr::TypeExpr(const Position& position, std::string&& name) :
 	Expression(position), m_name(std::move(name)), m_types_for_functions(nullptr) {}
 
-TypeExpr::TypeExpr(const Position& position,
-		std::vector<Expression::Ptr> parameter_types,
-		Expression::Ptr return_type) :
-	Expression(position),
-	m_name("Function"),
+TypeExpr::TypeExpr(const Position& position, std::vector<Expression::Ptr>&& parameter_types, Expression::Ptr return_type) :
+	Expression(position), m_name("Function"),
 	m_types_for_functions(std::make_shared<TypesForFunctions>(std::move(parameter_types), std::move(return_type))) {}
 
 void TypeExpr::accept(ExpressionVisitor& visitor) { visitor.visit_type_expr(*this); }

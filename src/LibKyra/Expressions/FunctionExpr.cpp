@@ -8,7 +8,7 @@ FunctionExpr::Parameter::Parameter(Token name, std::string type) :
 	name(std::move(std::move(name))), type(std::move(std::move(type))) {}
 
 FunctionExpr::FunctionExpr(const Position& position,
-		std::vector<Parameter> parameters,
+		std::vector<Parameter>&& parameters,
 		Expression::Ptr return_type,
 		Statement::Ptr impl) :
 	Expression(position),

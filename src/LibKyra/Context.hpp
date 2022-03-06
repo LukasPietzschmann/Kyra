@@ -12,17 +12,19 @@ public:
 	explicit Context(std::shared_ptr<C> parent = nullptr) : m_parent(parent) {}
 	virtual ~Context() = default;
 
-	virtual bool declare_var(const std::string& name, VT&& value) {
+	template <typename S = std::string, typename T = VT>
+	bool declare_var(S&& name, T&& value) {
 		if(m_variables.contains(name))
 			return false;
-		m_variables.try_emplace(name, std::forward<VT>(value));
+		m_variables.try_emplace(std::forward<S>(name), std::forward<T>(value));
 		return true;
 	}
 
-	virtual bool declare_type(const std::string& name, TT&& type) {
+	template <typename S = std::string, typename T = TT>
+	bool declare_type(S&& name, T&& type) {
 		if(m_types.contains(name))
 			return false;
-		m_types.try_emplace(name, std::forward<TT>(type));
+		m_types.try_emplace(std::forward<S>(name), std::forward<T>(type));
 		return true;
 	}
 
@@ -50,15 +52,14 @@ public:
 		return true;
 	}
 
-	virtual bool mutate_var(const std::string& name, VT&& value) {
+	template <typename T = VT>
+	bool mutate_var(const std::string& name, T&& value) {
 		if(const auto& it = m_variables.find(name); it != m_variables.end()) {
-			it->second = std::forward<VT>(value);
+			it->second = std::forward<T>(value);
 			return true;
 		}
-		if(m_parent != nullptr) {
-			m_parent->mutate_var(name, std::forward<VT>(value));
-			return true;
-		}
+		if(m_parent != nullptr)
+			return m_parent->mutate_var(name, std::forward<T>(value));
 		return false;
 	}
 

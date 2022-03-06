@@ -52,7 +52,7 @@ Statement::Ptr Parser::var_declaration() {
 	const Token& val_var_kw = consume({TokenType::VAL, TokenType::VAR});
 	const bool is_mutable = previous().get_type() == TokenType::VAR;
 
-	const Token& identifier = consume(TokenType::NAME);
+	Token identifier = consume(TokenType::NAME);
 
 	Expression::Ptr expected_type{};
 	if(match_and_advance(TokenType::COLON))
@@ -100,7 +100,10 @@ Statement::Ptr Parser::class_declaration() {
 
 	const Token& closing_curly = consume(TokenType::RIGHT_CURLY);
 	const Position position(class_kw.get_position(), closing_curly.get_position());
-	return Statement::make_ptr<ClassDeclarationStmt>(position, name, constructor_parameter, declarations);
+	return Statement::make_ptr<ClassDeclarationStmt>(position,
+			name,
+			std::move(constructor_parameter),
+			std::move(declarations));
 }
 
 Statement::Ptr Parser::statement() {
@@ -125,7 +128,8 @@ Statement::Ptr Parser::block() {
 		statements.push_back(declaration());
 
 	const Token& right_curly = consume(TokenType::RIGHT_CURLY);
-	return Statement::make_ptr<BlockStmt>(Position(left_curly.get_position(), right_curly.get_position()), statements);
+	return Statement::make_ptr<BlockStmt>(Position(left_curly.get_position(), right_curly.get_position()),
+			std::move(statements));
 }
 
 Statement::Ptr Parser::print() {
@@ -172,7 +176,8 @@ Statement::Ptr Parser::if_stmt() {
 Statement::Ptr Parser::expression() {
 	Expression::Ptr expr = assignment();
 	const Token& semicolon = consume(TokenType::SEMICOLON);
-	return Statement::make_ptr<ExpressionStmt>(Position(expr->get_position(), semicolon.get_position()), expr);
+	return Statement::make_ptr<ExpressionStmt>(Position(expr->get_position(), semicolon.get_position()),
+			std::move(expr));
 }
 
 Expression::Ptr Parser::assignment() {
@@ -288,7 +293,7 @@ Expression::Ptr Parser::call() {
 			const Position& expr_pos = expr->get_position();
 			expr = Expression::make_ptr<CallExpr>(Position(expr_pos, right_paren.get_position()),
 					std::move(expr),
-					arguments);
+					std::move(arguments));
 			continue;
 		}
 		break;
@@ -354,7 +359,10 @@ Expression::Ptr Parser::function() {
 	Statement::Ptr implementation = block();
 
 	const Position position(fun_kw.get_position(), implementation->get_position());
-	return Expression::make_ptr<FunctionExpr>(position, parameters, std::move(return_type), std::move(implementation));
+	return Expression::make_ptr<FunctionExpr>(position,
+			std::move(parameters),
+			std::move(return_type),
+			std::move(implementation));
 }
 
 Expression::Ptr Parser::instantiation() {
@@ -371,7 +379,7 @@ Expression::Ptr Parser::instantiation() {
 	const Token& right_paren = consume(TokenType::RIGHT_PAREN);
 
 	const Position position(instantiate_kw.get_position(), right_paren.get_position());
-	return Expression::make_ptr<InstantiationExpr>(position, name, parameters);
+	return Expression::make_ptr<InstantiationExpr>(position, name, std::move(parameters));
 }
 
 Expression::Ptr Parser::group() {
@@ -397,7 +405,7 @@ Expression::Ptr Parser::type_indicator() {
 		Expression::Ptr return_type = type_indicator();
 
 		const Position position(type_name.get_position(), return_type->get_position());
-		return Expression::make_ptr<TypeExpr>(position, param_types, std::move(return_type));
+		return Expression::make_ptr<TypeExpr>(position, std::move(param_types), std::move(return_type));
 	}
 	return Expression::make_ptr<TypeExpr>(type_name.get_position(), type_name.get_value().as_string());
 }

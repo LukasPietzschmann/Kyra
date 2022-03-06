@@ -10,8 +10,8 @@ namespace Kyra {
 struct Position;
 class TypeExpr : public Expression {
 public:
-	TypeExpr(const Position& position, std::string name);
-	TypeExpr(const Position& position, std::vector<Expression::Ptr> parameter_types, Expression::Ptr return_type);
+	TypeExpr(const Position& position, std::string&& name);
+	TypeExpr(const Position& position, std::vector<Expression::Ptr>&& parameter_types, Expression::Ptr return_type);
 	~TypeExpr() override = default;
 
 	void accept(ExpressionVisitor& visitor) override;
