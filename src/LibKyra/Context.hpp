@@ -6,13 +6,17 @@
 #include "HasPtrAlias.hpp"
 
 namespace Kyra {
-template <typename C, typename VT, typename TT>
-class Context : public HasPtrAlias<C> {
+template <typename Class,
+		typename VariableType,
+		typename TypeType,
+		typename TypeKeyType = std::string,
+		typename VariableKeyType = std::string>
+class Context : public HasPtrAlias<Class> {
 public:
-	explicit Context(std::shared_ptr<C> parent = nullptr) : m_parent(parent) {}
+	explicit Context(std::shared_ptr<Class> parent = nullptr) : m_parent(parent) {}
 	virtual ~Context() = default;
 
-	template <typename S = std::string, typename T = VT>
+	template <typename S = VariableKeyType, typename T = VariableType>
 	bool declare_var(S&& name, T&& value) {
 		if(m_variables.contains(name))
 			return false;
@@ -20,7 +24,7 @@ public:
 		return true;
 	}
 
-	template <typename S = std::string, typename T = TT>
+	template <typename S = TypeKeyType, typename T = TypeType>
 	bool declare_type(S&& name, T&& type) {
 		if(m_types.contains(name))
 			return false;
@@ -28,7 +32,7 @@ public:
 		return true;
 	}
 
-	virtual std::optional<VT> get_var(const std::string& name) const {
+	virtual std::optional<VariableType> get_var(const VariableKeyType& name) const {
 		if(const auto& it = m_variables.find(name); it != m_variables.end())
 			return it->second;
 		if(m_parent != nullptr)
@@ -36,7 +40,7 @@ public:
 		return {};
 	}
 
-	virtual std::optional<TT> get_type(const std::string& name) const {
+	virtual std::optional<TypeType> get_type(const TypeKeyType& name) const {
 		if(const auto& it = m_types.find(name); it != m_types.end())
 			return it->second;
 		if(m_parent != nullptr)
@@ -44,7 +48,7 @@ public:
 		return {};
 	}
 
-	virtual bool remove_var(const std::string& name) {
+	virtual bool remove_var(const VariableKeyType& name) {
 		const auto& it = m_variables.find(name);
 		if(it == m_variables.end())
 			return false;
@@ -52,8 +56,8 @@ public:
 		return true;
 	}
 
-	template <typename T = VT>
-	bool mutate_var(const std::string& name, T&& value) {
+	template <typename T = VariableType>
+	bool mutate_var(const VariableKeyType& name, T&& value) {
 		if(const auto& it = m_variables.find(name); it != m_variables.end()) {
 			it->second = std::forward<T>(value);
 			return true;
@@ -63,12 +67,12 @@ public:
 		return false;
 	}
 
-	const std::unordered_map<std::string, VT>& get_variables() const { return m_variables; }
-	const std::unordered_map<std::string, TT>& get_types() const { return m_types; }
+	const std::unordered_map<VariableKeyType, VariableType>& get_variables() const { return m_variables; }
+	const std::unordered_map<TypeKeyType, TypeType>& get_types() const { return m_types; }
 
 protected:
-	std::shared_ptr<C> m_parent;
-	std::unordered_map<std::string, VT> m_variables;
-	std::unordered_map<std::string, TT> m_types;
+	std::shared_ptr<Class> m_parent;
+	std::unordered_map<VariableKeyType, VariableType> m_variables;
+	std::unordered_map<TypeKeyType, TypeType> m_types;
 };
 }
