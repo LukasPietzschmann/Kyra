@@ -22,15 +22,6 @@ public:
 	std::string get_type() const override { return Value::NativeTypes::Function; }
 	std::string to_string() const override { return "[Function]"; }
 
-	bool operator==(const Value::Ptr& other) const override {
-		if(get_type() != other->get_type())
-			return false;
-		return false;  // TODO better equality checking
-	}
-
-	bool operator<(const Value::Ptr&) const override { return false; }
-	bool operator>(const Value::Ptr&) const override { return false; }
-
 private:
 	FunctionExpr m_function_expr;
 	RuntimeContext::Ptr m_definition_context;

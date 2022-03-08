@@ -13,7 +13,6 @@ void Klass::instantiate(const std::vector<Value::Ptr>& constructor_arguments) {
 	assert(constructor_arguments.size() == m_declaration_stmt.get_constructor_parameters().size());
 	m_instance_context = RuntimeContext::make_ptr<RuntimeContext>();
 	for(unsigned long i = 0; i < constructor_arguments.size(); ++i) {
-		assert(m_declaration_stmt.get_constructor_parameters()[i].type == constructor_arguments[i]->get_type());
 		if(!m_instance_context->declare_var(
 				   m_declaration_stmt.get_constructor_parameters()[i].name.get_value().as_string(),
 				   constructor_arguments[i],

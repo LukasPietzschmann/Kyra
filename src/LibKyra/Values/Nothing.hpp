@@ -10,10 +10,5 @@ public:
 	bool is_implicitly_true() const override;
 	std::string get_type() const override;
 	std::string to_string() const override;
-
-	bool operator==(const Value::Ptr& other) const override;
-
-	bool operator<(const Value::Ptr&) const override;
-	bool operator>(const Value::Ptr&) const override;
 };
 }

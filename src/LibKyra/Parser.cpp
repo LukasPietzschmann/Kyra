@@ -54,7 +54,7 @@ Statement::Ptr Parser::var_declaration() {
 
 	Token identifier = consume(TokenType::NAME);
 
-	Expression::Ptr expected_type{};
+	std::shared_ptr<TypeExpr> expected_type{};
 	if(match_and_advance(TokenType::COLON))
 		expected_type = type_indicator();
 
@@ -87,8 +87,7 @@ Statement::Ptr Parser::class_declaration() {
 			const bool is_mutable = previous().get_type() == TokenType::VAR;
 			const Token& param_name = consume(TokenType::NAME);
 			consume(TokenType::COLON);
-			const std::string& type = consume(TokenType::NAME).get_value().as_string();
-			constructor_parameter.emplace_back(param_name, is_mutable, type);
+			constructor_parameter.emplace_back(param_name, is_mutable, type_indicator());
 		} while(match_and_advance(TokenType::COMMA));
 	}
 	consume(TokenType::RIGHT_PAREN);
@@ -348,14 +347,13 @@ Expression::Ptr Parser::function() {
 		do {
 			const Token& name = consume(TokenType::NAME);
 			consume(TokenType::COLON);
-			const std::string& type = consume(TokenType::NAME).get_value().as_string();
-			parameters.emplace_back(name, type);
+			parameters.emplace_back(name, type_indicator());
 		} while(match_and_advance(TokenType::COMMA));
 	}
 	consume(TokenType::RIGHT_PAREN);
 	consume(TokenType::ARROW);
 
-	Expression::Ptr return_type = type_indicator();
+	std::shared_ptr<TypeExpr> return_type = type_indicator();
 	Statement::Ptr implementation = block();
 
 	const Position position(fun_kw.get_position(), implementation->get_position());
@@ -367,7 +365,7 @@ Expression::Ptr Parser::function() {
 
 Expression::Ptr Parser::instantiation() {
 	const Token& instantiate_kw = consume(TokenType::INSTANTIATE);
-	const std::string& name = consume(TokenType::NAME).get_value().as_string();
+	const Token& name = consume(TokenType::NAME);
 
 	std::vector<Expression::Ptr> parameters;
 	consume(TokenType::LEFT_PAREN);
@@ -390,11 +388,11 @@ Expression::Ptr Parser::group() {
 			std::move(expr));
 }
 
-Expression::Ptr Parser::type_indicator() {
+std::shared_ptr<TypeExpr> Parser::type_indicator() {
 	const Token& type_name = consume(TokenType::NAME);
 	if(type_name.get_value().as_string() == Value::NativeTypes::Function) {
 		consume(TokenType::LEFT_PAREN);
-		std::vector<Expression::Ptr> param_types;
+		std::vector<std::shared_ptr<TypeExpr>> param_types;
 		if(!match(TokenType::RIGHT_PAREN)) {
 			do {
 				param_types.push_back(type_indicator());
@@ -402,12 +400,12 @@ Expression::Ptr Parser::type_indicator() {
 		}
 		consume(TokenType::RIGHT_PAREN);
 		consume(TokenType::ARROW);
-		Expression::Ptr return_type = type_indicator();
+		std::shared_ptr<TypeExpr> return_type = type_indicator();
 
 		const Position position(type_name.get_position(), return_type->get_position());
-		return Expression::make_ptr<TypeExpr>(position, std::move(param_types), std::move(return_type));
+		return std::make_shared<TypeExpr>(position, std::move(param_types), std::move(return_type));
 	}
-	return Expression::make_ptr<TypeExpr>(type_name.get_position(), type_name.get_value().as_string());
+	return std::make_shared<TypeExpr>(type_name.get_position(), type_name.get_value().as_string());
 }
 
 Token Parser::advance() { return m_tokens[m_current++]; }

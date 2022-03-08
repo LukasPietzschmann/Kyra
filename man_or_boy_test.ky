@@ -1,0 +1,19 @@
+#https://en.wikipedia.org/wiki/Man_or_boy_test
+
+val A: Function(Number, Function()->Number, Function()->Number, Function()->Number, Function()->Number, Function()->Number)->Number = fun(k: Number, x1: Function()->Number, x2: Function()->Number, x3: Function()->Number, x4: Function()->Number, x5: Function()->Number)->Number{
+	val B: Function()->Number = fun()->Number{
+		k = k-1;
+		return A(k, B, x1, x2, x3, x4);
+	};
+	if(k <= 0)
+		return x4() + x5();
+	return B();
+};
+
+val K = fun(n: Number)->Function()->Number{
+	return fun()->Number{
+		return n;
+	};
+};
+
+print A(10, K(1), K(-1), K(-1), K(1), K(0));

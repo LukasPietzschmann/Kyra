@@ -31,14 +31,11 @@ public:
 
 	virtual bool is_native() const { return true; }
 
-	virtual bool operator==(const Value::Ptr&) const = 0;
-	virtual bool operator<(const Value::Ptr&) const = 0;
-	virtual bool operator>(const Value::Ptr&) const = 0;
-
+	virtual bool operator==(const Value::Ptr&) const { return false; }
+	virtual bool operator<(const Value::Ptr&) const { return false; }
+	virtual bool operator>(const Value::Ptr&) const { return false; }
 	virtual bool operator!=(const Value::Ptr& other) const { return !operator==(other); };
-
 	virtual bool operator<=(const Value::Ptr& other) const { return operator<(other) || operator==(other); };
-
 	virtual bool operator>=(const Value::Ptr& other) const { return operator>(other) || operator==(other); };
 
 	virtual Value::Ptr operator+(const Value::Ptr&) const {

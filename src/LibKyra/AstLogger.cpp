@@ -50,7 +50,7 @@ void AstLogger::visit_declaration_stmt(DeclarationStmt& declaration_stmt) {
 }
 
 void AstLogger::visit_class_declaration_stmt(ClassDeclarationStmt& class_declaration_stmt) {
-	COUT << "Declaration of class " << class_declaration_stmt.get_identifier().get_value().as_string() << "\n";
+	COUT << "Declaration of class " << class_declaration_stmt.get_class_name().get_value().as_string() << "\n";
 	COUT << "Constructor parameter\n";
 	++m_indent;
 	std::stringstream parameter;
@@ -173,7 +173,7 @@ void AstLogger::visit_group_expr(GroupExpr& group_expr) {
 }
 
 void AstLogger::visit_instantiation_expr(InstantiationExpr& instantiation_expr) {
-	COUT << "Instantiation of class " + instantiation_expr.get_name() + "\n";
+	COUT << "Instantiation of class " + instantiation_expr.get_class_name().get_value().as_string() + "\n";
 	COUT << "With constructor arguments\n";
 	++m_indent;
 	for(const auto& argument : instantiation_expr.get_arguments())

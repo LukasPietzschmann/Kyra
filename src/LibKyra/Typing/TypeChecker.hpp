@@ -12,35 +12,10 @@
 #include "../Statements/Statement.hpp"
 #include "Type.hpp"
 #include "TypeContext.hpp"
-#include "TypeProvider.hpp"
 #include "TypingErrors.hpp"
 
 namespace Kyra {
 class FunctionType;
-class TypeReprHelper {
-public:
-	TypeReprHelper() = default;
-	TypeReprHelper(Type::Repr repr) : m_repr(std::move(repr)) {}
-
-	TypeReprHelper& operator=(const Type::Repr& r) {
-		m_repr = r;
-		return *this;
-	}
-
-	Type::Ptr operator->() const { return TypeProvider::the().decode(m_repr); }
-	Type::Ptr operator*() const { return TypeProvider::the().decode(m_repr); }
-
-	bool operator==(const Type::Ptr& type) const { return **this == type; }
-	bool operator==(const TypeReprHelper& type) const { return **this == *type; }
-
-	const Type::Repr& get_repr() const { return m_repr; }
-
-	bool has_value() const { return !m_repr.empty(); }
-
-private:
-	Type::Repr m_repr;
-};
-
 class TypeChecker : public ExpressionVisitor, public StatementVisitor {
 #define THROW_TYPING_ERROR(error)                \
 	do {                                         \
@@ -48,7 +23,7 @@ class TypeChecker : public ExpressionVisitor, public StatementVisitor {
 		return;                                  \
 	} while(0)
 
-	EXPR_NEEDS_VISIT_RETURN_OF_TYPE(TypeReprHelper);
+	EXPR_NEEDS_VISIT_RETURN_OF_TYPE(Type::Ptr);
 
 public:
 	class Result {

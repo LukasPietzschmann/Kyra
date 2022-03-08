@@ -44,7 +44,7 @@ private:
 	Expression::Ptr instantiation();
 	Expression::Ptr group();
 
-	Expression::Ptr type_indicator();
+	std::shared_ptr<TypeExpr> type_indicator();
 
 	Token advance();
 	Token consume(TokenType expected);

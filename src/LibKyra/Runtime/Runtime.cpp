@@ -134,7 +134,8 @@ void Runtime::visit_group_expr(GroupExpr& group_expr) {
 }
 
 void Runtime::visit_instantiation_expr(InstantiationExpr& instantiation_expr) {
-	const auto& type_or_error = m_current_context->get_type(instantiation_expr.get_name());
+	const auto& type_or_error =
+			m_current_context->get_type(instantiation_expr.get_class_name().get_value().as_string());
 	if(!type_or_error.has_value())
 		assert(false);
 	Value::Ptr klass = Value::make_ptr<Klass>(*Value::as<Klass>(*type_or_error));
@@ -190,7 +191,7 @@ void Runtime::visit_declaration_stmt(DeclarationStmt& declaration_stmt) {
 }
 
 void Runtime::visit_class_declaration_stmt(ClassDeclarationStmt& class_declaration_stmt) {
-	const std::string& name = class_declaration_stmt.get_identifier().get_value().as_string();
+	const std::string& name = class_declaration_stmt.get_class_name().get_value().as_string();
 	if(!m_current_context->declare_type(name, Value::make_ptr<Klass>(class_declaration_stmt)))
 		assert(false);
 }

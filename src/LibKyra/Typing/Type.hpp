@@ -11,12 +11,11 @@ template <typename ValueType>
 struct Variable;
 class Type : public HasPtrAlias<Type> {
 public:
-	using Repr = std::string;
 	explicit Type(std::string name);
 	virtual ~Type() = default;
 
-	virtual std::optional<Variable<Type::Repr>> knows_about(const std::string&) const;
-	virtual bool can_be_called_with(const std::vector<Type::Repr>&) const;
+	virtual std::optional<Variable<Type::Ptr>> knows_about(const std::string&) const;
+	virtual bool can_be_called_with(const std::vector<Type::Ptr>&) const;
 	virtual bool is_applicable_for_declaration() const;
 	virtual bool can_be_assigned_to(const Type::Ptr& assignee) const;
 	virtual bool is_function() const;
