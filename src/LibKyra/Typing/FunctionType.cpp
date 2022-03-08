@@ -50,12 +50,9 @@ bool FunctionType::is_function() const { return true; }
 bool FunctionType::can_be_called_with(const std::vector<Type::Ptr>& params) const {
 	if(params.size() != m_parameters.size())
 		return false;
-	for(size_t i = 0; i < params.size(); ++i) {
-		if(*params[i] != m_parameters[i])
-			return false;
-	}
-	return true;
-	// return std::equal(params.begin(), params.end(), m_parameters.begin());
+	return std::equal(params.begin(), params.end(), m_parameters.begin(), [](const Type::Ptr& l, const Type::Ptr& r) {
+		return *l == r;
+	});
 }
 
 }

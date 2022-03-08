@@ -16,8 +16,7 @@
 void simple_repl();
 void nice_repl();
 
-static bool verbose = false;
-static std::string default_prompt = "KYRA > ";
+bool verbose = false;
 
 int main(int argc, char** argv) {
 	std::ostream::sync_with_stdio(false);
@@ -93,7 +92,7 @@ void simple_repl() {
 void nice_repl() {
 	static bool unfinished = false;
 	static std::string complete_code;
-	static std::string prompt = default_prompt;
+	static std::string prompt = "KYRA > ";
 
 	rl_bind_key('\t', rl_insert);
 
@@ -114,7 +113,7 @@ void nice_repl() {
 			add_history(complete_code.c_str());
 			Kyra::Interpreter::execute(complete_code, verbose);
 			complete_code.clear();
-			prompt = default_prompt;
+			prompt = "KYRA > ";
 		}
 
 		delete[] input_line;

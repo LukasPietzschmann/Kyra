@@ -148,7 +148,7 @@ void TypeChecker::visit_function(FunctionExpr& function_expr) {
 			},
 			m_current_context);
 
-	std::shared_ptr<FunctionType> function_type = std::make_shared<FunctionType>(return_type, std::move(parameters));
+	auto function_type = std::make_shared<FunctionType>(return_type, std::move(parameters));
 
 	m_current_function = function_type.get();
 	run_in_new_context([&function_expr, this]() { function_expr.get_implementation()->accept(*this); },
@@ -288,8 +288,8 @@ void TypeChecker::visit_class_declaration_stmt(ClassDeclarationStmt& class_decla
 	if(m_current_context->get_type(name).has_value())
 		THROW_TYPING_ERROR(AlreadyDefinedTypeError(class_declaration_stmt.get_position(), name));
 
-	auto* klass = new ClassType(name);
-	m_current_context->declare_type(name, ClassType::Ptr(klass));
+	auto klass = std::make_shared<ClassType>(name);
+	m_current_context->declare_type(name, klass);
 
 	TypeContext::Ptr param_scope = run_in_new_context(
 			[&class_declaration_stmt, &klass, this]() {

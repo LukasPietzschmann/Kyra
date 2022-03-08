@@ -48,7 +48,7 @@ bool Interpreter::is_incomplete_statement(const std::string& code) {
 	try {
 		Parser parser(Lexer(code).scan_tokens());
 		parser.parse();
-	} catch(const ParserException& exception) { return exception.is_unfinished(); } catch(...) {
+	} catch(const ParserException& exception) { return exception.is_unfinished(); } catch(const MessageException&) {
 		return false;
 	}
 	return false;
