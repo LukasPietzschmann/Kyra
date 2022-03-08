@@ -7,7 +7,7 @@
 #include "Statements/Forward.hpp"
 #include "Statements/Statement.hpp"
 
-#define COUT std::cout << std::string(m_indent * 4, ' ')
+#define COUT std::cout << std::string(m_indent, '\t')
 
 namespace Kyra {
 class AstLogger : public StatementVisitor, public ExpressionVisitor {
