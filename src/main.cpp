@@ -78,12 +78,12 @@ int main(int argc, char** argv) {
 void simple_repl() {
 	std::cout << "Btw: To get the full REPL experience install the GNU readline library and recompile Kyra!"
 			  << std::endl;
-	std::cout << default_prompt;
+	std::cout << "KYRA > ";
 	for(std::string line; std::getline(std::cin, line);) {
 		if(line == "exit")
 			break;
 		Kyra::Interpreter::execute(line, verbose);
-		std::cout << default_prompt;
+		std::cout << "KYRA > ";
 	}
 }
 #endif
