@@ -7,20 +7,21 @@
 #include "Expressions/AssignmentExpr.hpp"
 #include "Expressions/BinaryExpr.hpp"
 #include "Expressions/CallExpr.hpp"
-#include "Expressions/FunctionExpr.hpp"
 #include "Expressions/GroupExpr.hpp"
 #include "Expressions/InstantiationExpr.hpp"
+#include "Expressions/LambdaFunctionExpr.hpp"
 #include "Expressions/LiteralExpr.hpp"
 #include "Expressions/TypeExpr.hpp"
 #include "Expressions/UnaryExpr.hpp"
 #include "Expressions/VariableExpr.hpp"
 #include "Statements/BlockStmt.hpp"
 #include "Statements/ClassDeclarationStmt.hpp"
-#include "Statements/DeclarationStmt.hpp"
 #include "Statements/ExpressionStmt.hpp"
+#include "Statements/FunDeclarationStmt.hpp"
 #include "Statements/IfStmt.hpp"
 #include "Statements/PrintStmt.hpp"
 #include "Statements/ReturnStmt.hpp"
+#include "Statements/VarDeclarationStmt.hpp"
 #include "Statements/WhileStmt.hpp"
 #include "TokenType.hpp"
 
@@ -39,7 +40,7 @@ void AstLogger::visit_block_stmt(BlockStmt& block_stmt) {
 	--m_indent;
 }
 
-void AstLogger::visit_declaration_stmt(DeclarationStmt& declaration_stmt) {
+void AstLogger::visit_var_declaration_stmt(VarDeclarationStmt& declaration_stmt) {
 	COUT << "Declaration of variable " << declaration_stmt.get_identifier().get_value().as_string();
 	if(declaration_stmt.get_initializer()) {
 		std::cout << " to\n";
@@ -69,6 +70,21 @@ void AstLogger::visit_class_declaration_stmt(ClassDeclarationStmt& class_declara
 			decl->accept(*this);
 		--m_indent;
 	}
+}
+
+void AstLogger::visit_fun_declaration_stmt(FunDeclarationStmt& fun_declaration_stmt) {
+	COUT << "Declaration of function " << fun_declaration_stmt.get_identifier().get_value().as_string();
+	if(!fun_declaration_stmt.get_function()->get_parameters().empty()) {
+		COUT << "Parameters\n";
+		++m_indent;
+		for(const auto& parameter : fun_declaration_stmt.get_function()->get_parameters())
+			COUT << parameter.name.get_value().as_string() << '\n';
+		--m_indent;
+	}
+	COUT << "Implementation\n";
+	++m_indent;
+	fun_declaration_stmt.get_function()->get_implementation()->accept(*this);
+	--m_indent;
 }
 
 void AstLogger::visit_expression_stmt(ExpressionStmt& expression_stmt) {
@@ -164,7 +180,7 @@ void AstLogger::visit_call_expr(CallExpr& call_expr) {
 	}
 }
 
-void AstLogger::visit_function(FunctionExpr& function_expr) {
+void AstLogger::visit_lambda_function(LambdaFunctionExpr& function_expr) {
 	COUT << "Function\n";
 	if(!function_expr.get_parameters().empty()) {
 		COUT << "Parameters\n";

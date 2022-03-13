@@ -1,30 +1,13 @@
 #pragma once
 
 #include "../Expressions/Expression.hpp"
+#include "../Expressions/Forward.hpp"
 #include "../Statements/Statement.hpp"
+#include "../Statements/Forward.hpp"
 #include "../Values/Value.hpp"
 #include "RuntimeContext.hpp"
 
 namespace Kyra {
-class AccessExpr;
-class AssignmentExpr;
-class BinaryExpr;
-class BlockStmt;
-class CallExpr;
-class ClassDeclarationStmt;
-class DeclarationStmt;
-class ExpressionStmt;
-class FunctionExpr;
-class GroupExpr;
-class InstantiationExpr;
-class LiteralExpr;
-class PrintStmt;
-class ReturnStmt;
-class TypeExpr;
-class UnaryExpr;
-class VariableExpr;
-class WhileStmt;
-
 class Runtime : public ExpressionVisitor, public StatementVisitor {
 	EXPR_NEEDS_VISIT_RETURN_OF_TYPE(Value::Ptr);
 
@@ -44,7 +27,7 @@ public:
 	void visit_assignment_expr(AssignmentExpr& assignment_expr) override;
 	void visit_binary_expr(BinaryExpr& binary_expr) override;
 	void visit_call_expr(CallExpr& call_expr) override;
-	void visit_function(FunctionExpr& function_expr) override;
+	void visit_lambda_function(LambdaFunctionExpr& function_expr) override;
 	void visit_group_expr(GroupExpr& group_expr) override;
 	void visit_instantiation_expr(InstantiationExpr& instantiation_expr) override;
 	void visit_literal(LiteralExpr& literal_expr) override;
@@ -53,8 +36,9 @@ public:
 	void visit_variable(VariableExpr& variable_expr) override;
 
 	void visit_block_stmt(BlockStmt& block_stmt) override;
-	void visit_declaration_stmt(DeclarationStmt& declaration_stmt) override;
+	void visit_var_declaration_stmt(VarDeclarationStmt& declaration_stmt) override;
 	void visit_class_declaration_stmt(ClassDeclarationStmt& class_declaration_stmt) override;
+	void visit_fun_declaration_stmt(FunDeclarationStmt& fun_declaration_stmt) override;
 	void visit_expression_stmt(ExpressionStmt& expression_stmt) override;
 	void visit_print_stmt(PrintStmt& print_stmt) override;
 	void visit_return_stmt(ReturnStmt& return_stmt) override;

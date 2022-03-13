@@ -4,7 +4,7 @@
 #include <memory>
 
 #include "../Runtime/Runtime.hpp"
-#include "../Statements/DeclarationStmt.hpp"
+#include "../Statements/VarDeclarationStmt.hpp"
 #include "Nothing.hpp"
 
 namespace Kyra {

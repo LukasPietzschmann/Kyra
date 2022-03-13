@@ -28,7 +28,7 @@ private:                                      \
 	virtual void visit_assignment_expr(AssignmentExpr& assignment_expr) = 0;
 	virtual void visit_binary_expr(BinaryExpr& binary_expr) = 0;
 	virtual void visit_call_expr(CallExpr& call_expr) = 0;
-	virtual void visit_function(FunctionExpr& function_expr) = 0;
+	virtual void visit_lambda_function(LambdaFunctionExpr& function_expr) = 0;
 	virtual void visit_group_expr(GroupExpr& group_expr) = 0;
 	virtual void visit_instantiation_expr(InstantiationExpr& instantiation_expr) = 0;
 	virtual void visit_literal(LiteralExpr& literal_expr) = 0;

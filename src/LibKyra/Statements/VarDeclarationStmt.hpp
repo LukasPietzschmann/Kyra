@@ -7,14 +7,14 @@
 namespace Kyra {
 struct Position;
 class TypeExpr;
-class DeclarationStmt : public Statement {
+class VarDeclarationStmt : public Statement {
 public:
-	DeclarationStmt(const Position& position,
+	VarDeclarationStmt(const Position& position,
 			Token identifier,
 			Expression::Ptr initializer,
 			std::shared_ptr<TypeExpr> type,
 			bool is_mutable = true);
-	~DeclarationStmt() override = default;
+	~VarDeclarationStmt() override = default;
 
 	void accept(StatementVisitor& visitor) override;
 

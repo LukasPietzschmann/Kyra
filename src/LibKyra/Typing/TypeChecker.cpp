@@ -7,20 +7,21 @@
 #include "../Expressions/AssignmentExpr.hpp"
 #include "../Expressions/BinaryExpr.hpp"
 #include "../Expressions/CallExpr.hpp"
-#include "../Expressions/FunctionExpr.hpp"
 #include "../Expressions/GroupExpr.hpp"
 #include "../Expressions/InstantiationExpr.hpp"
+#include "../Expressions/LambdaFunctionExpr.hpp"
 #include "../Expressions/LiteralExpr.hpp"
 #include "../Expressions/TypeExpr.hpp"
 #include "../Expressions/UnaryExpr.hpp"
 #include "../Expressions/VariableExpr.hpp"
 #include "../Statements/BlockStmt.hpp"
 #include "../Statements/ClassDeclarationStmt.hpp"
-#include "../Statements/DeclarationStmt.hpp"
 #include "../Statements/ExpressionStmt.hpp"
+#include "../Statements/FunDeclarationStmt.hpp"
 #include "../Statements/IfStmt.hpp"
 #include "../Statements/PrintStmt.hpp"
 #include "../Statements/ReturnStmt.hpp"
+#include "../Statements/VarDeclarationStmt.hpp"
 #include "../Statements/WhileStmt.hpp"
 #include "ClassType.hpp"
 #include "FunctionType.hpp"
@@ -130,7 +131,7 @@ void TypeChecker::visit_call_expr(CallExpr& call_expr) {
 	EXPR_RETURN_FROM_VISIT(function->get_return_type());
 }
 
-void TypeChecker::visit_function(FunctionExpr& function_expr) {
+void TypeChecker::visit_lambda_function(LambdaFunctionExpr& function_expr) {
 	FunctionType* enclosing_function_type = m_current_function;
 	EXPR_ACCEPT(function_expr.get_return_type(), *this, Type::Ptr return_type);
 	std::vector<Type::Ptr> parameters;
@@ -227,15 +228,16 @@ void TypeChecker::visit_unary_expr(UnaryExpr& unary_expr) {
 
 void TypeChecker::visit_variable(VariableExpr& variable_expr) {
 	const std::string& name = variable_expr.get_name().get_value().as_string();
-	const auto& result = m_current_context->get_var(name);
-	if(!result.has_value()) {
+	const auto& var_result = m_current_context->get_var(name);
+	const auto& fun_result = m_current_context->get_function(name);
+	if(!var_result.has_value() && !fun_result.has_value()) {
 		if(m_current_class_name != nullptr)
 			THROW_TYPING_ERROR(
 					UndefinedMemberError(variable_expr.get_position(), std::string(m_current_class_name), name));
 		else
 			THROW_TYPING_ERROR(UndefinedVariableError(variable_expr.get_position(), name));
 	}
-	EXPR_RETURN_FROM_VISIT(result->value);
+	EXPR_RETURN_FROM_VISIT(var_result.has_value() ? var_result->value : fun_result->value);
 }
 
 void TypeChecker::visit_block_stmt(BlockStmt& block_stmt) {
@@ -247,7 +249,7 @@ void TypeChecker::visit_block_stmt(BlockStmt& block_stmt) {
 			m_current_context);
 }
 
-void TypeChecker::visit_declaration_stmt(DeclarationStmt& declaration_stmt) {
+void TypeChecker::visit_var_declaration_stmt(VarDeclarationStmt& declaration_stmt) {
 	const std::string& name = declaration_stmt.get_identifier().get_value().as_string();
 
 	Type::Ptr expected_type{};
@@ -323,6 +325,47 @@ void TypeChecker::visit_class_declaration_stmt(ClassDeclarationStmt& class_decla
 
 	m_current_class_name = nullptr;
 }
+
+void TypeChecker::visit_fun_declaration_stmt(FunDeclarationStmt& fun_declaration_stmt) {
+	const std::string& name = fun_declaration_stmt.get_identifier().get_value().as_string();
+
+	EXPR_ACCEPT(fun_declaration_stmt.get_type(), *this, Type::Ptr expected_type);
+	if(!expected_type->is_applicable_for_declaration())
+		THROW_TYPING_ERROR(UndefinedTypeError(fun_declaration_stmt.get_position(), expected_type->get_name()));
+
+	std::vector<Type::Ptr> parameters;
+	TypeContext::Ptr param_scope = run_in_new_context(
+			[&fun_declaration_stmt, &parameters, this]() {
+				for(const auto& param : fun_declaration_stmt.get_function()->get_parameters()) {
+					EXPR_ACCEPT(param.type, *this, Type::Ptr param_type);
+					if(!param_type->is_applicable_for_declaration())
+						THROW_TYPING_ERROR(
+								UndefinedTypeError(fun_declaration_stmt.get_position(), param_type->get_name()));
+					parameters.push_back(param_type);
+					if(!m_current_context->declare_var(param.name.get_value().as_string(), param_type, true))
+						THROW_TYPING_ERROR(AlreadyDefinedVariableError(param.name.get_position(),
+								param.name.get_value().as_string()));
+				}
+			},
+			m_current_context);
+
+	m_current_context->declare_function(name, Variable(expected_type, false));
+	run_in_new_context([&fun_declaration_stmt,
+							   this]() { fun_declaration_stmt.get_function()->get_implementation()->accept(*this); },
+			m_current_context,
+			param_scope);
+	m_current_context->remove_function(name);
+
+	if(!m_current_context->declare_function(name, Variable(expected_type, false))) {
+		if(m_current_class_name != nullptr)
+			THROW_TYPING_ERROR(AlreadyDefinedMemberError(fun_declaration_stmt.get_position(),
+					std::string(m_current_class_name),
+					name));
+		else
+			THROW_TYPING_ERROR(AlreadyDefinedVariableError(fun_declaration_stmt.get_position(), name));
+	}
+}
+
 void TypeChecker::visit_expression_stmt(ExpressionStmt& expression_stmt) { expression_stmt.get_expr()->accept(*this); }
 
 void TypeChecker::visit_print_stmt(PrintStmt& print_stmt) { EXPR_ACCEPT(print_stmt.get_expr(), *this, Type::Ptr type); }

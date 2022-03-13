@@ -4,7 +4,7 @@
 
 namespace Kyra {
 struct Position;
-class DeclarationStmt;
+class VarDeclarationStmt;
 ClassDeclarationStmt::ConstructorParameter::ConstructorParameter(Token name,
 		bool is_mutable,
 		std::shared_ptr<TypeExpr> type) :
@@ -14,7 +14,7 @@ ClassDeclarationStmt::ConstructorParameter::ConstructorParameter(Token name,
 ClassDeclarationStmt::ClassDeclarationStmt(const Position& position,
 		Token class_name,
 		std::vector<ConstructorParameter>&& parameters,
-		std::vector<std::shared_ptr<DeclarationStmt>>&& declarations) :
+		std::vector<std::shared_ptr<VarDeclarationStmt>>&& declarations) :
 	Statement(position),
 	m_class_name(std::move(class_name)), m_parameters(std::move(parameters)), m_declarations(std::move(declarations)) {}
 
@@ -27,7 +27,7 @@ const std::vector<ClassDeclarationStmt::ConstructorParameter>& ClassDeclarationS
 	return m_parameters;
 }
 
-const std::vector<std::shared_ptr<DeclarationStmt>>& ClassDeclarationStmt::get_declarations() const {
+const std::vector<std::shared_ptr<VarDeclarationStmt>>& ClassDeclarationStmt::get_declarations() const {
 	return m_declarations;
 }
 }

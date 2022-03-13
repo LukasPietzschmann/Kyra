@@ -10,7 +10,7 @@
 namespace Kyra {
 struct Position;
 class TypeExpr;
-class FunctionExpr : public Expression {
+class LambdaFunctionExpr : public Expression {
 public:
 	struct Parameter {
 		Parameter(Token name, std::shared_ptr<TypeExpr> type);
@@ -18,11 +18,11 @@ public:
 		std::shared_ptr<TypeExpr> type;
 	};
 
-	FunctionExpr(const Position& position,
+	LambdaFunctionExpr(const Position& position,
 			std::vector<Parameter>&& parameters,
 			std::shared_ptr<TypeExpr> return_type,
 			Statement::Ptr impl);
-	~FunctionExpr() override = default;
+	~LambdaFunctionExpr() override = default;
 
 	void accept(ExpressionVisitor& visitor) override;
 	const std::vector<Parameter>& get_parameters() const;

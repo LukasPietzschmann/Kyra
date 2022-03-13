@@ -2,9 +2,10 @@
 
 namespace Kyra {
 class BlockStmt;
-class DeclarationStmt;
+class VarDeclarationStmt;
 class ClassDeclarationStmt;
 class ExpressionStmt;
+class FunDeclarationStmt;
 class PrintStmt;
 class ReturnStmt;
 class WhileStmt;

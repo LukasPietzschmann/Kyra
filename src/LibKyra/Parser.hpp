@@ -24,6 +24,7 @@ private:
 	Statement::Ptr declaration();
 	Statement::Ptr var_declaration();
 	Statement::Ptr class_declaration();
+	Statement::Ptr function_declaration();
 	Statement::Ptr statement();
 	Statement::Ptr expression();
 	Statement::Ptr block();
@@ -40,7 +41,7 @@ private:
 	Expression::Ptr unary();
 	Expression::Ptr call();
 	Expression::Ptr primary();
-	Expression::Ptr function();
+	Expression::Ptr lambda_function();
 	Expression::Ptr instantiation();
 	Expression::Ptr group();
 

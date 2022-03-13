@@ -9,9 +9,9 @@
 #include "Expressions/AssignmentExpr.hpp"
 #include "Expressions/BinaryExpr.hpp"
 #include "Expressions/CallExpr.hpp"
-#include "Expressions/FunctionExpr.hpp"
 #include "Expressions/GroupExpr.hpp"
 #include "Expressions/InstantiationExpr.hpp"
+#include "Expressions/LambdaFunctionExpr.hpp"
 #include "Expressions/LiteralExpr.hpp"
 #include "Expressions/TypeExpr.hpp"
 #include "Expressions/UnaryExpr.hpp"
@@ -19,11 +19,12 @@
 #include "Position.hpp"
 #include "Statements/BlockStmt.hpp"
 #include "Statements/ClassDeclarationStmt.hpp"
-#include "Statements/DeclarationStmt.hpp"
 #include "Statements/ExpressionStmt.hpp"
+#include "Statements/FunDeclarationStmt.hpp"
 #include "Statements/IfStmt.hpp"
 #include "Statements/PrintStmt.hpp"
 #include "Statements/ReturnStmt.hpp"
+#include "Statements/VarDeclarationStmt.hpp"
 #include "Statements/WhileStmt.hpp"
 #include "Values/Bool.hpp"
 #include "Values/Nothing.hpp"
@@ -39,13 +40,16 @@ std::vector<Statement::Ptr> Parser::parse() {
 }
 
 Statement::Ptr Parser::declaration() {
-	if(!match({TokenType::VAR, TokenType::VAL, TokenType::CLASS}))
+	if(!match({TokenType::VAR, TokenType::VAL, TokenType::CLASS, TokenType::FUN}))
 		return statement();
 
 	if(match(TokenType::CLASS))
 		return class_declaration();
 
-	return var_declaration();
+	if(match({TokenType::VAR, TokenType::VAL}))
+		return var_declaration();
+
+	return function_declaration();
 }
 
 Statement::Ptr Parser::var_declaration() {
@@ -68,7 +72,7 @@ Statement::Ptr Parser::var_declaration() {
 				"Immutable Variable " + identifier.get_value().as_string() + " needs to be initialized");
 
 	const Position position(val_var_kw.get_position(), semicolon.get_position());
-	return Statement::make_ptr<DeclarationStmt>(position,
+	return Statement::make_ptr<VarDeclarationStmt>(position,
 			identifier,
 			std::move(init),
 			std::move(expected_type),
@@ -93,9 +97,9 @@ Statement::Ptr Parser::class_declaration() {
 	consume(TokenType::RIGHT_PAREN);
 	consume(TokenType::LEFT_CURLY);
 
-	std::vector<std::shared_ptr<DeclarationStmt>> declarations;
+	std::vector<std::shared_ptr<VarDeclarationStmt>> declarations;
 	while(!is_at_end() && !match(TokenType::RIGHT_CURLY))
-		declarations.push_back(std::dynamic_pointer_cast<DeclarationStmt>(var_declaration()));
+		declarations.push_back(std::dynamic_pointer_cast<VarDeclarationStmt>(var_declaration()));
 
 	const Token& closing_curly = consume(TokenType::RIGHT_CURLY);
 	const Position position(class_kw.get_position(), closing_curly.get_position());
@@ -103,6 +107,33 @@ Statement::Ptr Parser::class_declaration() {
 			name,
 			std::move(constructor_parameter),
 			std::move(declarations));
+}
+
+Statement::Ptr Parser::function_declaration() {
+	const Token& fun_kw = consume(TokenType::FUN);
+	const Token& name = consume(TokenType::NAME);
+
+	consume(TokenType::LEFT_PAREN);
+	std::vector<LambdaFunctionExpr::Parameter> parameters;
+	if(!match(TokenType::RIGHT_PAREN)) {
+		do {
+			const Token& param_name = consume(TokenType::NAME);
+			consume(TokenType::COLON);
+			parameters.emplace_back(param_name, type_indicator());
+		} while(match_and_advance(TokenType::COMMA));
+	}
+	consume(TokenType::RIGHT_PAREN);
+	consume(TokenType::ARROW);
+
+	std::shared_ptr<TypeExpr> return_type = type_indicator();
+	Statement::Ptr implementation = block();
+
+	const Position position(fun_kw.get_position(), implementation->get_position());
+	std::shared_ptr<LambdaFunctionExpr> function = std::make_shared<LambdaFunctionExpr>(position,
+			std::move(parameters),
+			std::move(return_type),
+			std::move(implementation));
+	return Statement::make_ptr<FunDeclarationStmt>(position, name, function);
 }
 
 Statement::Ptr Parser::statement() {
@@ -328,7 +359,7 @@ Expression::Ptr Parser::primary() {
 		return Expression::make_ptr<VariableExpr>(position, previous());
 	}
 	if(match(TokenType::FUN))
-		return function();
+		return lambda_function();
 	if(match(TokenType::INSTANTIATE))
 		return instantiation();
 
@@ -338,10 +369,10 @@ Expression::Ptr Parser::primary() {
 		throw ParserException(previous().get_position(), "Expected expression after " + previous().get_lexeme(), true);
 }
 
-Expression::Ptr Parser::function() {
+Expression::Ptr Parser::lambda_function() {
 	const Token& fun_kw = consume(TokenType::FUN);
 
-	std::vector<FunctionExpr::Parameter> parameters;
+	std::vector<LambdaFunctionExpr::Parameter> parameters;
 	consume(TokenType::LEFT_PAREN);
 	if(!match(TokenType::RIGHT_PAREN)) {
 		do {
@@ -357,7 +388,7 @@ Expression::Ptr Parser::function() {
 	Statement::Ptr implementation = block();
 
 	const Position position(fun_kw.get_position(), implementation->get_position());
-	return Expression::make_ptr<FunctionExpr>(position,
+	return Expression::make_ptr<LambdaFunctionExpr>(position,
 			std::move(parameters),
 			std::move(return_type),
 			std::move(implementation));

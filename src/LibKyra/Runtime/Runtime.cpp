@@ -18,11 +18,12 @@
 #include "../Expressions/VariableExpr.hpp"
 #include "../Statements/BlockStmt.hpp"
 #include "../Statements/ClassDeclarationStmt.hpp"
-#include "../Statements/DeclarationStmt.hpp"
 #include "../Statements/ExpressionStmt.hpp"
+#include "../Statements/FunDeclarationStmt.hpp"
 #include "../Statements/IfStmt.hpp"
 #include "../Statements/PrintStmt.hpp"
 #include "../Statements/ReturnStmt.hpp"
+#include "../Statements/VarDeclarationStmt.hpp"
 #include "../Statements/WhileStmt.hpp"
 #include "../Values/Bool.hpp"
 #include "../Values/Function.hpp"
@@ -31,7 +32,7 @@
 #include "../Values/Number.hpp"
 
 namespace Kyra {
-class FunctionExpr;
+class LambdaFunctionExpr;
 class TypeExpr;
 Runtime& Runtime::the() {
 	static Runtime instance;
@@ -124,8 +125,9 @@ void Runtime::visit_call_expr(CallExpr& call_expr) {
 	EXPR_RETURN_FROM_VISIT(return_val);
 }
 
-void Runtime::visit_function(FunctionExpr& function_expr) {
-	EXPR_RETURN_FROM_VISIT(Value::make_ptr<Function>(function_expr, m_current_context));
+void Runtime::visit_lambda_function(LambdaFunctionExpr& function_expr) {
+	EXPR_RETURN_FROM_VISIT(
+			Value::make_ptr<Function>(std::make_shared<LambdaFunctionExpr>(function_expr), m_current_context));
 }
 
 void Runtime::visit_group_expr(GroupExpr& group_expr) {
@@ -164,10 +166,12 @@ void Runtime::visit_unary_expr(UnaryExpr& unary_expr) {
 }
 
 void Runtime::visit_variable(VariableExpr& variable_expr) {
-	const auto& var = m_current_context->get_var(variable_expr.get_name().get_value().as_string());
-	if(!var.has_value())
+	const std::string name = variable_expr.get_name().get_value().as_string();
+	const auto& var = m_current_context->get_var(name);
+	const auto& fun = m_current_context->get_function(name);
+	if(!var.has_value() && !fun.has_value())
 		assert(false);
-	EXPR_RETURN_FROM_VISIT(var->value);
+	EXPR_RETURN_FROM_VISIT(var.has_value() ? var->value : fun->value);
 }
 
 void Runtime::visit_block_stmt(BlockStmt& block_stmt) {
@@ -179,7 +183,7 @@ void Runtime::visit_block_stmt(BlockStmt& block_stmt) {
 			m_current_context);
 }
 
-void Runtime::visit_declaration_stmt(DeclarationStmt& declaration_stmt) {
+void Runtime::visit_var_declaration_stmt(VarDeclarationStmt& declaration_stmt) {
 	Value::Ptr init = Value::make_ptr<Nothing>();
 	if(declaration_stmt.get_initializer() != nullptr) {
 		EXPR_ACCEPT(declaration_stmt.get_initializer(), *this, init);
@@ -193,6 +197,13 @@ void Runtime::visit_declaration_stmt(DeclarationStmt& declaration_stmt) {
 void Runtime::visit_class_declaration_stmt(ClassDeclarationStmt& class_declaration_stmt) {
 	const std::string& name = class_declaration_stmt.get_class_name().get_value().as_string();
 	if(!m_current_context->declare_type(name, Value::make_ptr<Klass>(class_declaration_stmt)))
+		assert(false);
+}
+
+void Runtime::visit_fun_declaration_stmt(FunDeclarationStmt& fun_declaration_stmt) {
+	const std::string& name = fun_declaration_stmt.get_identifier().get_value().as_string();
+	EXPR_ACCEPT(fun_declaration_stmt.get_function(), *this, Value::Ptr function);
+	if(!m_current_context->declare_function(name, Variable(function, false)))
 		assert(false);
 }
 

@@ -11,6 +11,13 @@ val f: Function(Number)->Nothing = fun(a: Number)->Nothing{
 
 # f(1);
 
+fun f2(a: Number)->Nothing{
+	print a;
+	f2(a+1);
+}
+
+f2(1);
+
 var counter = 0;
 while(counter < 10){
 	if(counter < 3)

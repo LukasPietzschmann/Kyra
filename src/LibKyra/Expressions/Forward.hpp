@@ -5,7 +5,7 @@ class AccessExpr;
 class AssignmentExpr;
 class BinaryExpr;
 class CallExpr;
-class FunctionExpr;
+class LambdaFunctionExpr;
 class GroupExpr;
 class InstantiationExpr;
 class LiteralExpr;

@@ -10,7 +10,7 @@
 
 namespace Kyra {
 struct Position;
-class DeclarationStmt;
+class VarDeclarationStmt;
 class TypeExpr;
 class ClassDeclarationStmt : public Statement {
 public:
@@ -24,17 +24,17 @@ public:
 	ClassDeclarationStmt(const Position& position,
 			Token class_name,
 			std::vector<ConstructorParameter>&& parameters,
-			std::vector<std::shared_ptr<DeclarationStmt>>&& declarations);
+			std::vector<std::shared_ptr<VarDeclarationStmt>>&& declarations);
 	~ClassDeclarationStmt() override = default;
 
 	void accept(StatementVisitor& visitor) override;
 	const Token& get_class_name() const;
 	const std::vector<ConstructorParameter>& get_constructor_parameters() const;
-	const std::vector<std::shared_ptr<DeclarationStmt>>& get_declarations() const;
+	const std::vector<std::shared_ptr<VarDeclarationStmt>>& get_declarations() const;
 
 private:
 	Token m_class_name;
 	std::vector<ConstructorParameter> m_parameters;
-	std::vector<std::shared_ptr<DeclarationStmt>> m_declarations;
+	std::vector<std::shared_ptr<VarDeclarationStmt>> m_declarations;
 };
 }

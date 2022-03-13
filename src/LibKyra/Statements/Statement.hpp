@@ -24,8 +24,9 @@ private:                                      \
 	virtual ~StatementVisitor() = default;
 
 	virtual void visit_block_stmt(BlockStmt& block_stmt) = 0;
-	virtual void visit_declaration_stmt(DeclarationStmt& declaration_stmt) = 0;
+	virtual void visit_var_declaration_stmt(VarDeclarationStmt& declaration_stmt) = 0;
 	virtual void visit_class_declaration_stmt(ClassDeclarationStmt& class_declaration_stmt) = 0;
+	virtual void visit_fun_declaration_stmt(FunDeclarationStmt& fun_declaration_stmt) = 0;
 	virtual void visit_expression_stmt(ExpressionStmt& expression_stmt) = 0;
 	virtual void visit_print_stmt(PrintStmt& print_stmt) = 0;
 	virtual void visit_return_stmt(ReturnStmt& return_stmt) = 0;
