@@ -1,16 +1,12 @@
 #include "Exceptions.hpp"
 
-#include <sstream>
-
 namespace Kyra {
 MessageException::MessageException(const Position& position, std::string message) :
-	m_position(position), m_message(std::move(message)) {
-	std::stringstream ss;
-	ss << m_message << " [" << m_position.start << " - " << m_position.end << "]";
-	m_computed_message = ss.str();
-}
+	m_position(position), m_message(std::move(message)) {}
 
-const char* MessageException::what() const noexcept { return m_computed_message.c_str(); }
+const char* MessageException::what() const noexcept { return m_message.c_str(); }
+
+const Position& MessageException::get_position() const { return m_position; }
 
 LexerException::LexerException(const Position& position, const std::string& message) :
 	MessageException(position, message) {}

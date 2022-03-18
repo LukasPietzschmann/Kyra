@@ -10,6 +10,7 @@ class MessageException : public std::exception {
 public:
 	MessageException() = delete;
 	const char* what() const noexcept override;
+	const Position& get_position() const;
 
 protected:
 	MessageException(const Position& position, std::string message);
@@ -17,7 +18,6 @@ protected:
 private:
 	Position m_position;
 	std::string m_message;
-	std::string m_computed_message;
 };
 
 class LexerException : public MessageException {

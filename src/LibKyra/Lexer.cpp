@@ -8,14 +8,18 @@
 #include "Position.hpp"
 
 namespace Kyra {
-std::vector<Token> Lexer::scan_tokens() {
-	while(!is_at_end()) {
-		scan_token();
-		m_start_character = m_current_character;
-		m_start_line = m_current_line;
-	}
-	add_token(TokenType::END_OF_FILE);
-	return m_tokens;
+const Result<std::vector<Token>>& Lexer::scan_tokens() {
+	m_result.reset();
+	m_result.construct_value();
+	try {
+		while(!is_at_end()) {
+			scan_token();
+			m_start_character = m_current_character;
+			m_start_line = m_current_line;
+		}
+		add_token(TokenType::END_OF_FILE);
+	} catch(const LexerException& e) { m_result.insert_error({e.what(), e.get_position()}); }
+	return m_result;
 }
 
 void Lexer::scan_token() {
@@ -157,7 +161,10 @@ void Lexer::add_token(TokenType type, const std::string& literal) {
 		lexeme = m_source.substr(m_start_character, m_current_character - m_start_character);
 	int current_column = m_current_character - m_character_at_line_start + 1;
 	int start_column = m_start_character - m_character_at_line_start + 1;
-	m_tokens.emplace_back(type, Position(m_start_line, start_column, m_current_line, current_column), lexeme, literal);
+	m_result.assert_get_value().emplace_back(type,
+			Position(m_start_line, start_column, m_current_line, current_column),
+			lexeme,
+			literal);
 }
 
 bool Lexer::is_digit(char character) { return character >= '0' && character <= '9'; }

@@ -19,5 +19,6 @@ struct Position {
 	PositionPart end;
 
 	bool operator==(const Position& rhs) const;
+	friend std::ostream& operator<<(std::ostream& os, const Position& position);
 };
 }

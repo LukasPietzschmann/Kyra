@@ -8,11 +8,11 @@ namespace Kyra {
 TypingError::TypingError(const Position& position, std::string message) :
 	m_position(position), m_message(std::move(message)) {}
 
-std::string TypingError::get_cause() const {
-	std::stringstream ss;
-	ss << m_message << " [" << m_position.start << " - " << m_position.end << "]";
-	return ss.str();
+const std::string& TypingError::get_cause() const {
+	return m_message;
 }
+
+const Position& TypingError::get_position() const { return m_position; }
 
 WrongTypeError::WrongTypeError(const Position& position, const std::string& expected, const std::string& provided) :
 	TypingError(position, "Expected type " + expected + " does not equal provided type " + provided) {}

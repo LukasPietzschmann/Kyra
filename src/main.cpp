@@ -104,7 +104,10 @@ void nice_repl() {
 		}
 
 		complete_code += input_line;
-		unfinished = Kyra::Interpreter::is_incomplete_statement(complete_code);
+		// TODO: as the parser (and lexer) got rid of exceptions,
+		//		Interpreter::is_incomplete_statement does not work anymore
+		unfinished = false;
+		// unfinished = Kyra::Interpreter::is_incomplete_statement(complete_code);
 
 		if(unfinished) {
 			prompt = ".... ";

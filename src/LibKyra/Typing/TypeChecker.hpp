@@ -8,6 +8,7 @@
 
 #include "../Expressions/Expression.hpp"
 #include "../Expressions/Forward.hpp"
+#include "../Result.hpp"
 #include "../Statements/Forward.hpp"
 #include "../Statements/Statement.hpp"
 #include "Type.hpp"
@@ -17,37 +18,22 @@
 namespace Kyra {
 class FunctionType;
 class TypeChecker : public ExpressionVisitor, public StatementVisitor {
-#define THROW_TYPING_ERROR(error)                \
-	do {                                         \
-		m_errors.push_back((error).get_cause()); \
-		return;                                  \
+#define THROW_TYPING_ERROR(error)                                         \
+	do {                                                                  \
+		m_result.insert_error({error.get_cause(), error.get_position()}); \
+		return;                                                           \
 	} while(0)
 
 	EXPR_NEEDS_VISIT_RETURN_OF_TYPE(Type::Ptr);
 
 public:
-	class Result {
-	public:
-		bool has_errors() const { return m_errors.has_value(); }
-		void insert_error(std::string message) {
-			if(!m_errors.has_value())
-				m_errors = std::make_optional<std::vector<std::string>>({std::move(message)});
-			else
-				m_errors->push_back(std::move(message));
-		}
-		std::vector<std::string> get_errors() const { return m_errors.value_or(std::vector<std::string>()); }
-
-	private:
-		std::optional<std::vector<std::string>> m_errors{std::nullopt};
-	};
-
 	static TypeChecker& the();
 	TypeChecker(TypeChecker const&) = delete;
 	TypeChecker(TypeChecker&&) = delete;
 	void operator=(TypeChecker const&) = delete;
 	void operator=(TypeChecker&&) = delete;
 
-	TypeChecker::Result check(const std::vector<Statement::Ptr>& statements);
+	const Result<EmptyValue>& check(const std::vector<Statement::Ptr>& statements);
 
 	void visit_access_expr(AccessExpr& access_expr) override;
 	void visit_assignment_expr(AssignmentExpr& assignment_expr) override;
@@ -74,7 +60,7 @@ public:
 private:
 	TypeChecker() = default;
 
-	std::vector<std::string> m_errors;
+	Result<EmptyValue> m_result;
 	TypeContext::Ptr m_current_context{TypeContext::make_ptr<TypeContext>()};
 	FunctionType* m_current_function{};
 	bool m_does_current_function_return{};

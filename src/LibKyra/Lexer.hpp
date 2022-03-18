@@ -5,6 +5,7 @@
 #include <utility>
 #include <vector>
 
+#include "Result.hpp"
 #include "Token.hpp"
 #include "TokenType.hpp"
 
@@ -12,7 +13,7 @@ namespace Kyra {
 class Lexer {
 public:
 	explicit Lexer(std::string source) : m_source(std::move(source)) {}
-	std::vector<Token> scan_tokens();
+	const Result<std::vector<Token>>& scan_tokens();
 
 private:
 	const std::unordered_map<std::string, TokenType> m_keywords{{"var", TokenType::VAR},
@@ -29,7 +30,7 @@ private:
 			{"if", TokenType::IF},
 			{"else", TokenType::ELSE}};
 	const std::string m_source;
-	std::vector<Token> m_tokens;
+	Result<std::vector<Token>> m_result;
 	int m_current_character{};
 	int m_start_character{};
 	int m_current_line{1};

@@ -32,16 +32,11 @@ TypeChecker& TypeChecker::the() {
 	return instance;
 }
 
-TypeChecker::Result TypeChecker::check(const std::vector<Statement::Ptr>& statements) {
-	TypeChecker::Result result;
+const Result<EmptyValue>& TypeChecker::check(const std::vector<Statement::Ptr>& statements) {
+	m_result.reset();
 	for(const auto& statement : statements)
 		check(statement);
-
-	for(const auto& error : m_errors)
-		result.insert_error(error);
-
-	m_errors.clear();
-	return result;
+	return m_result;
 }
 
 void TypeChecker::check(const Statement::Ptr& statement) { statement->accept(*this); }

@@ -33,10 +33,14 @@
 #include "Values/Value.hpp"
 
 namespace Kyra {
-std::vector<Statement::Ptr> Parser::parse() {
-	while(!is_at_end())
-		m_statements.push_back(declaration());
-	return m_statements;
+const Result<std::vector<Statement::Ptr>>& Parser::parse() {
+	m_result.reset();
+	m_result.construct_value();
+	try {
+		while(!is_at_end())
+			m_result.assert_get_value().emplace_back(declaration());
+	} catch(const ParserException& e) { m_result.insert_error({e.what(), e.get_position()}); }
+	return m_result;
 }
 
 Statement::Ptr Parser::declaration() {

@@ -17,4 +17,9 @@ bool Position::operator==(const Position& rhs) const {
 	return start.line == rhs.start.line && start.column == rhs.start.column && end.line == rhs.end.line &&
 		   end.column == rhs.end.column;
 }
+
+std::ostream& operator<<(std::ostream& os, const Position& position) {
+	os << position.start << " - " << position.end;
+	return os;
+}
 }

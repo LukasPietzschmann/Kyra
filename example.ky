@@ -16,7 +16,7 @@ fun f2(a: Number)->Nothing{
 	f2(a+1);
 }
 
-f2(1);
+# f2(1);
 
 var counter = 0;
 while(counter < 10){

@@ -7,7 +7,8 @@ class TypingError {
 public:
 	TypingError(const Position& position, std::string message);
 
-	std::string get_cause() const;
+	const std::string& get_cause() const;
+	const Position& get_position() const;
 
 private:
 	Position m_position;
