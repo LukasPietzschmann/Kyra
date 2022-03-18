@@ -7,6 +7,11 @@
 #include "Exceptions.hpp"
 #include "Position.hpp"
 
+#define ADJUSTED_START_CHARACTER (m_start_position.column + m_character_at_start_line_start)
+#define START_CURRENT_CHARACTER_DELTA (m_current_character - ADJUSTED_START_CHARACTER)
+#define CURRENT_POSITION \
+	{ m_current_line, m_current_character - m_character_at_current_line_start + 1 }
+
 namespace Kyra {
 const Result<std::vector<Token>>& Lexer::scan_tokens() {
 	m_result.reset();
@@ -14,8 +19,8 @@ const Result<std::vector<Token>>& Lexer::scan_tokens() {
 	try {
 		while(!is_at_end()) {
 			scan_token();
-			m_start_character = m_current_character;
-			m_start_line = m_current_line;
+			m_character_at_start_line_start = m_character_at_current_line_start;
+			m_start_position = {m_current_line, m_current_character - m_character_at_current_line_start + 1};
 		}
 		add_token(TokenType::END_OF_FILE);
 	} catch(const LexerException& e) { m_result.insert_error({e.what(), e.get_position()}); }
@@ -30,7 +35,7 @@ void Lexer::scan_token() {
 		case '\r': break;
 		case '\n':
 			++m_current_line;
-			m_character_at_line_start = m_current_character;
+			m_character_at_current_line_start = m_current_character;
 			break;
 		case '#': comment(); break;
 		case '(': add_token(TokenType::LEFT_PAREN); break;
@@ -56,7 +61,7 @@ void Lexer::scan_token() {
 			else if(is_alpha(current))
 				name_or_keyword();
 			else
-				throw LexerException(Position(m_start_line, m_start_character, m_current_line, m_current_character),
+				throw LexerException(Position(m_start_position, CURRENT_POSITION),
 						"Unexpected Character \"" + std::string(1, current) + "\" ");
 	}
 }
@@ -67,8 +72,10 @@ void Lexer::comment() {
 		multiline = true;
 
 	while(multiline && (!is_at_end() && !match_multiple_and_advance("##"))) {
-		if(match('\n'))
+		if(match('\n')) {
+			m_character_at_current_line_start = m_current_character;
 			++m_current_line;
+		}
 		advance();
 	}
 	while(!multiline && (!is_at_end() && !match('\n')))
@@ -78,24 +85,24 @@ void Lexer::comment() {
 void Lexer::number() {
 	while(is_digit(peek()))
 		advance();
-	add_token(TokenType::NUMBER, m_source.substr(m_start_character, m_current_character - m_start_character));
+	add_token(TokenType::NUMBER, m_source.substr(ADJUSTED_START_CHARACTER, START_CURRENT_CHARACTER_DELTA));
 }
 
 void Lexer::string() {
 	while(!match('"') && !is_at_end()) {
-		if(match('\n'))
+		if(match('\n')) {
+			m_character_at_current_line_start = m_current_character;
 			++m_current_line;
+		}
 		advance();
 	}
 
 	if(is_at_end())
-		throw LexerException(Position(m_start_line, m_start_character, m_current_line, m_current_character),
-				"Unterminated String " +
-						m_source.substr(m_start_character + 1, m_current_character - m_start_character - 1));
+		throw LexerException(Position(m_start_position, CURRENT_POSITION), "Unterminated String");
 
 	advance();
 
-	const std::string& string = m_source.substr(m_start_character + 1, m_current_character - m_start_character - 2);
+	const std::string& string = m_source.substr(ADJUSTED_START_CHARACTER + 1, START_CURRENT_CHARACTER_DELTA - 2);
 	add_token(TokenType::STRING, string);
 }
 
@@ -103,18 +110,18 @@ void Lexer::name_or_keyword() {
 	while(is_alpha(peek()) || is_digit(peek()))
 		advance();
 
-	std::string string = m_source.substr(m_start_character, m_current_character - m_start_character);
+	std::string string = m_source.substr(ADJUSTED_START_CHARACTER, START_CURRENT_CHARACTER_DELTA);
 	if(string == "operator") {
 		while(!is_whitespace(peek()))
 			advance();
 	}
-	string = m_source.substr(m_start_character, m_current_character - m_start_character);
+	string = m_source.substr(ADJUSTED_START_CHARACTER, START_CURRENT_CHARACTER_DELTA);
 	std::string literal;
 	TokenType type = TokenType::NAME;
 	if(const auto& it = m_keywords.find(string); it != m_keywords.end())
 		type = it->second;
 	else
-		literal = m_source.substr(m_start_character, m_current_character - m_start_character);
+		literal = m_source.substr(ADJUSTED_START_CHARACTER, START_CURRENT_CHARACTER_DELTA);
 
 	add_token(type, literal);
 }
@@ -158,13 +165,8 @@ bool Lexer::match_multiple_and_advance(const std::string& expected) {
 void Lexer::add_token(TokenType type, const std::string& literal) {
 	std::string lexeme;
 	if(type != TokenType::END_OF_FILE)
-		lexeme = m_source.substr(m_start_character, m_current_character - m_start_character);
-	int current_column = m_current_character - m_character_at_line_start + 1;
-	int start_column = m_start_character - m_character_at_line_start + 1;
-	m_result.assert_get_value().emplace_back(type,
-			Position(m_start_line, start_column, m_current_line, current_column),
-			lexeme,
-			literal);
+		lexeme = m_source.substr(ADJUSTED_START_CHARACTER, START_CURRENT_CHARACTER_DELTA);
+	m_result.assert_get_value().emplace_back(type, Position(m_start_position, CURRENT_POSITION), lexeme, literal);
 }
 
 bool Lexer::is_digit(char character) { return character >= '0' && character <= '9'; }
@@ -177,3 +179,7 @@ bool Lexer::is_whitespace(char character) { return isspace(character); }
 
 bool Lexer::is_at_end() const { return (unsigned long)m_current_character >= m_source.size(); }
 }
+
+#undef ADJUSTED_START_CHARACTER
+#undef START_CURRENT_CHARACTER_DELTA
+#undef CURRENT_POSITION

@@ -4,9 +4,6 @@
 
 namespace Kyra {
 struct Position {
-	Position(unsigned int start_line, unsigned int start_column, unsigned int end_line, unsigned int end_column);
-	Position(const Position& start, const Position& end);
-
 	struct PositionPart {
 		PositionPart(unsigned int line, unsigned int column);
 		unsigned int line;
@@ -14,6 +11,10 @@ struct Position {
 
 		friend std::ostream& operator<<(std::ostream& os, const Position::PositionPart& part);
 	};
+
+	Position(unsigned int start_line, unsigned int start_column, unsigned int end_line, unsigned int end_column);
+	Position(const PositionPart& start, const PositionPart& end);
+	Position(const Position& start, const Position& end);
 
 	PositionPart start;
 	PositionPart end;

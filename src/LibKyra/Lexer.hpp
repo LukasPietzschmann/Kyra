@@ -31,11 +31,11 @@ private:
 			{"else", TokenType::ELSE}};
 	const std::string m_source;
 	Result<std::vector<Token>> m_result;
-	int m_current_character{};
-	int m_start_character{};
-	int m_current_line{1};
-	int m_start_line{1};
-	int m_character_at_line_start{};
+	Position::PositionPart m_start_position{1, 0};
+	unsigned int m_current_character{0};
+	unsigned int m_current_line{1};
+	unsigned int m_character_at_start_line_start{0};
+	unsigned int m_character_at_current_line_start{0};
 
 	void scan_token();
 	void comment();
