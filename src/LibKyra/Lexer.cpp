@@ -10,8 +10,9 @@
 #define ADJUSTED_START_CHARACTER (m_start_position.column + m_character_at_start_line_start)
 #define START_CURRENT_CHARACTER_DELTA (m_current_character - ADJUSTED_START_CHARACTER)
 #define CURRENT_POSITION \
-	{ m_current_line, m_current_character - m_character_at_current_line_start + 1 }
+	{ m_current_line, m_current_character - m_character_at_current_line_start }
 
+// FIXME: If the column gets printed, it should start at 1, not 0
 namespace Kyra {
 const Result<std::vector<Token>>& Lexer::scan_tokens() {
 	m_result.reset();
@@ -20,7 +21,7 @@ const Result<std::vector<Token>>& Lexer::scan_tokens() {
 		while(!is_at_end()) {
 			scan_token();
 			m_character_at_start_line_start = m_character_at_current_line_start;
-			m_start_position = {m_current_line, m_current_character - m_character_at_current_line_start + 1};
+			m_start_position = {m_current_line, m_current_character - m_character_at_current_line_start};
 		}
 		add_token(TokenType::END_OF_FILE);
 	} catch(const LexerException& e) { m_result.insert_error({e.what(), e.get_position()}); }
