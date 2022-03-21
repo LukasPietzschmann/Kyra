@@ -27,7 +27,10 @@ public:
 
 	void reset() {
 		m_errors.clear();
+		if(m_value == nullptr)
+			return;
 		delete m_value;
+		m_value = nullptr;
 	};
 
 	bool has_errors() const { return !m_errors.empty(); }
@@ -36,7 +39,10 @@ public:
 	template <typename... Args>
 	void construct_value(Args... args) {
 		static_assert(std::is_constructible_v<VT, Args...>);
-		delete m_value;
+		if(m_value != nullptr) {
+			delete m_value;
+			m_value = nullptr;
+		}
 		m_value = new VT(args...);
 	}
 
