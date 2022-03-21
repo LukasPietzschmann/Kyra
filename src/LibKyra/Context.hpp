@@ -36,7 +36,7 @@ public:
 	bool declare_function(S&& name, T&& value) {
 		if(m_functions.contains(name) || m_variables.contains(name))
 			return false;
-		m_functions.template try_emplace(std::forward<S>(name), std::forward<T>(value));
+		m_functions.try_emplace(std::forward<S>(name), std::forward<T>(value));
 		return true;
 	}
 
