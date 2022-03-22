@@ -40,7 +40,7 @@ public:
 		static_assert(std::is_constructible_v<VT, Args...>);
 		if(m_value.has_value())
 			m_value.reset();
-		m_value.template emplace(args...);
+		m_value.emplace(args...);
 	}
 
 	VT& assert_get_value() {
