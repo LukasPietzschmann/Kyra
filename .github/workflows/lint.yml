@@ -1,0 +1,24 @@
+name: Run clang-format
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - uses: DoozyX/clang-format-lint-action@v0.13
+      with:
+        source: './src'
+        exclude: './tests'
+        extensions: 'h,hpp,cpp'
+        clangFormatVersion: 12
+        style: file
+        inplace: False
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
