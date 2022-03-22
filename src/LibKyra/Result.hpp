@@ -2,6 +2,7 @@
 
 #include <cassert>
 #include <iostream>
+#include <optional>
 #include <ostream>
 #include <string>
 #include <vector>
@@ -28,10 +29,7 @@ public:
 
 	void reset() {
 		m_errors.clear();
-		if(m_value == nullptr)
-			return;
-		delete m_value;
-		m_value = nullptr;
+		m_value.reset();
 	};
 
 	bool has_errors() const { return !m_errors.empty(); }
@@ -40,15 +38,13 @@ public:
 	template <typename... Args>
 	void construct_value(Args... args) {
 		static_assert(std::is_constructible_v<VT, Args...>);
-		if(m_value != nullptr) {
-			delete m_value;
-			m_value = nullptr;
-		}
-		m_value = new VT(args...);
+		if(m_value.has_value())
+			m_value.reset();
+		m_value.template emplace(args...);
 	}
 
-	VT& assert_get_value() const {
-		assert(m_value != nullptr);
+	VT& assert_get_value() {
+		assert(m_value.has_value());
 		return *m_value;
 	}
 
@@ -56,6 +52,6 @@ public:
 
 private:
 	std::vector<Error> m_errors;
-	VT* m_value{nullptr};
+	std::optional<VT> m_value{};
 };
 }

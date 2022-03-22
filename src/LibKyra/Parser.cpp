@@ -133,7 +133,7 @@ Statement::Ptr Parser::function_declaration() {
 	Statement::Ptr implementation = block();
 
 	const Position position(fun_kw.get_position(), implementation->get_position());
-	std::shared_ptr<LambdaFunctionExpr> function = std::make_shared<LambdaFunctionExpr>(position,
+	auto function = std::make_shared<LambdaFunctionExpr>(position,
 			std::move(parameters),
 			std::move(return_type),
 			std::move(implementation));
