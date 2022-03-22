@@ -1,10 +1,10 @@
 # The Kyra programming language
 
+
+[![Build (MacOS, Ubuntu, Windows)](https://github.com/LukasPietzschmann/Kyra/actions/workflows/build.yml/badge.svg?branch=master)](https://github.com/LukasPietzschmann/Kyra/actions/workflows/build.yml)
 [![SonarCloud](https://github.com/LukasPietzschmann/Kyra/actions/workflows/sonarcloud.yml/badge.svg?branch=master)](https://github.com/LukasPietzschmann/Kyra/actions/workflows/sonarcloud.yml)
 [![Lines of Code](https://sonarcloud.io/api/project_badges/measure?project=LukasPietzschmann_Kyra&metric=ncloc)](https://sonarcloud.io/dashboard?id=LukasPietzschmann_Kyra)
-[![Bugs](https://sonarcloud.io/api/project_badges/measure?project=LukasPietzschmann_Kyra&metric=bugs)](https://sonarcloud.io/dashboard?id=LukasPietzschmann_Kyra)
 [![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=LukasPietzschmann_Kyra&metric=code_smells)](https://sonarcloud.io/dashboard?id=LukasPietzschmann_Kyra)
-![works on my machine](https://cdn.jsdelivr.net/gh/nikku/works-on-my-machine@v0.2.0/badge.svg)
 
 <img src="https://github.com/LukasPietzschmann/Kyra/blob/master/Logo.png" style="display: block; margin-left: auto; margin-right: auto; width: 200px" />
 
