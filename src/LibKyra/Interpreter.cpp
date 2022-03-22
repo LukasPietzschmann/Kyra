@@ -30,7 +30,7 @@ void Interpreter::execute(const std::string& code, bool verbose_logging) {
 	const auto& type_checking_result = TypeChecker::the().check(parser_result.assert_get_value());
 	if(type_checking_result.has_errors()) {
 		for(const auto& error : type_checking_result.get_errors())
-			std::cout << "[Typing Error]" << error << std::endl;
+			std::cout << "[Typing Error] " << error << std::endl;
 		return;
 	}
 
