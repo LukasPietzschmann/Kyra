@@ -12,7 +12,7 @@ FunDeclarationStmt::FunDeclarationStmt(const Position& position,
 		Token identifier,
 		std::shared_ptr<LambdaFunctionExpr> function) :
 	Statement(position),
-	m_identifier(std::move(identifier)), m_function(std::move(function)), m_type({}) {
+	m_identifier(std::move(identifier)), m_function(std::move(function)) {
 	std::vector<std::shared_ptr<TypeExpr>> param_types;
 	for(const auto& param : m_function->get_parameters())
 		param_types.push_back(param.type);

@@ -23,6 +23,6 @@ public:
 private:
 	Token m_identifier;
 	std::shared_ptr<LambdaFunctionExpr> m_function;
-	std::shared_ptr<TypeExpr> m_type;
+	std::shared_ptr<TypeExpr> m_type{};
 };
 }
