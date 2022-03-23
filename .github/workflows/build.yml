@@ -1,4 +1,4 @@
-name: Build for MacOS, Ubuntu and Windows
+name: Build
 
 on:
   push:

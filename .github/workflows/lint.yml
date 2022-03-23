@@ -1,4 +1,4 @@
-name: Run clang-format
+name: Lint
 
 on:
   push:
