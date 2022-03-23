@@ -30,6 +30,7 @@
 #include "../Values/Klass.hpp"
 #include "../Values/Nothing.hpp"
 #include "../Values/Number.hpp"
+#include "../Values/String.hpp"
 
 namespace Kyra {
 class LambdaFunctionExpr;
@@ -150,7 +151,16 @@ void Runtime::visit_instantiation_expr(InstantiationExpr& instantiation_expr) {
 	EXPR_RETURN_FROM_VISIT(klass);
 }
 
-void Runtime::visit_literal(LiteralExpr& literal_expr) { EXPR_RETURN_FROM_VISIT(literal_expr.get_value()); }
+void Runtime::visit_literal(LiteralExpr& literal_expr) {
+	switch(literal_expr.get_type()) {
+		case LiteralExpr::t_int: EXPR_RETURN_FROM_VISIT(Value::make_ptr<Number>(literal_expr.get_int_value())); break;
+		case LiteralExpr::t_string:
+			EXPR_RETURN_FROM_VISIT(Value::make_ptr<String>(literal_expr.get_string_value()));
+			break;
+		case LiteralExpr::t_bool: EXPR_RETURN_FROM_VISIT(Value::make_ptr<Bool>(literal_expr.get_bool_value())); break;
+		case LiteralExpr::t_nothing: EXPR_RETURN_FROM_VISIT(Value::make_ptr<Nothing>()); break;
+	}
+}
 
 void Runtime::visit_type_expr(TypeExpr&) {
 	// a type expr. has no effect during runtime

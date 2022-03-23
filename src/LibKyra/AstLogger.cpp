@@ -214,7 +214,16 @@ void AstLogger::visit_instantiation_expr(InstantiationExpr& instantiation_expr) 
 }
 
 void AstLogger::visit_literal(LiteralExpr& literal) {
-	COUT << "Literal with value of " << literal.get_value()->to_string() << '\n';
+	switch(literal.get_type()) {
+		case LiteralExpr::t_int: COUT << "Int-Literal with value of " << literal.get_int_value() << '\n'; break;
+		case LiteralExpr::t_string:
+			COUT << "String-Literal with value of " << literal.get_string_value() << '\n';
+			break;
+		case LiteralExpr::t_bool:
+			COUT << "Bool-Literal with value of " << (literal.get_bool_value() ? "true" : "false") << '\n';
+			break;
+		case LiteralExpr::t_nothing: COUT << "Nothing-Literal with value of Nothing" << '\n'; break;
+	}
 }
 
 void AstLogger::visit_type_expr(TypeExpr& type_expr) { COUT << "Type " << type_expr.get_name(); }

@@ -23,6 +23,7 @@
 #include "../Statements/ReturnStmt.hpp"
 #include "../Statements/VarDeclarationStmt.hpp"
 #include "../Statements/WhileStmt.hpp"
+#include "../Values/Value.hpp"
 #include "ClassType.hpp"
 #include "FunctionType.hpp"
 
@@ -188,7 +189,18 @@ void TypeChecker::visit_instantiation_expr(InstantiationExpr& instantiation_expr
 }
 
 void TypeChecker::visit_literal(LiteralExpr& literal_expr) {
-	EXPR_RETURN_FROM_VISIT(*m_current_context->get_type(literal_expr.get_value()->get_type()));
+	switch(literal_expr.get_type()) {
+		case LiteralExpr::t_int:
+			EXPR_RETURN_FROM_VISIT(*m_current_context->get_type(Value::NativeTypes::Number));
+			break;
+		case LiteralExpr::t_string:
+			EXPR_RETURN_FROM_VISIT(*m_current_context->get_type(Value::NativeTypes::String));
+			break;
+		case LiteralExpr::t_bool: EXPR_RETURN_FROM_VISIT(*m_current_context->get_type(Value::NativeTypes::Bool)); break;
+		case LiteralExpr::t_nothing:
+			EXPR_RETURN_FROM_VISIT(*m_current_context->get_type(Value::NativeTypes::Nothing));
+			break;
+	}
 }
 
 void TypeChecker::visit_type_expr(TypeExpr& type_expr) {

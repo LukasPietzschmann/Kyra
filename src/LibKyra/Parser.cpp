@@ -26,10 +26,6 @@
 #include "Statements/ReturnStmt.hpp"
 #include "Statements/VarDeclarationStmt.hpp"
 #include "Statements/WhileStmt.hpp"
-#include "Values/Bool.hpp"
-#include "Values/Nothing.hpp"
-#include "Values/Number.hpp"
-#include "Values/String.hpp"
 #include "Values/Value.hpp"
 
 namespace Kyra {
@@ -340,23 +336,23 @@ Expression::Ptr Parser::primary() {
 		return group();
 	if(match(TokenType::NOTHING)) {
 		const Position& position = consume(TokenType::NOTHING).get_position();
-		return Expression::make_ptr<LiteralExpr>(position, Value::make_ptr<Nothing>());
+		return Expression::make_ptr<LiteralExpr>(position);
 	}
 	if(match(TokenType::NUMBER)) {
 		const Position& position = consume(TokenType::NUMBER).get_position();
-		return Expression::make_ptr<LiteralExpr>(position, Value::make_ptr<Number>(previous().get_value().as_int()));
+		return Expression::make_ptr<LiteralExpr>(position, previous().get_value().as_int());
 	}
 	if(match(TokenType::STRING)) {
 		const Position& position = consume(TokenType::STRING).get_position();
-		return Expression::make_ptr<LiteralExpr>(position, Value::make_ptr<String>(previous().get_value().as_string()));
+		return Expression::make_ptr<LiteralExpr>(position, previous().get_value().as_string());
 	}
 	if(match(TokenType::TRUE)) {
 		const Position& position = consume(TokenType::TRUE).get_position();
-		return Expression::make_ptr<LiteralExpr>(position, Value::make_ptr<Bool>(true));
+		return Expression::make_ptr<LiteralExpr>(position, true);
 	}
 	if(match(TokenType::FALSE)) {
 		const Position& position = consume(TokenType::FALSE).get_position();
-		return Expression::make_ptr<LiteralExpr>(position, Value::make_ptr<Bool>(false));
+		return Expression::make_ptr<LiteralExpr>(position, false);
 	}
 	if(match(TokenType::NAME)) {
 		const Position& position = consume(TokenType::NAME).get_position();
