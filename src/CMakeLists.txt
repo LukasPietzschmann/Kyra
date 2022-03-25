@@ -1,5 +1,3 @@
-add_subdirectory(LibKyra)
-
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR}/cmake)
 
 find_package(Readline)
@@ -25,9 +23,19 @@ if (NORMALIZED_BUILD_TYPE STREQUAL "DEBUG")
 	FetchContent_MakeAvailable(backward-cpp)
 endif (NORMALIZED_BUILD_TYPE STREQUAL "DEBUG")
 
-add_executable(Kyra main.cpp ${PROJECT_SOURCE_DIR}/src/version.h ${BACKWARD_ENABLE})
+add_subdirectory(LibKyra)
+add_executable(Kyra main.cpp ${BACKWARD_ENABLE})
 target_include_directories(Kyra PRIVATE LibKyra/include)
 target_link_libraries(Kyra LibKyra cxxopts)
+
+if (READLINE_FOUND)
+	target_link_libraries(Kyra ${Readline_LIBRARY})
+	add_compile_definitions(HAS_READLINE)
+endif (READLINE_FOUND)
+
+if (NORMALIZED_BUILD_TYPE STREQUAL "DEBUG")
+	add_backward(Kyra)
+endif (NORMALIZED_BUILD_TYPE STREQUAL "DEBUG")
 
 option(IWYU "Adds Include-What-You-Use to the Toolchain" OFF)
 if (IWYU)
@@ -36,12 +44,3 @@ if (IWYU)
 	set_property(TARGET LibKyra Kyra PROPERTY CXX_INCLUDE_WHAT_YOU_USE ${iwyu_path_and_options})
 	set_property(TARGET LibKyra Kyra PROPERTY C_INCLUDE_WHAT_YOU_USE ${iwyu_path_and_options})
 endif ()
-
-if (CMAKE_BUILD_TYPE MATCHES DEBUG)
-	add_backward(Kyra)
-endif (CMAKE_BUILD_TYPE MATCHES DEBUG)
-
-if (READLINE_FOUND)
-	target_link_libraries(Kyra ${Readline_LIBRARY})
-	add_compile_definitions(HAS_READLINE)
-endif (READLINE_FOUND)
