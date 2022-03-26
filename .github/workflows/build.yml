@@ -15,7 +15,11 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ ubuntu-20.04, macos-11, windows-2022 ]
+        os: [ ubuntu-20.04, macos-11 ]
+        compiler: [ g++, clang++ ]
+        exclude:
+          - os: macos-11
+            compiler: g++
     steps:
       - uses: actions/checkout@v2
 
@@ -23,11 +27,11 @@ jobs:
         uses: actions/cache@v3
         with:
           path: ${{github.workspace}}/build
-          key: ${{ matrix.os }}-build
+          key: ${{ matrix.os }}-${{ matrix.compiler }}-build
           restore-keys: ${{ matrix.os }}-build
 
       - name: Configure CMake
-        run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DFORCE_COLORED_OUTPUT=1
+        run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DFORCE_COLORED_OUTPUT=1 -DCMAKE_CXX_COMPILER=${{matrix.compiler}}
 
       - name: Build
         run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
