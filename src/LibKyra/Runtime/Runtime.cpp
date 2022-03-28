@@ -159,6 +159,7 @@ void Runtime::visit_literal(LiteralExpr& literal_expr) {
 			break;
 		case LiteralExpr::t_bool: EXPR_RETURN_FROM_VISIT(Value::make_ptr<Bool>(literal_expr.get_bool_value())); break;
 		case LiteralExpr::t_nothing: EXPR_RETURN_FROM_VISIT(Value::make_ptr<Nothing>()); break;
+		default: assert(false);
 	}
 }
 

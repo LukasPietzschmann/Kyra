@@ -1,5 +1,6 @@
 #include "TypeChecker.hpp"
 
+#include <cassert>
 #include <string>
 #include <utility>
 
@@ -200,6 +201,7 @@ void TypeChecker::visit_literal(LiteralExpr& literal_expr) {
 		case LiteralExpr::t_nothing:
 			EXPR_RETURN_FROM_VISIT(*m_current_context->get_type(Value::NativeTypes::Nothing));
 			break;
+		default: assert(false);
 	}
 }
 

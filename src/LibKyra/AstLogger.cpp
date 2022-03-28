@@ -223,6 +223,7 @@ void AstLogger::visit_literal(LiteralExpr& literal) {
 			COUT << "Bool-Literal with value of " << (literal.get_bool_value() ? "true" : "false") << '\n';
 			break;
 		case LiteralExpr::t_nothing: COUT << "Nothing-Literal with value of Nothing" << '\n'; break;
+		default: assert(false); // This should not fire, as there are not more cases in the enum
 	}
 }
 

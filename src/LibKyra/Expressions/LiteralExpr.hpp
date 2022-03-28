@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <variant>
 
 #include "Expression.hpp"
 
@@ -14,7 +15,6 @@ public:
 	LiteralExpr(const Position& position, std::string&& string_value);
 	LiteralExpr(const Position& position, bool bool_value);
 	explicit LiteralExpr(const Position& position);
-	~LiteralExpr() override;
 
 	void accept(ExpressionVisitor& visitor) override;
 	Type get_type() const;
@@ -24,10 +24,6 @@ public:
 
 private:
 	Type m_type;
-	union {
-		int m_int_literal;
-		std::string m_string_literal;
-		bool m_bool_literal;
-	};
+	std::variant<int, std::string, bool> m_literal;
 };
 }
