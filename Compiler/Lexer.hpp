@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 
+#include "SourceRange.hpp"
 #include "Token.hpp"
 
 class Lexer {
@@ -25,8 +26,8 @@ public:
 private:
 	std::vector<Token> m_tokens;
 	std::string_view m_source{};
-	unsigned m_current_character{0};
-	unsigned m_start_character{m_current_character};
+	SourceRange::Position m_current{0, 0, 0};
+	SourceRange::Position m_start{0, 0, 0};
 
 	void scan_token();
 
@@ -47,4 +48,6 @@ private:
 	std::optional<TokenType> is_keyword(std::string_view string) const;
 	bool is_at_end() const;
 	void add_token(TokenType type, std::string_view literal = "");
+
+	void line_brak();
 };

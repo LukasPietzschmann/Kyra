@@ -8,7 +8,7 @@ const std::vector<Token>& Lexer::scan_input(std::string_view source) {
 	m_tokens.clear();
 
 	while(!is_at_end()) {
-		m_start_character = m_current_character;
+		m_start = m_current;
 		scan_token();
 	}
 	add_token(TokenType::END_OF_FILE);
@@ -21,8 +21,8 @@ void Lexer::scan_token() {
 	switch(current) {
 		case ' ':
 		case '\t':
-		case '\n':
 		case '\r': break;  // skip whitespace
+		case '\n': line_brak(); break;
 		case '(': add_token(TokenType::LEFT_PAREN); break;
 		case ')': add_token(TokenType::RIGHT_PAREN); break;
 		case '{': add_token(TokenType::LEFT_CURLY); break;
@@ -48,8 +48,11 @@ void Lexer::scan_token() {
 
 void Lexer::comment() {
 	bool is_multiline = match_and_advance('#');
-	while(is_multiline && (!is_at_end() && !match_multiple_and_advance("##")))
+	while(is_multiline && (!is_at_end() && !match_multiple_and_advance("##"))) {
+		if(match('\n'))
+			line_brak();
 		advance();
+	}
 	while(!is_multiline && (!is_at_end() && !match('\n')))
 		advance();
 }
@@ -57,13 +60,13 @@ void Lexer::comment() {
 void Lexer::number() {
 	while(is_digit(peek()))
 		advance();
-	add_token(TokenType::NUMBER, m_source.substr(m_start_character, m_current_character - m_start_character));
+	add_token(TokenType::NUMBER, m_source.substr(m_start.index, m_current.index - m_start.index));
 }
 
 void Lexer::name_or_keyword() {
 	while(is_alpha(peek()) || is_digit(peek()))
 		advance();
-	std::string_view lexeme = m_source.substr(m_start_character, m_current_character - m_start_character);
+	std::string_view lexeme = m_source.substr(m_start.index, m_current.index - m_start.index);
 	if(const auto& type_or_nil = is_keyword(lexeme); type_or_nil.has_value())
 		add_token(*type_or_nil, lexeme);
 	else
@@ -72,13 +75,13 @@ void Lexer::name_or_keyword() {
 
 char Lexer::advance() {
 	assert(!is_at_end());
-	return m_source.at(m_current_character++);
+	return m_source.at(m_current.index++);
 }
 
 char Lexer::peek() const {
 	if(is_at_end())
 		return '\0';
-	return m_source.at(m_current_character);
+	return m_source.at(m_current.index);
 }
 
 bool Lexer::match(char expected) const { return peek() == expected; }
@@ -93,7 +96,7 @@ bool Lexer::match_and_advance(char expected) {
 std::string_view Lexer::peek_multiple(unsigned n) const {
 	if(is_at_end())
 		return "";
-	return m_source.substr(m_current_character, n);
+	return m_source.substr(m_current.index, n);
 }
 
 bool Lexer::match_multiple(std::string_view expected) const { return peek_multiple(expected.length()) == expected; }
@@ -123,11 +126,18 @@ std::optional<TokenType> Lexer::is_keyword(std::string_view string) const {
 	return {};
 }
 
-bool Lexer::is_at_end() const { return m_current_character >= m_source.length(); }
+bool Lexer::is_at_end() const { return m_current.index >= m_source.length(); }
 
 void Lexer::add_token(TokenType type, std::string_view literal) {
 	std::string_view lexeme;
 	if(type != TokenType::END_OF_FILE)
-		lexeme = m_source.substr(m_start_character, m_current_character - m_start_character);
-	m_tokens.emplace_back(type, lexeme, literal);
+		lexeme = m_source.substr(m_start.index, m_current.index - m_start.index);
+	SourceRange::Position start_copy = m_start;
+	SourceRange::Position end_copy = m_current;
+	m_tokens.emplace_back(type, lexeme, literal, SourceRange(start_copy, end_copy));
+}
+
+void Lexer::line_brak() {
+	++m_current.line;
+	m_current.line_start_index = m_current.index;
 }

@@ -2,6 +2,8 @@
 
 #include <string>
 
+#include "SourceRange.hpp"
+
 enum class TokenType {
 	// Single-character tokens
 	LEFT_PAREN,
@@ -44,14 +46,16 @@ public:
 		std::string_view m_value;
 	};
 
-	Token(TokenType type, std::string_view lexeme, std::string_view literal_value = "");
+	Token(TokenType type, std::string_view lexeme, std::string_view literal_value, const SourceRange& source_range);
 
 	const TokenType get_type() const;
 	const std::string_view get_lexeme() const;
 	const LiteralValue& get_literal_value() const;
+	const SourceRange& get_source_range() const;
 
 private:
 	const TokenType m_type;
 	const std::string_view m_lexeme;
 	const LiteralValue m_literal_value;
+	const SourceRange m_source_range;
 };
