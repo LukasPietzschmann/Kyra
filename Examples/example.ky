@@ -1,0 +1,12 @@
+# Single-line comment
+
+##
+multi-line comment
+##
+
+val a: i32 = 1;
+var a: i32 = 2;
+
+fun add(val a: i32, var b: i32): i32{
+	return a + b;
+}
