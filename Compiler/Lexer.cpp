@@ -104,7 +104,7 @@ bool Lexer::match_multiple(std::string_view expected) const { return peek_multip
 bool Lexer::match_multiple_and_advance(std::string_view expected) {
 	if(!match_multiple(expected))
 		return false;
-	for(auto i = 0; i < expected.length(); ++i)
+	for(unsigned i = 0; i < expected.length(); ++i)
 		advance();
 	return true;
 }
