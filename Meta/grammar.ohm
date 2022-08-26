@@ -1,0 +1,40 @@
+// This grammar can be parsed on https://ohmjs.org/editor
+
+Kyra {
+	Program = Declaration*
+
+	// Declarations
+	Declaration = VarDeclaration | FunDeclaration | Statement
+	VarDeclaration = varKeyword identifier TypeSpecifier ("=" Expression)? ";"
+	FunDeclaration = "fun" identifier ParamList TypeSpecifier Block
+
+	// Expressions
+	Expression = Assignment
+	Assignment = identifier TypeSpecifier "=" Assignment -- Assignment
+		| Term
+	Term = Factor (( "-" | "+") Factor)*
+	Factor = Call (("/" | "*") Call)*
+	Call = Primary ExpressionList*
+	Primary = number | identifier | Group
+
+	// Statements
+	Statement = Block | ExpressionStatement | ReturnStatement
+	ExpressionStatement = Expression ";"
+	ReturnStatement = "return" Expression ";"
+
+	// Utilities
+	Group = "(" Expression ")"
+	Block = "{" Declaration* "}"
+	IdentifierList = "(" (identifier TypeSpecifier ("," identifier TypeSpecifier)*)? ")"
+	IdentifierListWithVal = "(" (varKeyword identifier TypeSpecifier (varKeyword identifier TypeSpecifier)*)? ")"
+	ExpressionList = "(" (Expression ("," Expression)*)? ")"
+	TypeSpecifier = ":" identifier
+	Param = varKeyword identifier TypeSpecifier
+	ParamList = "(" (Param ("," Param)* )? ")"
+
+	// Lexical Grammar
+	number = digit+
+	identifier = ~keyword letter+
+	varKeyword = "val" | "var"
+	keyword = varKeyword | "fun" | "return"
+}
