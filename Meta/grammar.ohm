@@ -10,7 +10,7 @@ Kyra {
 
 	// Expressions
 	Expression = Assignment
-	Assignment = identifier TypeSpecifier "=" Assignment -- Assignment
+	Assignment = identifier TypeSpecifier "=" Expression -- Assignment
 		| Term
 	Term = Factor (( "-" | "+") Factor)*
 	Factor = Call (("/" | "*") Call)*
@@ -34,7 +34,7 @@ Kyra {
 
 	// Lexical Grammar
 	number = digit+
-	identifier = ~keyword letter+
+	identifier = ~keyword letter (letter | digit)*
 	varKeyword = "val" | "var"
 	keyword = varKeyword | "fun" | "return"
 }
