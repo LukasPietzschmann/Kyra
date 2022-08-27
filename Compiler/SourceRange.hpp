@@ -14,6 +14,10 @@ public:
 
 	SourceRange(const Position& start, const Position& end);
 
+	static SourceRange unite(const SourceRange& start, const SourceRange& end) {
+		return SourceRange(start.m_start, end.m_end);
+	}
+
 	const Position& get_start() const;
 	const Position& get_end() const;
 
