@@ -3,6 +3,8 @@
 #include <cassert>
 #include <stdexcept>
 
+#include "Aliases.hpp"
+
 Token::LiteralValue::LiteralValue(std::string_view value) : m_value(value) {}
 
 const std::string_view Token::LiteralValue::as_string() const { return m_value; }
@@ -12,7 +14,7 @@ int Token::LiteralValue::as_int() const {
 	try {
 		res = std::stoi(std::string(m_value));
 	} catch(const std::exception&) {  // std::invalid_argument, std::out_of_range
-		assert(0);	// TODO: assert_not_reached
+		assert_not_reached();
 	}
 	return res;
 }

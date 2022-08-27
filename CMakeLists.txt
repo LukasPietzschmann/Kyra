@@ -27,4 +27,5 @@ if (${USE_MOLD_LINKER})
 	add_link_options(-fuse-ld=mold)
 endif ()
 
+include_directories(Utils)
 add_subdirectory(Compiler)
