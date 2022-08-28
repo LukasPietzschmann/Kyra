@@ -20,7 +20,7 @@ void ExpressionStatement::accept(ASTVisitor& visitor) const { visitor.visit(*thi
 Declaration::Declaration(const SourceRange& source_range,
 		Kind declaration_kind,
 		std::string_view identifier,
-		RefPtr<Type> type,
+		RefPtr<TypeIndicator> type,
 		RefPtr<Expression> initializer) :
 	Statement(source_range),
 	m_declaration_kind(declaration_kind), m_identifier(identifier), m_type(type), m_initializer(initializer) {}
@@ -39,13 +39,13 @@ RefPtr<Expression> Declaration::get_initializer_shared() const { return m_initia
 
 void Declaration::accept(ASTVisitor& visitor) const { visitor.visit(*this); }
 
-Function::Parameter::Parameter(std::string_view name, RefPtr<Type> type, Declaration::Kind declaration_kind) :
+Function::Parameter::Parameter(std::string_view name, RefPtr<TypeIndicator> type, Declaration::Kind declaration_kind) :
 	name(name), type(type), kind(declaration_kind) {}
 
 Function::Function(const SourceRange& source_range,
 		std::string_view identifier,
 		RefPtr<Statement> body,
-		RefPtr<Type> return_type,
+		RefPtr<TypeIndicator> return_type,
 		const std::vector<Parameter> parameters) :
 	Statement(source_range),
 	m_identifier(identifier), m_implementation(body), m_return_type(return_type), m_parameters(parameters) {}
@@ -56,9 +56,9 @@ const Statement& Function::get_implementation() const { return *m_implementation
 
 RefPtr<Statement> Function::get_implementation_shared() const { return m_implementation; }
 
-const Type& Function::get_return_type() const { return *m_return_type; }
+const TypeIndicator& Function::get_return_type() const { return *m_return_type; }
 
-RefPtr<Type> Function::get_return_type_shared() const { return m_return_type; }
+RefPtr<TypeIndicator> Function::get_return_type_shared() const { return m_return_type; }
 
 const std::vector<Function::Parameter>& Function::get_parameters() const { return m_parameters; }
 
@@ -117,11 +117,11 @@ const Token& BinaryExpression::get_operator() const { return m_operator; }
 
 void BinaryExpression::accept(ASTVisitor& visitor) const { visitor.visit(*this); }
 
-Type::Type(const SourceRange& source_range, std::string_view type) : Expression(source_range), m_type(type) {}
+TypeIndicator::TypeIndicator(const SourceRange& source_range, std::string_view type) : Expression(source_range), m_type(type) {}
 
-const std::string_view Type::get_type() const { return m_type; }
+const std::string_view TypeIndicator::get_type() const { return m_type; }
 
-void Type::accept(ASTVisitor& visitor) const { visitor.visit(*this); }
+void TypeIndicator::accept(ASTVisitor& visitor) const { visitor.visit(*this); }
 
 Call::Argument::Argument(RefPtr<Expression> value) : value(value) {}
 

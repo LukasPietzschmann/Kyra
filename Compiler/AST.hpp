@@ -6,7 +6,7 @@
 #include "SourceRange.hpp"
 #include "Token.hpp"
 
-class Type;
+class TypeIndicator;
 class ASTVisitor;
 
 class ASTNode {
@@ -57,7 +57,7 @@ public:
 	Declaration(const SourceRange& source_range,
 			Kind declaration_kind,
 			std::string_view identifier,
-			RefPtr<Type> type,
+			RefPtr<TypeIndicator> type,
 			RefPtr<Expression> initializer = nullptr);
 
 	Kind get_declaration_kind() const;
@@ -72,30 +72,30 @@ public:
 private:
 	const Kind m_declaration_kind;
 	const std::string_view m_identifier;
-	RefPtr<Type> m_type;
+	RefPtr<TypeIndicator> m_type;
 	RefPtr<Expression> m_initializer;
 };
 
 class Function : public Statement {
 public:
 	struct Parameter {
-		Parameter(std::string_view name, RefPtr<Type> type, Declaration::Kind declaration_kind);
+		Parameter(std::string_view name, RefPtr<TypeIndicator> type, Declaration::Kind declaration_kind);
 		const std::string_view name;
-		RefPtr<Type> type;
+		RefPtr<TypeIndicator> type;
 		const Declaration::Kind kind;
 	};
 
 	Function(const SourceRange& source_range,
 			std::string_view identifier,
 			RefPtr<Statement> body,
-			RefPtr<Type> return_type,
+			RefPtr<TypeIndicator> return_type,
 			const std::vector<Parameter> parameters);
 
 	const std::string_view get_identifier() const;
 	const Statement& get_implementation() const;
 	RefPtr<Statement> get_implementation_shared() const;
-	const Type& get_return_type() const;
-	RefPtr<Type> get_return_type_shared() const;
+	const TypeIndicator& get_return_type() const;
+	RefPtr<TypeIndicator> get_return_type_shared() const;
 	const std::vector<Parameter>& get_parameters() const;
 
 	void accept(ASTVisitor& visitor) const override;
@@ -103,7 +103,7 @@ public:
 private:
 	const std::string_view m_identifier;
 	RefPtr<Statement> m_implementation;
-	RefPtr<Type> m_return_type;
+	RefPtr<TypeIndicator> m_return_type;
 	const std::vector<Parameter> m_parameters;
 };
 
@@ -177,9 +177,9 @@ private:
 	const Token m_operator;
 };
 
-class Type : public Expression {
+class TypeIndicator : public Expression {
 public:
-	Type(const SourceRange& source_range, std::string_view type);
+	TypeIndicator(const SourceRange& source_range, std::string_view type);
 
 	const std::string_view get_type() const;
 
@@ -244,7 +244,7 @@ public:
 
 	virtual void visit(const Assignment& assignment) = 0;
 	virtual void visit(const BinaryExpression& binary_expression) = 0;
-	virtual void visit(const Type& type) = 0;
+	virtual void visit(const TypeIndicator& type) = 0;
 	virtual void visit(const Call& call) = 0;
 	virtual void visit(const Group& group) = 0;
 	virtual void visit(const VarQuery& var_query) = 0;

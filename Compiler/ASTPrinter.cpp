@@ -62,7 +62,7 @@ void ASTPrinter::visit(const BinaryExpression& binary_expression) {
 	--m_indent;
 }
 
-void ASTPrinter::visit(const Type& type) { print_with_indent("Type ", type.get_type(), ""); }
+void ASTPrinter::visit(const TypeIndicator& type) { print_with_indent("Type ", type.get_type(), ""); }
 
 void ASTPrinter::visit(const Call& call) { print_with_indent("Call to ", call.get_function_name()); }
 

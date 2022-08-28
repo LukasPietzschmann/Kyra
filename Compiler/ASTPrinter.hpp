@@ -31,7 +31,7 @@ public:
 
 	void visit(const Assignment& assignment) override;
 	void visit(const BinaryExpression& binary_expression) override;
-	void visit(const Type& type) override;
+	void visit(const TypeIndicator& type) override;
 	void visit(const Call& call) override;
 	void visit(const Group& group) override;
 	void visit(const VarQuery& var_query) override;
