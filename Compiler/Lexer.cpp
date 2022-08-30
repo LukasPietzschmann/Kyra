@@ -21,7 +21,7 @@ void Lexer::scan_token() {
 	switch(current) {
 		case ' ':
 		case '\t':
-		case '\r': break;  // skip whitespace
+		case '\r': break; // skip whitespace
 		case '\n': line_brak(); break;
 		case '(': add_token(TokenType::LEFT_PAREN); break;
 		case ')': add_token(TokenType::RIGHT_PAREN); break;
@@ -42,7 +42,7 @@ void Lexer::scan_token() {
 			else if(is_alpha(current))
 				name_or_keyword();
 			else
-				assert(0);	// TODO: Error
+				assert(0); // TODO: Error
 	}
 }
 
@@ -116,10 +116,8 @@ bool Lexer::is_alpha(char character) const {
 }
 
 std::optional<TokenType> Lexer::is_keyword(std::string_view string) const {
-	static const std::map<std::string_view, TokenType> keywords{{"var", TokenType::VAR},
-			{"val", TokenType::VAL},
-			{"fun", TokenType::FUN},
-			{"return", TokenType::RETURN}};
+	static const std::map<std::string_view, TokenType> keywords{
+		{"var", TokenType::VAR}, {"val", TokenType::VAL}, {"fun", TokenType::FUN}, {"return", TokenType::RETURN}};
 
 	if(const auto& it = keywords.find(string); it != keywords.end())
 		return it->second;

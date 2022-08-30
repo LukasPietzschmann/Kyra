@@ -85,11 +85,8 @@ public:
 		const Declaration::Kind kind;
 	};
 
-	Function(const SourceRange& source_range,
-			std::string_view identifier,
-			RefPtr<Statement> body,
-			RefPtr<TypeIndicator> return_type,
-			const std::vector<Parameter> parameters);
+	Function(const SourceRange& source_range, std::string_view identifier, RefPtr<Block> body,
+		RefPtr<TypeIndicator> return_type, const std::vector<Parameter> parameters);
 
 	const std::string_view get_identifier() const;
 	const Statement& get_implementation() const;

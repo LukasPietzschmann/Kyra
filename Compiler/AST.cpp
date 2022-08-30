@@ -17,11 +17,8 @@ RefPtr<Expression> ExpressionStatement::get_expression_shared() const { return m
 
 void ExpressionStatement::accept(ASTVisitor& visitor) const { visitor.visit(*this); }
 
-Declaration::Declaration(const SourceRange& source_range,
-		Kind declaration_kind,
-		std::string_view identifier,
-		RefPtr<TypeIndicator> type,
-		RefPtr<Expression> initializer) :
+Declaration::Declaration(const SourceRange& source_range, Kind declaration_kind, std::string_view identifier,
+	RefPtr<TypeIndicator> type, RefPtr<Expression> initializer) :
 	Statement(source_range),
 	m_declaration_kind(declaration_kind), m_identifier(identifier), m_type(type), m_initializer(initializer) {}
 
@@ -98,10 +95,8 @@ RefPtr<Expression> Assignment::get_rhs_shared() const { return m_rhs; }
 
 void Assignment::accept(ASTVisitor& visitor) const { visitor.visit(*this); }
 
-BinaryExpression::BinaryExpression(const SourceRange& source_range,
-		RefPtr<Expression> lhs,
-		RefPtr<Expression> rhs,
-		Token oper) :
+BinaryExpression::BinaryExpression(
+	const SourceRange& source_range, RefPtr<Expression> lhs, RefPtr<Expression> rhs, Token oper) :
 	Expression(source_range),
 	m_lhs(lhs), m_rhs(rhs), m_operator(oper) {}
 
@@ -117,7 +112,8 @@ const Token& BinaryExpression::get_operator() const { return m_operator; }
 
 void BinaryExpression::accept(ASTVisitor& visitor) const { visitor.visit(*this); }
 
-TypeIndicator::TypeIndicator(const SourceRange& source_range, std::string_view type) : Expression(source_range), m_type(type) {}
+TypeIndicator::TypeIndicator(const SourceRange& source_range, std::string_view type) :
+	Expression(source_range), m_type(type) {}
 
 const std::string_view TypeIndicator::get_type() const { return m_type; }
 

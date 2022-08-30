@@ -26,8 +26,8 @@ RefPtr<Statement> Parser::statement() {
 RefPtr<Statement> Parser::expression_statement() {
 	RefPtr<Expression> expr = expression();
 	const Token& semi_colon = consume(TokenType::SEMICOLON);
-	return mk_ref<ExpressionStatement>(SourceRange::unite(expr->get_source_range(), semi_colon.get_source_range()),
-			expr);
+	return mk_ref<ExpressionStatement>(
+		SourceRange::unite(expr->get_source_range(), semi_colon.get_source_range()), expr);
 }
 
 RefPtr<Statement> Parser::return_statement() {
@@ -63,10 +63,8 @@ RefPtr<Statement> Parser::variable_declaration() {
 		initializer = expression();
 	const Token& semicolon = consume(TokenType::SEMICOLON);
 	return mk_ref<Declaration>(SourceRange::unite(val_var.get_source_range(), semicolon.get_source_range()),
-			val_var.get_type() == TokenType::VAL ? Declaration::Kind::VAL : Declaration::Kind::VAR,
-			identifier.get_lexeme(),
-			var_type,
-			initializer);
+		val_var.get_type() == TokenType::VAL ? Declaration::Kind::VAL : Declaration::Kind::VAR, identifier.get_lexeme(),
+		var_type, initializer);
 }
 
 RefPtr<Statement> Parser::function_declaration() {
@@ -79,9 +77,8 @@ RefPtr<Statement> Parser::function_declaration() {
 			const Token& val_var = consume(TokenType::VAL, TokenType::VAR);
 			const Token& identifier = consume(TokenType::NAME);
 			RefPtr<TypeIndicator> param_type = std::static_pointer_cast<TypeIndicator>(type());
-			params.emplace_back(identifier.get_lexeme(),
-					param_type,
-					val_var.get_type() == TokenType::VAL ? Declaration::Kind::VAL : Declaration::Kind::VAR);
+			params.emplace_back(identifier.get_lexeme(), param_type,
+				val_var.get_type() == TokenType::VAL ? Declaration::Kind::VAL : Declaration::Kind::VAR);
 
 		} while(match_and_advance(TokenType::COMMA));
 	}
@@ -89,10 +86,7 @@ RefPtr<Statement> Parser::function_declaration() {
 	RefPtr<TypeIndicator> return_type = std::static_pointer_cast<TypeIndicator>(type());
 	RefPtr<Statement> implementation = block();
 	return mk_ref<Function>(SourceRange::unite(fun.get_source_range(), implementation->get_source_range()),
-			identifier.get_lexeme(),
-			implementation,
-			return_type,
-			params);
+		identifier.get_lexeme(), implementation, return_type, params);
 }
 
 RefPtr<Expression> Parser::expression() { return assignment(); }
@@ -103,9 +97,8 @@ RefPtr<Expression> Parser::assignment() {
 		return lhs;
 	const std::string_view identifier = std::static_pointer_cast<VarQuery>(lhs)->get_identifier();
 	RefPtr<Expression> new_value = expression();
-	return mk_ref<Assignment>(SourceRange::unite(lhs->get_source_range(), new_value->get_source_range()),
-			identifier,
-			new_value);
+	return mk_ref<Assignment>(
+		SourceRange::unite(lhs->get_source_range(), new_value->get_source_range()), identifier, new_value);
 }
 
 RefPtr<Expression> Parser::term() {
@@ -115,10 +108,8 @@ RefPtr<Expression> Parser::term() {
 		if(!match_and_advance(TokenType::MINUS, TokenType::PLUS))
 			break;
 		RefPtr<Expression> rhs = factor();
-		lhs = mk_ref<BinaryExpression>(SourceRange::unite(lhs->get_source_range(), rhs->get_source_range()),
-				lhs,
-				rhs,
-				oper);
+		lhs = mk_ref<BinaryExpression>(
+			SourceRange::unite(lhs->get_source_range(), rhs->get_source_range()), lhs, rhs, oper);
 	}
 	return lhs;
 }
@@ -130,10 +121,8 @@ RefPtr<Expression> Parser::factor() {
 		if(!match_and_advance(TokenType::SLASH, TokenType::STAR))
 			break;
 		RefPtr<Expression> rhs = call();
-		lhs = mk_ref<BinaryExpression>(SourceRange::unite(lhs->get_source_range(), rhs->get_source_range()),
-				lhs,
-				rhs,
-				oper);
+		lhs = mk_ref<BinaryExpression>(
+			SourceRange::unite(lhs->get_source_range(), rhs->get_source_range()), lhs, rhs, oper);
 	}
 	return lhs;
 }
@@ -151,9 +140,8 @@ RefPtr<Expression> Parser::call() {
 	}
 	const Token& right_paren = consume(TokenType::RIGHT_PAREN);
 	RefPtr<VarQuery> var_query = std::static_pointer_cast<VarQuery>(lhs);
-	return mk_ref<Call>(SourceRange::unite(lhs->get_source_range(), right_paren.get_source_range()),
-			var_query->get_identifier(),
-			args);
+	return mk_ref<Call>(
+		SourceRange::unite(lhs->get_source_range(), right_paren.get_source_range()), var_query->get_identifier(), args);
 }
 
 RefPtr<Expression> Parser::primary() {

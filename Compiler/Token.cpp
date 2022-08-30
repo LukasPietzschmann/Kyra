@@ -13,7 +13,7 @@ int Token::LiteralValue::as_int() const {
 	int res;
 	try {
 		res = std::stoi(std::string(m_value));
-	} catch(const std::exception&) {  // std::invalid_argument, std::out_of_range
+	} catch(const std::exception&) { // std::invalid_argument, std::out_of_range
 		assert_not_reached();
 	}
 	return res;
