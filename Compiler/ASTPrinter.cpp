@@ -39,7 +39,7 @@ void ASTPrinter::visit(const Return& return_statement) {
 void ASTPrinter::visit(const Block& block) {
 	print_with_indent("Block");
 	++m_indent;
-	for(RefPtr<Statement> statement : block.get_body())
+	for(const RefPtr<Statement>& statement : block.get_body())
 		statement->accept(*this);
 	--m_indent;
 }

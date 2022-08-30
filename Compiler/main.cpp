@@ -25,7 +25,7 @@ int main(int argc, char** argv) {
 	const std::vector<Token>& tokens = Lexer::the().scan_input(source_code);
 	const std::vector<RefPtr<Statement>> statements = Parser::the().parse_tokens(tokens);
 	ASTPrinter printer;
-	for(RefPtr<Statement> statement : statements)
+	for(const RefPtr<Statement>& statement : statements)
 		printer.print(*statement);
 
 	return 0;
