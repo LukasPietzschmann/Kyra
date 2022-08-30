@@ -54,16 +54,13 @@ class Declaration : public Statement {
 public:
 	enum class Kind { VAR, VAL };
 
-	Declaration(const SourceRange& source_range,
-			Kind declaration_kind,
-			std::string_view identifier,
-			RefPtr<TypeIndicator> type,
-			RefPtr<Expression> initializer = nullptr);
+	Declaration(const SourceRange& source_range, Kind declaration_kind, std::string_view identifier,
+		RefPtr<TypeIndicator> type, RefPtr<Expression> initializer = nullptr);
 
 	Kind get_declaration_kind() const;
 	const std::string_view get_identifier() const;
-	const Expression& get_type() const;
-	RefPtr<Expression> get_type_shared() const;
+	const TypeIndicator& get_type() const;
+	RefPtr<TypeIndicator> get_type_shared() const;
 	const Expression* get_initializer() const;
 	RefPtr<Expression> get_initializer_shared() const;
 
@@ -74,6 +71,18 @@ private:
 	const std::string_view m_identifier;
 	RefPtr<TypeIndicator> m_type;
 	RefPtr<Expression> m_initializer;
+};
+
+class Block : public Statement {
+public:
+	Block(const SourceRange& source_range, const std::vector<RefPtr<Statement>>& body);
+
+	const std::vector<RefPtr<Statement>>& get_body() const;
+
+	void accept(ASTVisitor& visitor) const override;
+
+private:
+	const std::vector<RefPtr<Statement>> m_body;
 };
 
 class Function : public Statement {
@@ -89,8 +98,8 @@ public:
 		RefPtr<TypeIndicator> return_type, const std::vector<Parameter> parameters);
 
 	const std::string_view get_identifier() const;
-	const Statement& get_implementation() const;
-	RefPtr<Statement> get_implementation_shared() const;
+	const Block& get_implementation() const;
+	RefPtr<Block> get_implementation_shared() const;
 	const TypeIndicator& get_return_type() const;
 	RefPtr<TypeIndicator> get_return_type_shared() const;
 	const std::vector<Parameter>& get_parameters() const;
@@ -99,7 +108,7 @@ public:
 
 private:
 	const std::string_view m_identifier;
-	RefPtr<Statement> m_implementation;
+	RefPtr<Block> m_implementation;
 	RefPtr<TypeIndicator> m_return_type;
 	const std::vector<Parameter> m_parameters;
 };
@@ -115,18 +124,6 @@ public:
 
 private:
 	RefPtr<Expression> m_expression;
-};
-
-class Block : public Statement {
-public:
-	Block(const SourceRange& source_range, const std::vector<RefPtr<Statement>>& body);
-
-	const std::vector<RefPtr<Statement>>& get_body() const;
-
-	void accept(ASTVisitor& visitor) const override;
-
-private:
-	const std::vector<RefPtr<Statement>> m_body;
 };
 
 class IntLiteral : public Expression {

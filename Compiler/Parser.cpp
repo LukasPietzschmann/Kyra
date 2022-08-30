@@ -84,7 +84,7 @@ RefPtr<Statement> Parser::function_declaration() {
 	}
 	consume(TokenType::RIGHT_PAREN);
 	RefPtr<TypeIndicator> return_type = std::static_pointer_cast<TypeIndicator>(type());
-	RefPtr<Statement> implementation = block();
+	RefPtr<Block> implementation = std::static_pointer_cast<Block>(block());
 	return mk_ref<Function>(SourceRange::unite(fun.get_source_range(), implementation->get_source_range()),
 		identifier.get_lexeme(), implementation, return_type, params);
 }

@@ -26,9 +26,9 @@ Declaration::Kind Declaration::get_declaration_kind() const { return m_declarati
 
 const std::string_view Declaration::get_identifier() const { return m_identifier; }
 
-const Expression& Declaration::get_type() const { return *m_type; }
+const TypeIndicator& Declaration::get_type() const { return *m_type; }
 
-RefPtr<Expression> Declaration::get_type_shared() const { return m_type; }
+RefPtr<TypeIndicator> Declaration::get_type_shared() const { return m_type; }
 
 const Expression* Declaration::get_initializer() const { return m_initializer.get(); }
 
@@ -36,22 +36,26 @@ RefPtr<Expression> Declaration::get_initializer_shared() const { return m_initia
 
 void Declaration::accept(ASTVisitor& visitor) const { visitor.visit(*this); }
 
+Block::Block(const SourceRange& source_range, const std::vector<RefPtr<Statement>>& body) :
+	Statement(source_range), m_body(body) {}
+
+const std::vector<RefPtr<Statement>>& Block::get_body() const { return m_body; }
+
+void Block::accept(ASTVisitor& visitor) const { visitor.visit(*this); }
+
 Function::Parameter::Parameter(std::string_view name, RefPtr<TypeIndicator> type, Declaration::Kind declaration_kind) :
 	name(name), type(type), kind(declaration_kind) {}
 
-Function::Function(const SourceRange& source_range,
-		std::string_view identifier,
-		RefPtr<Statement> body,
-		RefPtr<TypeIndicator> return_type,
-		const std::vector<Parameter> parameters) :
+Function::Function(const SourceRange& source_range, std::string_view identifier, RefPtr<Block> body,
+	RefPtr<TypeIndicator> return_type, const std::vector<Parameter> parameters) :
 	Statement(source_range),
 	m_identifier(identifier), m_implementation(body), m_return_type(return_type), m_parameters(parameters) {}
 
 const std::string_view Function::get_identifier() const { return m_identifier; }
 
-const Statement& Function::get_implementation() const { return *m_implementation; }
+const Block& Function::get_implementation() const { return *m_implementation; }
 
-RefPtr<Statement> Function::get_implementation_shared() const { return m_implementation; }
+RefPtr<Block> Function::get_implementation_shared() const { return m_implementation; }
 
 const TypeIndicator& Function::get_return_type() const { return *m_return_type; }
 
@@ -69,13 +73,6 @@ const Expression& Return::get_expression() const { return *m_expression; }
 RefPtr<Expression> Return::get_expression_shared() const { return m_expression; }
 
 void Return::accept(ASTVisitor& visitor) const { visitor.visit(*this); }
-
-Block::Block(const SourceRange& source_range, const std::vector<RefPtr<Statement>>& body) :
-	Statement(source_range), m_body(body) {}
-
-const std::vector<RefPtr<Statement>>& Block::get_body() const { return m_body; }
-
-void Block::accept(ASTVisitor& visitor) const { visitor.visit(*this); }
 
 IntLiteral::IntLiteral(const SourceRange& source_range, int literal_value) :
 	Expression(source_range), m_value(literal_value) {}
