@@ -7,7 +7,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/bin)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/lib)
 
-add_compile_options(-Wall -pedantic -Wextra)
+add_compile_options(-Wall -Wextra)
 
 option (FORCE_COLORED_OUTPUT "Always produce ANSI-colored output" OFF)
 if (${FORCE_COLORED_OUTPUT})

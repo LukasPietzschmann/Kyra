@@ -228,6 +228,27 @@ private:
 };
 
 class ASTVisitor {
+#define VISIT_RETURN_TYPE(type) \
+private:                        \
+	type _return_value;         \
+	bool _has_return_value{false};
+
+#define return_from_visit(value)  \
+	do {                          \
+		_return_value = (value);  \
+		_has_return_value = true; \
+		return;                   \
+	} while(0)
+
+// https://gcc.gnu.org/onlinedocs/gcc/Statement-Exprs.html#Statement-Exprs
+#define visit_with_return(visitee)                                                \
+	({                                                                            \
+		_has_return_value = false;                                                \
+		(visitee).accept(*this);                                                  \
+		assert(_has_return_value && "no value was returned from previous visit"); \
+		_return_value;                                                            \
+	})
+
 public:
 	virtual void visit(const ExpressionStatement& expresion_statement) = 0;
 	virtual void visit(const Declaration& declaration) = 0;
