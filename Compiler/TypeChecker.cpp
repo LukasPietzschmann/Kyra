@@ -27,7 +27,10 @@ std::vector<RefPtr<FunctionType>> DeclaredType::find_methods(std::string_view na
 
 void DeclaredType::insert_method_if_non_exists(std::string_view name, RefPtr<FunctionType> type) {
 	std::vector<RefPtr<FunctionType>>& methods = m_methods[name];
-	// TODO: check if method signature is already present
+	for(const RefPtr<FunctionType>& method : methods) {
+		if(*method == *type)
+			return;
+	}
 	methods.push_back(type);
 }
 
@@ -49,14 +52,25 @@ const std::vector<RefPtr<AppliedType>>& FunctionType::get_parameter() const { re
 bool FunctionType::can_be_called_with(const std::vector<RefPtr<AppliedType>>& arguments) const {
 	if(arguments.size() != m_parameters.size())
 		return false;
-	bool ok = true;
 	for(unsigned i = 0; i < arguments.size(); ++i) {
 		if(arguments.at(i)->can_be_assigned_to(*m_parameters.at(i)))
 			continue;
-		ok = false;
-		break;
+		return false;
 	}
-	return ok;
+	return true;
+}
+
+bool FunctionType::operator==(const FunctionType& other) const {
+	if(!other.m_return_type->can_be_assigned_to(*m_return_type))
+		return false;
+	if(m_parameters.size() != other.m_parameters.size())
+		return false;
+	for(unsigned i = 0; i < m_parameters.size(); ++i) {
+		if(other.m_parameters.at(i)->can_be_assigned_to(*m_parameters.at(i)))
+			continue;
+		return false;
+	}
+	return true;
 }
 
 IntType::IntType(std::string_view name, unsigned width) : DeclaredType(name), m_width(width) {}
@@ -121,7 +135,10 @@ std::vector<RefPtr<FunctionType>> TypeScope::find_functions(std::string_view nam
 
 bool TypeScope::insert_function(std::string_view name, RefPtr<FunctionType> type) {
 	std::vector<RefPtr<FunctionType>>& functions = m_function_scope[name];
-	// TODO: check if function signature is already present
+	for(const RefPtr<FunctionType>& function : functions) {
+		if(*function == *type)
+			return false;
+	}
 	functions.push_back(type);
 	return true;
 }
@@ -162,7 +179,8 @@ void TypeChecker::visit(const Function& function) {
 	m_context.enclosing_function = function_type;
 	execute_on_scope(function_scope, [&]() { function.get_implementation().accept(*this); });
 	m_context.enclosing_function = nullptr;
-	m_current_scope->insert_function(function.get_identifier(), function_type);
+	if(!m_current_scope->insert_function(function.get_identifier(), function_type))
+		assert_not_reached(); // TODO: Error: multiple definitions
 }
 
 void TypeChecker::visit(const Return& return_statement) {

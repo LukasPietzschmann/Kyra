@@ -51,6 +51,8 @@ public:
 
 	bool can_be_called_with(const std::vector<RefPtr<AppliedType>>& arguments) const;
 
+	bool operator==(const FunctionType& other) const;
+
 private:
 	RefPtr<DeclaredType> m_return_type;
 	std::vector<RefPtr<AppliedType>> m_parameters;
