@@ -10,6 +10,7 @@
 #include "Parser.hpp"
 #include "SourceRange.hpp"
 #include "Token.hpp"
+#include "TypeChecker.hpp"
 
 int main(int argc, char** argv) {
 	if(argc != 2)
@@ -27,6 +28,8 @@ int main(int argc, char** argv) {
 	ASTPrinter printer;
 	for(const RefPtr<Statement>& statement : statements)
 		printer.print(*statement);
+	for(const RefPtr<Statement>& statement : statements)
+		TypeChecker::the().check_statement(*statement);
 
 	return 0;
 }
