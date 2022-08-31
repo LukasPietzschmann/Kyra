@@ -1,5 +1,6 @@
 #pragma once
 
+#include <filesystem>
 #include <optional>
 #include <string>
 #include <vector>
@@ -21,9 +22,10 @@ public:
 	Lexer& operator=(const Lexer&) = delete;
 	Lexer& operator=(Lexer&&) noexcept = default;
 
-	const std::vector<Token>& scan_input(std::string_view source);
+	const std::vector<Token>& scan_input(std::string_view source, const std::filesystem::path& file_path);
 
 private:
+	std::filesystem::path m_file_path;
 	std::vector<Token> m_tokens;
 	std::string_view m_source{};
 	SourceRange::Position m_current{0, 0, 0};

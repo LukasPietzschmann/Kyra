@@ -3,7 +3,8 @@
 #include <cassert>
 #include <map>
 
-const std::vector<Token>& Lexer::scan_input(std::string_view source) {
+const std::vector<Token>& Lexer::scan_input(std::string_view source, const std::filesystem::path& file_path) {
+	m_file_path = file_path;
 	m_source = source;
 	m_tokens.clear();
 
@@ -132,7 +133,7 @@ void Lexer::add_token(TokenType type, std::string_view literal) {
 		lexeme = m_source.substr(m_start.index, m_current.index - m_start.index);
 	SourceRange::Position start_copy = m_start;
 	SourceRange::Position end_copy = m_current;
-	m_tokens.emplace_back(type, lexeme, literal, SourceRange(start_copy, end_copy));
+	m_tokens.emplace_back(type, lexeme, literal, SourceRange(start_copy, end_copy, m_file_path));
 }
 
 void Lexer::line_brak() {

@@ -1,6 +1,7 @@
 #include <filesystem>
 #include <fstream>
 #include <iostream>
+#include <optional>
 #include <string>
 
 #include "AST.hpp"
@@ -23,13 +24,16 @@ int main(int argc, char** argv) {
 	std::ifstream input_file_stream(source_file_path);
 	std::string source_code((std::istreambuf_iterator<char>(input_file_stream)), (std::istreambuf_iterator<char>()));
 
-	const std::vector<Token>& tokens = Lexer::the().scan_input(source_code);
+	const std::vector<Token>& tokens = Lexer::the().scan_input(source_code, source_file_path);
 	const std::vector<RefPtr<Statement>> statements = Parser::the().parse_tokens(tokens);
 	ASTPrinter printer;
 	for(const RefPtr<Statement>& statement : statements)
 		printer.print(*statement);
-	for(const RefPtr<Statement>& statement : statements)
-		TypeChecker::the().check_statement(*statement);
+	for(const RefPtr<Statement>& statement : statements) {
+		std::optional<Error> maybe_error = TypeChecker::the().check_statement(*statement);
+		if(maybe_error.has_value())
+			maybe_error->print(std::cout);
+	}
 
 	return 0;
 }

@@ -1,10 +1,12 @@
 #pragma once
 
 #include <map>
+#include <optional>
 #include <string_view>
 
 #include "AST.hpp"
 #include "Aliases.hpp"
+#include "Error.hpp"
 
 class FunctionType;
 class DeclaredType {
@@ -106,7 +108,7 @@ public:
 	TypeChecker& operator=(const TypeChecker&) = delete;
 	TypeChecker& operator=(TypeChecker&&) noexcept = default;
 
-	void check_statement(const Statement& statement);
+	std::optional<Error> check_statement(const Statement& statement);
 
 	void visit(const ExpressionStatement& expresion_statement) override;
 	void visit(const Declaration& declaration) override;

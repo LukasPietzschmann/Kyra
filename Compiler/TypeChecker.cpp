@@ -143,7 +143,14 @@ bool TypeScope::insert_function(std::string_view name, RefPtr<FunctionType> type
 	return true;
 }
 
-void TypeChecker::check_statement(const Statement& statement) { statement.accept(*this); }
+std::optional<Error> TypeChecker::check_statement(const Statement& statement) {
+	try {
+		statement.accept(*this);
+	} catch(const ErrorException& e) {
+		return Error(e);
+	}
+	return {};
+}
 
 void TypeChecker::visit(const ExpressionStatement& expresion_statement) {
 	visit_with_return(expresion_statement.get_expression());
@@ -157,11 +164,11 @@ void TypeChecker::visit(const Declaration& declaration) {
 	if(const Expression* init = declaration.get_initializer(); init != nullptr) {
 		RefPtr<AppliedType> init_type = visit_with_return(*init);
 		if(!init_type->can_be_assigned_to(*applied_type))
-			assert_not_reached(); // TODO: Error: wrong type
+			throw ErrorException("Initializer type does not match declaration type", init->get_source_range());
 	}
 	bool successful = m_current_scope->insert_symbol(name, applied_type);
 	if(!successful)
-		assert_not_reached(); // TODO: Error: symbol already declared
+		throw ErrorException("Symbol already declared", declaration.get_source_range());
 }
 
 void TypeChecker::visit(const Function& function) {
@@ -180,17 +187,17 @@ void TypeChecker::visit(const Function& function) {
 	execute_on_scope(function_scope, [&]() { function.get_implementation().accept(*this); });
 	m_context.enclosing_function = nullptr;
 	if(!m_current_scope->insert_function(function.get_identifier(), function_type))
-		assert_not_reached(); // TODO: Error: multiple definitions
+		throw ErrorException("Redefinition of function", function.get_source_range());
 }
 
 void TypeChecker::visit(const Return& return_statement) {
 	if(RefPtr<FunctionType> function = m_context.enclosing_function; function == nullptr)
-		assert_not_reached(); // TODO: Error: return can only be used inside a function
+		throw ErrorException("Return can only be used inside a function", return_statement.get_source_range());
 	else {
 		RefPtr<AppliedType> actual_return_type = visit_with_return(return_statement.get_expression());
 		if(!actual_return_type->can_be_assigned_to(
 			   *AppliedType::promote_declared_type(function->get_returned_type(), true))) {
-			assert_not_reached(); // TODO: Error: wrong return type
+			throw ErrorException("Wrong return type", return_statement.get_expression().get_source_range());
 		}
 	}
 }
@@ -210,10 +217,10 @@ void TypeChecker::visit(const IntLiteral&) {
 void TypeChecker::visit(const Assignment& assignment) {
 	RefPtr<AppliedType> assignee_type = m_current_scope->find_symbol(assignment.get_lhs());
 	if(assignee_type == nullptr)
-		assert_not_reached(); // TODO: Error: unknown type
+		throw ErrorException("Undefined symbol", assignment.get_source_range());
 	RefPtr<AppliedType> rhs_type = visit_with_return(assignment.get_rhs());
 	if(!rhs_type->can_be_assigned_to(*assignee_type))
-		assert_not_reached(); // TODO: Error: wrong type
+		throw ErrorException("Wrong type", assignment.get_rhs().get_source_range());
 	return_from_visit(assignee_type);
 }
 
@@ -224,7 +231,7 @@ void TypeChecker::visit(const BinaryExpression& binary_expression) {
 	RefPtr<AppliedType> rhs_type = visit_with_return(binary_expression.get_rhs());
 	const std::vector<RefPtr<FunctionType>> methods = lhs_type->get_declared_type().find_methods(function_name.str());
 	if(methods.empty())
-		assert_not_reached(); // TODO: Error: unknown method
+		throw ErrorException("Undefined operator", binary_expression.get_operator().get_source_range());
 
 	RefPtr<FunctionType> candidate = nullptr;
 	for(const RefPtr<FunctionType>& method : methods) {
@@ -233,21 +240,21 @@ void TypeChecker::visit(const BinaryExpression& binary_expression) {
 		candidate = method;
 	}
 	if(candidate == nullptr)
-		assert_not_reached(); // TODO: Error: No candidate was found
+		throw ErrorException("No candidate matched", binary_expression.get_operator().get_source_range());
 	return_from_visit(AppliedType::promote_declared_type(candidate->get_returned_type(), true));
 }
 
 void TypeChecker::visit(const TypeIndicator& type) {
 	RefPtr<DeclaredType> found_type = m_current_scope->find_type(type.get_type());
 	if(found_type == nullptr)
-		assert_not_reached(); // TODO: Error: unknown type
+		throw ErrorException("Undefined type", type.get_source_range());
 	return_from_visit(AppliedType::promote_declared_type(found_type, true));
 }
 
 void TypeChecker::visit(const Call& call) {
 	const std::vector<RefPtr<FunctionType>>& functions = m_current_scope->find_functions(call.get_function_name());
 	if(functions.empty())
-		assert_not_reached(); // TODO: Error: unknown function
+		throw ErrorException("Undefined function", call.get_source_range());
 	std::vector<RefPtr<AppliedType>> args;
 	for(const Call::Argument& arg : call.get_arguments())
 		args.push_back(visit_with_return(*arg.value));
@@ -258,7 +265,7 @@ void TypeChecker::visit(const Call& call) {
 		candidate = function;
 	}
 	if(candidate == nullptr)
-		assert_not_reached(); // TODO: Error: No candidate was found
+		throw ErrorException("No candidate matched", call.get_source_range());
 	return_from_visit(AppliedType::promote_declared_type(candidate->get_returned_type(), true));
 }
 
@@ -268,7 +275,7 @@ void TypeChecker::visit(const VarQuery& var_query) {
 	const std::string_view name = var_query.get_identifier();
 	RefPtr<AppliedType> found_type = m_current_scope->find_symbol(name);
 	if(found_type == nullptr)
-		assert_not_reached(); // TODO: Error: unknown symbol
+		throw ErrorException("Undefined symbol", var_query.get_source_range());
 	return_from_visit(found_type);
 }
 
