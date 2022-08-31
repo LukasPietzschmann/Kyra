@@ -54,11 +54,11 @@ class Declaration : public Statement {
 public:
 	enum class Kind { VAR, VAL };
 
-	Declaration(const SourceRange& source_range, Kind declaration_kind, std::string_view identifier,
+	Declaration(const SourceRange& source_range, Kind declaration_kind, const Token& identifier,
 		RefPtr<TypeIndicator> type, RefPtr<Expression> initializer = nullptr);
 
 	Kind get_declaration_kind() const;
-	const std::string_view get_identifier() const;
+	const Token& get_identifier() const;
 	const TypeIndicator& get_type() const;
 	RefPtr<TypeIndicator> get_type_shared() const;
 	const Expression* get_initializer() const;
@@ -68,7 +68,7 @@ public:
 
 private:
 	const Kind m_declaration_kind;
-	const std::string_view m_identifier;
+	const Token m_identifier;
 	RefPtr<TypeIndicator> m_type;
 	RefPtr<Expression> m_initializer;
 };
@@ -88,16 +88,16 @@ private:
 class Function : public Statement {
 public:
 	struct Parameter {
-		Parameter(std::string_view name, RefPtr<TypeIndicator> type, Declaration::Kind declaration_kind);
-		const std::string_view name;
+		Parameter(const Token& identifier, RefPtr<TypeIndicator> type, Declaration::Kind declaration_kind);
+		const Token& identifier;
 		RefPtr<TypeIndicator> type;
 		const Declaration::Kind kind;
 	};
 
-	Function(const SourceRange& source_range, std::string_view identifier, RefPtr<Block> body,
+	Function(const SourceRange& source_range, const Token& identifier, RefPtr<Block> body,
 		RefPtr<TypeIndicator> return_type, const std::vector<Parameter> parameters);
 
-	const std::string_view get_identifier() const;
+	const Token& get_identifier() const;
 	const Block& get_implementation() const;
 	RefPtr<Block> get_implementation_shared() const;
 	const TypeIndicator& get_return_type() const;
@@ -107,7 +107,7 @@ public:
 	void accept(ASTVisitor& visitor) const override;
 
 private:
-	const std::string_view m_identifier;
+	const Token m_identifier;
 	RefPtr<Block> m_implementation;
 	RefPtr<TypeIndicator> m_return_type;
 	const std::vector<Parameter> m_parameters;
@@ -140,16 +140,16 @@ private:
 
 class Assignment : public Expression {
 public:
-	Assignment(const SourceRange& source_range, std::string_view lhs, RefPtr<Expression> rhs);
+	Assignment(const SourceRange& source_range, const Token& lhs, RefPtr<Expression> rhs);
 
-	const std::string_view get_lhs() const;
+	const Token& get_lhs() const;
 	const Expression& get_rhs() const;
 	RefPtr<Expression> get_rhs_shared() const;
 
 	void accept(ASTVisitor& visitor) const override;
 
 private:
-	const std::string_view m_lhs;
+	const Token m_lhs;
 	RefPtr<Expression> m_rhs;
 };
 
@@ -173,14 +173,14 @@ private:
 
 class TypeIndicator : public Expression {
 public:
-	TypeIndicator(const SourceRange& source_range, std::string_view type);
+	TypeIndicator(const SourceRange& source_range, const Token& type);
 
-	const std::string_view get_type() const;
+	const Token& get_type() const;
 
 	void accept(ASTVisitor& visitor) const override;
 
 private:
-	const std::string_view m_type;
+	const Token m_type;
 };
 
 class Call : public Expression {
@@ -190,15 +190,15 @@ public:
 		RefPtr<Expression> value;
 	};
 
-	Call(const SourceRange& source_range, std::string_view function_name, const std::vector<Argument>& arguments);
+	Call(const SourceRange& source_range, const Token& function_name, const std::vector<Argument>& arguments);
 
-	const std::string_view get_function_name() const;
+	const Token& get_function_name() const;
 	const std::vector<Argument>& get_arguments() const;
 
 	void accept(ASTVisitor& visitor) const override;
 
 private:
-	const std::string_view m_function_name;
+	const Token m_function_name;
 	const std::vector<Argument> m_arguments;
 };
 
@@ -217,14 +217,14 @@ private:
 
 class VarQuery : public Expression {
 public:
-	VarQuery(const SourceRange& source_range, std::string_view identifier);
+	VarQuery(const SourceRange& source_range, const Token& identifier);
 
-	const std::string_view get_identifier() const;
+	const Token& get_identifier() const;
 
 	void accept(ASTVisitor& visitor) const override;
 
 private:
-	const std::string_view m_identifier;
+	const Token m_identifier;
 };
 
 class ASTVisitor {

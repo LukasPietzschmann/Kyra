@@ -17,14 +17,14 @@ RefPtr<Expression> ExpressionStatement::get_expression_shared() const { return m
 
 void ExpressionStatement::accept(ASTVisitor& visitor) const { visitor.visit(*this); }
 
-Declaration::Declaration(const SourceRange& source_range, Kind declaration_kind, std::string_view identifier,
+Declaration::Declaration(const SourceRange& source_range, Kind declaration_kind, const Token& identifier,
 	RefPtr<TypeIndicator> type, RefPtr<Expression> initializer) :
 	Statement(source_range),
 	m_declaration_kind(declaration_kind), m_identifier(identifier), m_type(type), m_initializer(initializer) {}
 
 Declaration::Kind Declaration::get_declaration_kind() const { return m_declaration_kind; }
 
-const std::string_view Declaration::get_identifier() const { return m_identifier; }
+const Token& Declaration::get_identifier() const { return m_identifier; }
 
 const TypeIndicator& Declaration::get_type() const { return *m_type; }
 
@@ -43,15 +43,15 @@ const std::vector<RefPtr<Statement>>& Block::get_body() const { return m_body; }
 
 void Block::accept(ASTVisitor& visitor) const { visitor.visit(*this); }
 
-Function::Parameter::Parameter(std::string_view name, RefPtr<TypeIndicator> type, Declaration::Kind declaration_kind) :
-	name(name), type(type), kind(declaration_kind) {}
+Function::Parameter::Parameter(const Token& name, RefPtr<TypeIndicator> type, Declaration::Kind declaration_kind) :
+	identifier(name), type(type), kind(declaration_kind) {}
 
-Function::Function(const SourceRange& source_range, std::string_view identifier, RefPtr<Block> body,
+Function::Function(const SourceRange& source_range, const Token& identifier, RefPtr<Block> body,
 	RefPtr<TypeIndicator> return_type, const std::vector<Parameter> parameters) :
 	Statement(source_range),
 	m_identifier(identifier), m_implementation(body), m_return_type(return_type), m_parameters(parameters) {}
 
-const std::string_view Function::get_identifier() const { return m_identifier; }
+const Token& Function::get_identifier() const { return m_identifier; }
 
 const Block& Function::get_implementation() const { return *m_implementation; }
 
@@ -81,10 +81,10 @@ int IntLiteral::get_literal_value() const { return m_value; }
 
 void IntLiteral::accept(ASTVisitor& visitor) const { visitor.visit(*this); }
 
-Assignment::Assignment(const SourceRange& source_range, std::string_view lhs, RefPtr<Expression> rhs) :
+Assignment::Assignment(const SourceRange& source_range, const Token& lhs, RefPtr<Expression> rhs) :
 	Expression(source_range), m_lhs(lhs), m_rhs(rhs) {}
 
-const std::string_view Assignment::get_lhs() const { return m_lhs; }
+const Token& Assignment::get_lhs() const { return m_lhs; }
 
 const Expression& Assignment::get_rhs() const { return *m_rhs; }
 
@@ -109,19 +109,19 @@ const Token& BinaryExpression::get_operator() const { return m_operator; }
 
 void BinaryExpression::accept(ASTVisitor& visitor) const { visitor.visit(*this); }
 
-TypeIndicator::TypeIndicator(const SourceRange& source_range, std::string_view type) :
+TypeIndicator::TypeIndicator(const SourceRange& source_range, const Token& type) :
 	Expression(source_range), m_type(type) {}
 
-const std::string_view TypeIndicator::get_type() const { return m_type; }
+const Token& TypeIndicator::get_type() const { return m_type; }
 
 void TypeIndicator::accept(ASTVisitor& visitor) const { visitor.visit(*this); }
 
 Call::Argument::Argument(RefPtr<Expression> value) : value(value) {}
 
-Call::Call(const SourceRange& source_range, std::string_view function_name, const std::vector<Argument>& arguments) :
+Call::Call(const SourceRange& source_range, const Token& function_name, const std::vector<Argument>& arguments) :
 	Expression(source_range), m_function_name(function_name), m_arguments(arguments) {}
 
-const std::string_view Call::get_function_name() const { return m_function_name; }
+const Token& Call::get_function_name() const { return m_function_name; }
 
 const std::vector<Call::Argument>& Call::get_arguments() const { return m_arguments; }
 
@@ -136,9 +136,9 @@ RefPtr<Expression> Group::get_content_shared() const { return m_content; }
 
 void Group::accept(ASTVisitor& visitor) const { visitor.visit(*this); }
 
-VarQuery::VarQuery(const SourceRange& source_range, std::string_view identifier) :
+VarQuery::VarQuery(const SourceRange& source_range, const Token& identifier) :
 	Expression(source_range), m_identifier(identifier) {}
 
-const std::string_view VarQuery::get_identifier() const { return m_identifier; }
+const Token& VarQuery::get_identifier() const { return m_identifier; }
 
 void VarQuery::accept(ASTVisitor& visitor) const { visitor.visit(*this); }

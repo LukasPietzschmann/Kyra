@@ -157,7 +157,7 @@ void TypeChecker::visit(const ExpressionStatement& expresion_statement) {
 }
 
 void TypeChecker::visit(const Declaration& declaration) {
-	const std::string_view name = declaration.get_identifier();
+	const std::string_view name = declaration.get_identifier().get_lexeme();
 	RefPtr<DeclaredType> declared_type = visit_with_return(declaration.get_type())->get_declared_type_shared();
 	bool is_mutable = declaration.get_declaration_kind() == Declaration::Kind::VAR;
 	RefPtr<AppliedType> applied_type = AppliedType::promote_declared_type(declared_type, is_mutable);
@@ -168,7 +168,7 @@ void TypeChecker::visit(const Declaration& declaration) {
 	}
 	bool successful = m_current_scope->insert_symbol(name, applied_type);
 	if(!successful)
-		throw ErrorException("Symbol already declared", declaration.get_source_range());
+		throw ErrorException("Symbol already declared", declaration.get_identifier().get_source_range());
 }
 
 void TypeChecker::visit(const Function& function) {
@@ -178,16 +178,17 @@ void TypeChecker::visit(const Function& function) {
 		RefPtr<DeclaredType> param_type = visit_with_return(*parameter.type)->get_declared_type_shared();
 		bool is_mutable = parameter.kind == Declaration::Kind::VAR;
 		RefPtr<AppliedType> applied_param_type = AppliedType::promote_declared_type(param_type, is_mutable);
-		function_scope->insert_symbol(parameter.name, applied_param_type);
+		function_scope->insert_symbol(parameter.identifier.get_lexeme(), applied_param_type);
 		parameters.push_back(applied_param_type);
 	}
 	RefPtr<DeclaredType> return_type = visit_with_return(function.get_return_type())->get_declared_type_shared();
-	RefPtr<FunctionType> function_type = mk_ref<FunctionType>(function.get_identifier(), return_type, parameters);
+	RefPtr<FunctionType> function_type =
+		mk_ref<FunctionType>(function.get_identifier().get_lexeme(), return_type, parameters);
 	m_context.enclosing_function = function_type;
 	execute_on_scope(function_scope, [&]() { function.get_implementation().accept(*this); });
 	m_context.enclosing_function = nullptr;
-	if(!m_current_scope->insert_function(function.get_identifier(), function_type))
-		throw ErrorException("Redefinition of function", function.get_source_range());
+	if(!m_current_scope->insert_function(function.get_identifier().get_lexeme(), function_type))
+		throw ErrorException("Redefinition of function", function.get_identifier().get_source_range());
 }
 
 void TypeChecker::visit(const Return& return_statement) {
@@ -215,9 +216,9 @@ void TypeChecker::visit(const IntLiteral&) {
 }
 
 void TypeChecker::visit(const Assignment& assignment) {
-	RefPtr<AppliedType> assignee_type = m_current_scope->find_symbol(assignment.get_lhs());
+	RefPtr<AppliedType> assignee_type = m_current_scope->find_symbol(assignment.get_lhs().get_lexeme());
 	if(assignee_type == nullptr)
-		throw ErrorException("Undefined symbol", assignment.get_source_range());
+		throw ErrorException("Undefined symbol", assignment.get_lhs().get_source_range());
 	RefPtr<AppliedType> rhs_type = visit_with_return(assignment.get_rhs());
 	if(!rhs_type->can_be_assigned_to(*assignee_type))
 		throw ErrorException("Wrong type", assignment.get_rhs().get_source_range());
@@ -245,16 +246,17 @@ void TypeChecker::visit(const BinaryExpression& binary_expression) {
 }
 
 void TypeChecker::visit(const TypeIndicator& type) {
-	RefPtr<DeclaredType> found_type = m_current_scope->find_type(type.get_type());
+	RefPtr<DeclaredType> found_type = m_current_scope->find_type(type.get_type().get_lexeme());
 	if(found_type == nullptr)
 		throw ErrorException("Undefined type", type.get_source_range());
 	return_from_visit(AppliedType::promote_declared_type(found_type, true));
 }
 
 void TypeChecker::visit(const Call& call) {
-	const std::vector<RefPtr<FunctionType>>& functions = m_current_scope->find_functions(call.get_function_name());
+	const std::vector<RefPtr<FunctionType>>& functions =
+		m_current_scope->find_functions(call.get_function_name().get_lexeme());
 	if(functions.empty())
-		throw ErrorException("Undefined function", call.get_source_range());
+		throw ErrorException("Undefined function", call.get_function_name().get_source_range());
 	std::vector<RefPtr<AppliedType>> args;
 	for(const Call::Argument& arg : call.get_arguments())
 		args.push_back(visit_with_return(*arg.value));
@@ -265,14 +267,14 @@ void TypeChecker::visit(const Call& call) {
 		candidate = function;
 	}
 	if(candidate == nullptr)
-		throw ErrorException("No candidate matched", call.get_source_range());
+		throw ErrorException("No candidate matched", call.get_function_name().get_source_range());
 	return_from_visit(AppliedType::promote_declared_type(candidate->get_returned_type(), true));
 }
 
 void TypeChecker::visit(const Group& group) { return_from_visit(visit_with_return(group.get_content())); }
 
 void TypeChecker::visit(const VarQuery& var_query) {
-	const std::string_view name = var_query.get_identifier();
+	const std::string_view name = var_query.get_identifier().get_lexeme();
 	RefPtr<AppliedType> found_type = m_current_scope->find_symbol(name);
 	if(found_type == nullptr)
 		throw ErrorException("Undefined symbol", var_query.get_source_range());

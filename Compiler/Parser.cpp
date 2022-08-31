@@ -63,8 +63,8 @@ RefPtr<Statement> Parser::variable_declaration() {
 		initializer = expression();
 	const Token& semicolon = consume(TokenType::SEMICOLON);
 	return mk_ref<Declaration>(SourceRange::unite(val_var.get_source_range(), semicolon.get_source_range()),
-		val_var.get_type() == TokenType::VAL ? Declaration::Kind::VAL : Declaration::Kind::VAR, identifier.get_lexeme(),
-		var_type, initializer);
+		val_var.get_type() == TokenType::VAL ? Declaration::Kind::VAL : Declaration::Kind::VAR, identifier, var_type,
+		initializer);
 }
 
 RefPtr<Statement> Parser::function_declaration() {
@@ -77,7 +77,7 @@ RefPtr<Statement> Parser::function_declaration() {
 			const Token& val_var = consume(TokenType::VAL, TokenType::VAR);
 			const Token& identifier = consume(TokenType::NAME);
 			RefPtr<TypeIndicator> param_type = std::static_pointer_cast<TypeIndicator>(type());
-			params.emplace_back(identifier.get_lexeme(), param_type,
+			params.emplace_back(identifier, param_type,
 				val_var.get_type() == TokenType::VAL ? Declaration::Kind::VAL : Declaration::Kind::VAR);
 
 		} while(match_and_advance(TokenType::COMMA));
@@ -85,8 +85,8 @@ RefPtr<Statement> Parser::function_declaration() {
 	consume(TokenType::RIGHT_PAREN);
 	RefPtr<TypeIndicator> return_type = std::static_pointer_cast<TypeIndicator>(type());
 	RefPtr<Block> implementation = std::static_pointer_cast<Block>(block());
-	return mk_ref<Function>(SourceRange::unite(fun.get_source_range(), implementation->get_source_range()),
-		identifier.get_lexeme(), implementation, return_type, params);
+	return mk_ref<Function>(SourceRange::unite(fun.get_source_range(), implementation->get_source_range()), identifier,
+		implementation, return_type, params);
 }
 
 RefPtr<Expression> Parser::expression() { return assignment(); }
@@ -95,7 +95,7 @@ RefPtr<Expression> Parser::assignment() {
 	RefPtr<Expression> lhs = term();
 	if(!match(TokenType::EQUAL))
 		return lhs;
-	const std::string_view identifier = std::static_pointer_cast<VarQuery>(lhs)->get_identifier();
+	const Token& identifier = std::static_pointer_cast<VarQuery>(lhs)->get_identifier();
 	RefPtr<Expression> new_value = expression();
 	return mk_ref<Assignment>(
 		SourceRange::unite(lhs->get_source_range(), new_value->get_source_range()), identifier, new_value);
@@ -151,7 +151,7 @@ RefPtr<Expression> Parser::primary() {
 	}
 	if(match(TokenType::NAME)) {
 		const Token& identifier = consume(TokenType::NAME);
-		return mk_ref<VarQuery>(identifier.get_source_range(), identifier.get_literal_value().as_string());
+		return mk_ref<VarQuery>(identifier.get_source_range(), identifier);
 	}
 	// Group
 	const Token& open_paren = consume(TokenType::LEFT_PAREN);
@@ -163,7 +163,7 @@ RefPtr<Expression> Parser::primary() {
 RefPtr<Expression> Parser::type() {
 	consume(TokenType::COLON);
 	const Token& identifier = consume(TokenType::NAME);
-	return mk_ref<TypeIndicator>(identifier.get_source_range(), identifier.get_literal_value().as_string());
+	return mk_ref<TypeIndicator>(identifier.get_source_range(), identifier);
 }
 
 bool Parser::is_at_end() const { return m_current_token->get_type() == TokenType::END_OF_FILE; }

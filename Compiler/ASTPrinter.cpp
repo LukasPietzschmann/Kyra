@@ -14,7 +14,7 @@ void ASTPrinter::visit(const ExpressionStatement& expresion_statement) {
 }
 
 void ASTPrinter::visit(const Declaration& declaration) {
-	print_with_indent("Declaration of ", declaration.get_identifier(), ":");
+	print_with_indent("Declaration of ", declaration.get_identifier().get_lexeme(), ":");
 	if(const Expression* init = declaration.get_initializer(); init != nullptr) {
 		++m_indent;
 		init->accept(*this);
@@ -23,7 +23,7 @@ void ASTPrinter::visit(const Declaration& declaration) {
 }
 
 void ASTPrinter::visit(const Function& function) {
-	print_with_indent("Function ", function.get_identifier(), ":");
+	print_with_indent("Function ", function.get_identifier().get_lexeme(), ":");
 	++m_indent;
 	function.get_implementation().accept(*this);
 	--m_indent;
@@ -47,7 +47,7 @@ void ASTPrinter::visit(const Block& block) {
 void ASTPrinter::visit(const IntLiteral&) { print_with_indent("Literal"); }
 
 void ASTPrinter::visit(const Assignment& assignment) {
-	print_with_indent("Assignment to ", assignment.get_lhs(), ":");
+	print_with_indent("Assignment to ", assignment.get_lhs().get_lexeme(), ":");
 	++m_indent;
 	assignment.get_rhs().accept(*this);
 	--m_indent;
@@ -62,9 +62,9 @@ void ASTPrinter::visit(const BinaryExpression& binary_expression) {
 	--m_indent;
 }
 
-void ASTPrinter::visit(const TypeIndicator& type) { print_with_indent("Type ", type.get_type(), ""); }
+void ASTPrinter::visit(const TypeIndicator& type) { print_with_indent("Type ", type.get_type().get_lexeme(), ""); }
 
-void ASTPrinter::visit(const Call& call) { print_with_indent("Call to ", call.get_function_name()); }
+void ASTPrinter::visit(const Call& call) { print_with_indent("Call to ", call.get_function_name().get_lexeme()); }
 
 void ASTPrinter::visit(const Group& group) {
 	print_with_indent("Group:");
@@ -73,4 +73,6 @@ void ASTPrinter::visit(const Group& group) {
 	--m_indent;
 }
 
-void ASTPrinter::visit(const VarQuery& var_query) { print_with_indent("Variable ", var_query.get_identifier()); }
+void ASTPrinter::visit(const VarQuery& var_query) {
+	print_with_indent("Variable ", var_query.get_identifier().get_lexeme());
+}
