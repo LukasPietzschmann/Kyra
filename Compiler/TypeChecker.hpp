@@ -13,13 +13,13 @@ public:
 	virtual ~DeclaredType() = default;
 
 	bool can_be_assigned_to(const DeclaredType& other) const;
-	std::vector<RefPtr<FunctionType>> find_methods(std::string_view name) const;
+	const std::vector<RefPtr<FunctionType>> find_methods(std::string_view name) const;
 	void insert_method_if_non_exists(std::string_view name, RefPtr<FunctionType> type);
 
 	const std::string_view get_name() const;
 
 protected:
-	std::string_view m_name;
+	const std::string_view m_name;
 	std::map<std::string_view, std::vector<RefPtr<FunctionType>>> m_methods;
 };
 
@@ -39,7 +39,7 @@ public:
 
 private:
 	RefPtr<DeclaredType> m_decl_type;
-	bool m_is_multable;
+	const bool m_is_multable;
 };
 
 class FunctionType : public DeclaredType {
@@ -56,7 +56,7 @@ public:
 
 private:
 	RefPtr<DeclaredType> m_return_type;
-	std::vector<RefPtr<AppliedType>> m_parameters;
+	const std::vector<RefPtr<AppliedType>> m_parameters;
 };
 
 class IntType : public DeclaredType {
@@ -66,7 +66,7 @@ public:
 	unsigned get_width() const;
 
 private:
-	unsigned m_width;
+	const unsigned m_width;
 };
 
 class TypeScope {
@@ -77,7 +77,7 @@ public:
 	bool insert_symbol(std::string_view name, RefPtr<AppliedType> type);
 	RefPtr<DeclaredType> find_type(std::string_view name) const;
 	bool insert_type(std::string_view name, RefPtr<DeclaredType> type);
-	std::vector<RefPtr<FunctionType>> find_functions(std::string_view name) const;
+	const std::vector<RefPtr<FunctionType>> find_functions(std::string_view name) const;
 	bool insert_function(std::string_view name, RefPtr<FunctionType> type);
 
 private:

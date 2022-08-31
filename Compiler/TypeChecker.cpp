@@ -19,7 +19,7 @@ bool AppliedType::can_be_assigned_to(const AppliedType& other) const {
 	return !(!m_is_multable && other.m_is_multable);
 }
 
-std::vector<RefPtr<FunctionType>> DeclaredType::find_methods(std::string_view name) const {
+const std::vector<RefPtr<FunctionType>> DeclaredType::find_methods(std::string_view name) const {
 	if(const auto& it = m_methods.find(name); it != m_methods.end())
 		return it->second;
 	return {};
@@ -124,7 +124,7 @@ bool TypeScope::insert_type(std::string_view name, RefPtr<DeclaredType> type) {
 	return true;
 }
 
-std::vector<RefPtr<FunctionType>> TypeScope::find_functions(std::string_view name) const {
+const std::vector<RefPtr<FunctionType>> TypeScope::find_functions(std::string_view name) const {
 	// TODO: find functions from all visible scopes
 	if(const auto& it = m_function_scope.find(name); it != m_function_scope.end())
 		return it->second;
