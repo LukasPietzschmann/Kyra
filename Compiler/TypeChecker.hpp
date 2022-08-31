@@ -1,6 +1,7 @@
 #pragma once
 
 #include <map>
+#include <string_view>
 
 #include "AST.hpp"
 #include "Aliases.hpp"
