@@ -1,5 +1,6 @@
 #include "Error.hpp"
 
+#include <algorithm>
 #include <filesystem>
 #include <fstream>
 #include <map>
@@ -26,7 +27,16 @@ void Error::print(std::ostream& stream) const {
 			file_content = std::string((std::istreambuf_iterator<char>(input)), (std::istreambuf_iterator<char>()));
 			file_content_cache.try_emplace(sr.get_file_path(), file_content);
 		}
-		std::string span = file_content.substr(sr.get_start().index, sr.get_end().index - sr.get_start().index);
+		static const unsigned margin = 10;
+		const unsigned lower_index = sr.get_start().index -
+			std::min<unsigned>(std::max(margin, margin / 2), sr.get_start().index - sr.get_start().line_start_index);
+		const unsigned upper_index =
+			std::min<unsigned>(file_content.find('\n', sr.get_end().index), sr.get_end().index + margin);
+		std::string span = file_content.substr(lower_index, upper_index - lower_index);
 		stream << span << std::endl;
+
+		std::string underline(sr.get_end().index - sr.get_start().index, '-');
+		std::string padding(sr.get_start().index - lower_index, ' ');
+		stream << padding << underline << std::endl;
 	}
 }
