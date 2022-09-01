@@ -7,6 +7,8 @@
 #include "Error.hpp"
 #include "Token.hpp"
 
+namespace Kyra {
+
 class Parser {
 public:
 	static Parser& the() {
@@ -72,3 +74,4 @@ private:
 
 	bool is_at_end() const;
 };
+}

@@ -4,6 +4,8 @@
 
 #include "SourceRange.hpp"
 
+namespace Kyra {
+
 ErrorOr<std::vector<RefPtr<Statement>>> Parser::parse_tokens(const std::vector<Token>& tokens) {
 	m_statements.clear();
 	m_tokens = &tokens;
@@ -171,3 +173,4 @@ RefPtr<Expression> Parser::type() {
 }
 
 bool Parser::is_at_end() const { return m_current_token->get_type() == TokenType::END_OF_FILE; }
+}

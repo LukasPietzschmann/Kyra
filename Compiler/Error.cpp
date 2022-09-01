@@ -6,6 +6,8 @@
 #include <map>
 #include <string>
 
+namespace Kyra {
+
 ErrorException::ErrorException(std::string_view message, const SourceRange& source_range) :
 	m_message(message), m_source_range(source_range) {}
 
@@ -51,4 +53,5 @@ void ErrorException::print(std::ostream& stream) const {
 		stream << padding << "\033[31m" << underline << "\033[0m\n";
 	}
 	stream.flush();
+}
 }

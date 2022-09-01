@@ -7,6 +7,8 @@
 
 #include "SourceRange.hpp"
 
+namespace Kyra {
+
 class ErrorException : public std::exception {
 public:
 	ErrorException(std::string_view message, const SourceRange& source_range);
@@ -60,3 +62,4 @@ public:
 private:
 	std::optional<ErrorException> m_exception;
 };
+}

@@ -6,6 +6,8 @@
 #include "AST.hpp"
 #include "Aliases.hpp"
 
+namespace Kyra {
+
 class ASTPrinter : public ASTVisitor {
 public:
 	static ASTPrinter& the() {
@@ -44,3 +46,4 @@ private:
 		((std::cout << std::string(m_indent, '\t')) << ... << strings) << '\n';
 	}
 };
+}

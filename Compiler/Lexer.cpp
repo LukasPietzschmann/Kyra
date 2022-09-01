@@ -3,6 +3,8 @@
 #include <cassert>
 #include <map>
 
+namespace Kyra {
+
 ErrorOr<std::vector<Token>> Lexer::scan_input(std::string_view source, const std::filesystem::path& file_path) {
 	m_file_path = file_path;
 	m_source = source;
@@ -146,4 +148,5 @@ void Lexer::add_token(TokenType type, std::string_view literal) {
 void Lexer::line_brak() {
 	++m_current.line;
 	m_current.line_start_index = m_current.index;
+}
 }

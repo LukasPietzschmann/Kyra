@@ -5,6 +5,8 @@
 
 #include "SourceRange.hpp"
 
+namespace Kyra {
+
 enum class TokenType {
 	// Single-character tokens
 	LEFT_PAREN,
@@ -66,3 +68,4 @@ private:
 	const LiteralValue m_literal_value;
 	const SourceRange m_source_range;
 };
+}

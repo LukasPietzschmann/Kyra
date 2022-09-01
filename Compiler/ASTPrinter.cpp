@@ -1,5 +1,7 @@
 #include "ASTPrinter.hpp"
 
+namespace Kyra {
+
 void ASTPrinter::print(const Statement& statement) {
 	m_indent = 0;
 	statement.accept(*this);
@@ -75,4 +77,5 @@ void ASTPrinter::visit(const Group& group) {
 
 void ASTPrinter::visit(const VarQuery& var_query) {
 	print_with_indent("Variable ", var_query.get_identifier().get_lexeme());
+}
 }

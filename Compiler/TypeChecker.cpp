@@ -3,6 +3,8 @@
 #include <iostream>
 #include <sstream>
 
+namespace Kyra {
+
 DeclaredType::DeclaredType(std::string_view name) : m_name(name) {}
 
 bool DeclaredType::can_be_assigned_to(const DeclaredType& other) const { return m_name == other.m_name; }
@@ -299,4 +301,5 @@ RefPtr<TypeScope> TypeChecker::execute_on_new_scope(Callback callback) {
 	RefPtr<TypeScope> new_scope = mk_ref<TypeScope>(m_current_scope);
 	execute_on_scope(new_scope, callback);
 	return new_scope;
+}
 }

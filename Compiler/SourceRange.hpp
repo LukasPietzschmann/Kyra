@@ -3,6 +3,8 @@
 #include <cassert>
 #include <filesystem>
 
+namespace Kyra {
+
 class SourceRange {
 public:
 	struct Position {
@@ -31,3 +33,4 @@ private:
 	const Position m_end;
 	const std::filesystem::path& m_file_path;
 };
+}

@@ -9,6 +9,8 @@
 #include "SourceRange.hpp"
 #include "Token.hpp"
 
+namespace Kyra {
+
 class Lexer {
 public:
 	static Lexer& the() {
@@ -54,3 +56,4 @@ private:
 
 	void line_brak();
 };
+}

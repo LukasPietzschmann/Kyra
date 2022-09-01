@@ -8,6 +8,8 @@
 #include "Aliases.hpp"
 #include "Error.hpp"
 
+namespace Kyra {
+
 class FunctionType;
 class DeclaredType {
 public:
@@ -133,3 +135,4 @@ private:
 	template <typename Callback>
 	RefPtr<TypeScope> execute_on_new_scope(Callback callback);
 };
+}

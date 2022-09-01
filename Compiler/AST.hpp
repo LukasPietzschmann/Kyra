@@ -6,6 +6,8 @@
 #include "SourceRange.hpp"
 #include "Token.hpp"
 
+namespace Kyra {
+
 class TypeIndicator;
 class ASTVisitor;
 
@@ -264,3 +266,4 @@ public:
 	virtual void visit(const Group& group) = 0;
 	virtual void visit(const VarQuery& var_query) = 0;
 };
+}
