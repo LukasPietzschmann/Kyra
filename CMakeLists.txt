@@ -20,7 +20,7 @@ endif ()
 
 option(USE_MOLD_LINKER "Use mold instead of the default linker" OFF)
 if (${USE_MOLD_LINKER})
-	message("Using mold instead of ld")
+	message(STATUS "Using mold instead of ld")
 	if (${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU" AND ${CMAKE_CXX_COMPILER_VERSION} LESS_EQUAL 12.1.0)
 		add_link_options(-B/usr/libexec/mold)
 	endif ()

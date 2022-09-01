@@ -7,6 +7,7 @@
 #include "AST.hpp"
 #include "ASTPrinter.hpp"
 #include "Aliases.hpp"
+#include "CodeGen.hpp"
 #include "Lexer.hpp"
 #include "Parser.hpp"
 #include "SourceRange.hpp"
@@ -45,6 +46,8 @@ int main(int argc, char** argv) {
 		maybe_error.get_exception().print(std::cout);
 		return 1;
 	}
+
+	CodeGen::the().gen_code(error_or_statements.get_result());
 
 	return 0;
 }
