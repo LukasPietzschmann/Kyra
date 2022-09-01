@@ -167,7 +167,8 @@ void TypeChecker::visit(const Declaration& declaration) {
 		RefPtr<AppliedType> init_type = visit_with_return(*init);
 		if(!init_type->can_be_assigned_to(*applied_type))
 			throw ErrorException("Initializer type does not match declaration type", init->get_source_range());
-	}
+	} else if(!is_mutable)
+		throw ErrorException("Values have to be initialized during declaration", declaration.get_source_range());
 	bool successful = m_current_scope->insert_symbol(name, applied_type);
 	if(!successful)
 		throw ErrorException("Symbol already declared", declaration.get_identifier().get_source_range());
@@ -221,6 +222,8 @@ void TypeChecker::visit(const Assignment& assignment) {
 	RefPtr<AppliedType> assignee_type = m_current_scope->find_symbol(assignment.get_lhs().get_lexeme());
 	if(assignee_type == nullptr)
 		throw ErrorException("Undefined symbol", assignment.get_lhs().get_source_range());
+	if(!assignee_type->is_mutable())
+		throw ErrorException("Cannot assign to a value", assignment.get_source_range());
 	RefPtr<AppliedType> rhs_type = visit_with_return(assignment.get_rhs());
 	if(!rhs_type->can_be_assigned_to(*assignee_type))
 		throw ErrorException("Wrong type", assignment.get_rhs().get_source_range());
