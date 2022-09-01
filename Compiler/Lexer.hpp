@@ -28,8 +28,8 @@ private:
 	std::filesystem::path m_file_path;
 	std::vector<Token> m_tokens;
 	std::string_view m_source{};
-	SourceRange::Position m_current{0, 0, 0};
-	SourceRange::Position m_start{0, 0, 0};
+	SourceRange::Position m_current{1, 0, 0};
+	SourceRange::Position m_start{1, 0, 0};
 
 	void scan_token();
 
