@@ -206,7 +206,7 @@ void TypeChecker::visit(const Return& return_statement) {
 void TypeChecker::visit(const Block& block) {
 	execute_on_new_scope([&]() {
 		for(const RefPtr<Statement>& statement : block.get_body())
-			check_statement(*statement);
+			statement->accept(*this);
 	});
 }
 
