@@ -1,5 +1,6 @@
 #include "TypeChecker.hpp"
 
+#include <iostream>
 #include <sstream>
 
 DeclaredType::DeclaredType(std::string_view name) : m_name(name) {}
@@ -143,11 +144,11 @@ bool TypeScope::insert_function(std::string_view name, RefPtr<FunctionType> type
 	return true;
 }
 
-std::optional<Error> TypeChecker::check_statement(const Statement& statement) {
+ErrorOr<void> TypeChecker::check_statement(const Statement& statement) {
 	try {
 		statement.accept(*this);
 	} catch(const ErrorException& e) {
-		return Error(e);
+		return e;
 	}
 	return {};
 }

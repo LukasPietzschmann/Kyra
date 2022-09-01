@@ -23,16 +23,24 @@ int main(int argc, char** argv) {
 
 	std::ifstream input_file_stream(source_file_path);
 	std::string source_code((std::istreambuf_iterator<char>(input_file_stream)), (std::istreambuf_iterator<char>()));
+	input_file_stream.close();
 
-	const std::vector<Token>& tokens = Lexer::the().scan_input(source_code, source_file_path);
-	const std::vector<RefPtr<Statement>> statements = Parser::the().parse_tokens(tokens);
-	ASTPrinter printer;
-	for(const RefPtr<Statement>& statement : statements)
-		printer.print(*statement);
-	for(const RefPtr<Statement>& statement : statements) {
-		std::optional<Error> maybe_error = TypeChecker::the().check_statement(*statement);
-		if(maybe_error.has_value())
-			maybe_error->print(std::cout);
+	const ErrorOr<std::vector<Token>>& error_or_tokens = Lexer::the().scan_input(source_code, source_file_path);
+	if(error_or_tokens.is_error()) {
+		error_or_tokens.get_exception().print(std::cout);
+		return 1;
+	}
+
+	const ErrorOr<std::vector<RefPtr<Statement>>>& error_or_statements =
+		Parser::the().parse_tokens(error_or_tokens.get_result());
+	if(error_or_statements.is_error()) {
+		error_or_statements.get_exception().print(std::cout);
+		return 1;
+	}
+	for(const RefPtr<Statement>& statement : error_or_statements.get_result()) {
+		const ErrorOr<void>& maybe_error = TypeChecker::the().check_statement(*statement);
+		if(maybe_error.is_error())
+			maybe_error.get_exception().print(std::cout);
 	}
 
 	return 0;

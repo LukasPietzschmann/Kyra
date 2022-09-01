@@ -5,6 +5,7 @@
 #include <string>
 #include <vector>
 
+#include "Error.hpp"
 #include "SourceRange.hpp"
 #include "Token.hpp"
 
@@ -22,7 +23,7 @@ public:
 	Lexer& operator=(const Lexer&) = delete;
 	Lexer& operator=(Lexer&&) noexcept = default;
 
-	const std::vector<Token>& scan_input(std::string_view source, const std::filesystem::path& file_path);
+	ErrorOr<std::vector<Token>> scan_input(std::string_view source, const std::filesystem::path& file_path);
 
 private:
 	std::filesystem::path m_file_path;

@@ -3,14 +3,18 @@
 #include <cassert>
 #include <map>
 
-const std::vector<Token>& Lexer::scan_input(std::string_view source, const std::filesystem::path& file_path) {
+ErrorOr<std::vector<Token>> Lexer::scan_input(std::string_view source, const std::filesystem::path& file_path) {
 	m_file_path = file_path;
 	m_source = source;
 	m_tokens.clear();
 
-	while(!is_at_end()) {
-		m_start = m_current;
-		scan_token();
+	try {
+		while(!is_at_end()) {
+			m_start = m_current;
+			scan_token();
+		}
+	} catch(const ErrorException& e) {
+		return e;
 	}
 	add_token(TokenType::END_OF_FILE);
 
@@ -42,8 +46,11 @@ void Lexer::scan_token() {
 				number();
 			else if(is_alpha(current))
 				name_or_keyword();
-			else
-				assert(0); // TODO: Error
+			else {
+				SourceRange::Position start_copy = m_start;
+				SourceRange::Position end_copy = m_current;
+				throw ErrorException("Unknown character", SourceRange(start_copy, end_copy, m_file_path));
+			}
 	}
 }
 

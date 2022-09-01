@@ -4,13 +4,17 @@
 
 #include "SourceRange.hpp"
 
-const std::vector<RefPtr<Statement>>& Parser::parse_tokens(const std::vector<Token>& tokens) {
+ErrorOr<std::vector<RefPtr<Statement>>> Parser::parse_tokens(const std::vector<Token>& tokens) {
 	m_statements.clear();
 	m_tokens = &tokens;
 	m_current_token = m_tokens->begin();
 
-	while(!is_at_end())
-		m_statements.push_back(declaration());
+	try {
+		while(!is_at_end())
+			m_statements.push_back(declaration());
+	} catch(const ErrorException& e) {
+		return e;
+	}
 
 	return m_statements;
 }

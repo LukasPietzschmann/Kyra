@@ -11,11 +11,11 @@ ErrorException::ErrorException(std::string_view message, const SourceRange& sour
 
 const char* ErrorException::what() const noexcept { return m_message.data(); }
 
-Error::Error(const ErrorException& exception) : m_exception(exception) {}
+const SourceRange& ErrorException::get_source_range() const { return m_source_range; }
 
-void Error::print(std::ostream& stream) const {
-	stream << m_exception.what() << '\n';
-	const SourceRange& source_range = m_exception.m_source_range;
+void ErrorException::print(std::ostream& stream) const {
+	stream << m_message << '\n';
+	const SourceRange& source_range = m_source_range;
 	if(source_range.get_start().line - source_range.get_end().line == 0) {
 		static std::map<std::filesystem::path, std::string> file_content_cache;
 

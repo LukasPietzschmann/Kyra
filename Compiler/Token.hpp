@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <vector>
 
 #include "SourceRange.hpp"
 
@@ -45,6 +46,12 @@ public:
 	private:
 		std::string_view m_value;
 	};
+
+	static const std::string get_name_for(const TokenType& type) {
+		static const std::vector<std::string> names{"(", ")", "{", "}", ",", ";", ":", "-", "+", "*", "\\", "=",
+			"Identifier", "Number", "var", "val", "fun", "return", "EOF"};
+		return "\"" + names.at(static_cast<unsigned>(type)) + "\"";
+	}
 
 	Token(TokenType type, std::string_view lexeme, std::string_view literal_value, const SourceRange& source_range);
 

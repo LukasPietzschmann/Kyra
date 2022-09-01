@@ -1,7 +1,10 @@
 #pragma once
 
+#include <sstream>
+
 #include "AST.hpp"
 #include "Aliases.hpp"
+#include "Error.hpp"
 #include "Token.hpp"
 
 class Parser {
@@ -18,7 +21,7 @@ public:
 	Parser& operator=(const Parser&) = delete;
 	Parser& operator=(Parser&&) noexcept = default;
 
-	const std::vector<RefPtr<Statement>>& parse_tokens(const std::vector<Token>& tokens);
+	ErrorOr<std::vector<RefPtr<Statement>>> parse_tokens(const std::vector<Token>& tokens);
 
 private:
 	std::vector<RefPtr<Statement>> m_statements;
@@ -60,8 +63,11 @@ private:
 		if(match_and_advance(args...)) {
 			return current;
 		}
-		// TODO: error
-		assert_not_reached();
+		std::stringstream message;
+		message << "Expexted ";
+		(message << ... << (Token::get_name_for(args) + ", "))
+			<< "but found " << Token::get_name_for(current.get_type());
+		throw ErrorException(message.str(), m_current_token->get_source_range());
 	}
 
 	bool is_at_end() const;
