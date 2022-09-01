@@ -108,7 +108,7 @@ public:
 	TypeChecker& operator=(const TypeChecker&) = delete;
 	TypeChecker& operator=(TypeChecker&&) noexcept = default;
 
-	ErrorOr<void> check_statement(const Statement& statement);
+	ErrorOr<void> check_statements(const std::vector<RefPtr<Statement>>& statements);
 
 	void visit(const ExpressionStatement& expresion_statement) override;
 	void visit(const Declaration& declaration) override;

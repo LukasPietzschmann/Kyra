@@ -19,7 +19,7 @@ int main(int argc, char** argv) {
 
 	std::filesystem::path source_file_path(argv[1]);
 	if(!std::filesystem::exists(source_file_path))
-		return 2;
+		return 1;
 
 	std::ifstream input_file_stream(source_file_path);
 	std::string source_code((std::istreambuf_iterator<char>(input_file_stream)), (std::istreambuf_iterator<char>()));
@@ -37,10 +37,11 @@ int main(int argc, char** argv) {
 		error_or_statements.get_exception().print(std::cout);
 		return 1;
 	}
-	for(const RefPtr<Statement>& statement : error_or_statements.get_result()) {
-		const ErrorOr<void>& maybe_error = TypeChecker::the().check_statement(*statement);
-		if(maybe_error.is_error())
-			maybe_error.get_exception().print(std::cout);
+
+	const ErrorOr<void>& maybe_error = TypeChecker::the().check_statements(error_or_statements.get_result());
+	if(maybe_error.is_error()) {
+		maybe_error.get_exception().print(std::cout);
+		return 1;
 	}
 
 	return 0;

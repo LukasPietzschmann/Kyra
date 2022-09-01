@@ -144,9 +144,10 @@ bool TypeScope::insert_function(std::string_view name, RefPtr<FunctionType> type
 	return true;
 }
 
-ErrorOr<void> TypeChecker::check_statement(const Statement& statement) {
+ErrorOr<void> TypeChecker::check_statements(const std::vector<RefPtr<Statement>>& statements) {
 	try {
-		statement.accept(*this);
+		for(const RefPtr<Statement>& statement : statements)
+			statement->accept(*this);
 	} catch(const ErrorException& e) {
 		return e;
 	}
