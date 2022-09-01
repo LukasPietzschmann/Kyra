@@ -10,7 +10,7 @@ Kyra {
 
 	// Expressions
 	Expression = Assignment
-	Assignment = identifier TypeSpecifier "=" Expression -- Assignment
+	Assignment = Term "=" Expression -- Assignment
 		| Term
 	Term = Factor (( "-" | "+") Factor)*
 	Factor = Call (("/" | "*") Call)*
