@@ -97,7 +97,7 @@ RefPtr<Expression> Parser::expression() { return assignment(); }
 
 RefPtr<Expression> Parser::assignment() {
 	RefPtr<Expression> lhs = term();
-	if(!match(TokenType::EQUAL))
+	if(!match_and_advance(TokenType::EQUAL))
 		return lhs;
 	const Token& identifier = std::static_pointer_cast<VarQuery>(lhs)->get_identifier();
 	RefPtr<Expression> new_value = expression();
