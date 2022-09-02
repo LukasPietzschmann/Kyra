@@ -13,9 +13,6 @@ class ASTVisitor;
 
 class ASTNode {
 public:
-	template <typename T>
-	using Ptr = std::shared_ptr<T>;
-
 	virtual ~ASTNode() = default;
 
 	const SourceRange& get_source_range() const;
