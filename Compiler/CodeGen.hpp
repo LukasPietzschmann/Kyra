@@ -5,12 +5,11 @@
 #include "AST.hpp"
 #include "Aliases.hpp"
 
+namespace Kyra {
 using namespace llvm;
 
-namespace Kyra {
-
 class CodeGen : public ASTVisitor {
-	VISIT_RETURN_TYPE(Value*);
+	VISIT_RETURN_TYPE(Value*)
 
 public:
 	static CodeGen& the() {
