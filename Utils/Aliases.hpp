@@ -10,8 +10,10 @@ template <typename T>
 using RefPtr = std::shared_ptr<T>;
 
 template <typename T, typename... Args>
-RefPtr<T> inline mk_ref(Args... args) {
-	return std::make_shared<T>(args...);
+RefPtr<T> inline mk_ref(Args&&... args) {
+	return std::make_shared<T>(std::forward<Args>(args)...);
+}
+template <typename T, typename... Args>
 }
 
 template <typename T, typename... Args>
