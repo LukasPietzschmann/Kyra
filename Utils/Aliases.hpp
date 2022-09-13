@@ -3,17 +3,24 @@
 #include <cassert>
 #include <memory>
 #include <type_traits>
+#include <utility>
 
 #define assert_not_reached() assert(0 && "should not reach")
 
 template <typename T>
 using RefPtr = std::shared_ptr<T>;
 
+template <typename T>
+using OwnPtr = std::unique_ptr<T>;
+
 template <typename T, typename... Args>
 RefPtr<T> inline mk_ref(Args&&... args) {
 	return std::make_shared<T>(std::forward<Args>(args)...);
 }
+
 template <typename T, typename... Args>
+OwnPtr<T> inline mk_own(Args&&... args) {
+	return std::make_unique<T>(std::forward<Args>(args)...);
 }
 
 template <typename T, typename... Args>
