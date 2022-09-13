@@ -3,6 +3,7 @@
 #include <iostream>
 #include <optional>
 #include <string>
+#include <vector>
 
 #include "AST.hpp"
 #include "ASTPrinter.hpp"
@@ -11,6 +12,7 @@
 #include "Lexer.hpp"
 #include "Parser.hpp"
 #include "SourceRange.hpp"
+#include "TAST.hpp"
 #include "Token.hpp"
 #include "TypeChecker.hpp"
 
@@ -41,7 +43,8 @@ int main(int argc, char** argv) {
 		return 1;
 	}
 
-	const ErrorOr<void>& maybe_error = TypeChecker::the().check_statements(error_or_statements.get_result());
+	const ErrorOr<std::vector<RefPtr<Typed::Statement>>>& maybe_error =
+		TypeChecker::the().check_statements(error_or_statements.get_result());
 	if(maybe_error.is_error()) {
 		maybe_error.get_exception().print(std::cout);
 		return 1;

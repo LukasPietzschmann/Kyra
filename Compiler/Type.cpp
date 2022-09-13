@@ -1,5 +1,7 @@
 #include "Type.hpp"
 
+namespace Kyra {
+
 DeclaredType::DeclaredType(std::string_view name) : m_name(name) {}
 
 bool DeclaredType::can_be_assigned_to(const DeclaredType& other) const { return m_name == other.m_name; }
@@ -75,7 +77,27 @@ IntType::IntType(std::string_view name, unsigned width) : DeclaredType(name), m_
 
 unsigned IntType::get_width() const { return m_width; }
 
+declid_t DeclarationDumpster::insert(RefPtr<AppliedType> type) {
+	static declid_t id = 0;
+	m_transaction.try_emplace(++id, type);
+	return id;
+}
+
+RefPtr<AppliedType> DeclarationDumpster::retrieve(declid_t id) const {
+	assert(m_transaction.empty());
+	return m_dumpster.at(id);
+}
+
+void DeclarationDumpster::commit_transaction() {
+	m_dumpster.insert(m_transaction.begin(), m_transaction.end());
+	m_transaction.clear();
+}
+
+void DeclarationDumpster::abort_transaction() { m_transaction.clear(); }
+
 TypeScope::TypeScope(RefPtr<TypeScope> parent) : m_parent(parent) {
+	int sdfsdfsdfsdfsf = 2;
+	(void)sdfsdfsdfsdfsf;
 	static RefPtr<IntType> i32_type = nullptr;
 	if(i32_type == nullptr) {
 		i32_type = mk_ref<IntType>("i32", 32);
@@ -92,18 +114,18 @@ TypeScope::TypeScope(RefPtr<TypeScope> parent) : m_parent(parent) {
 	m_type_scope.try_emplace(i32_type->get_name(), i32_type);
 }
 
-RefPtr<AppliedType> TypeScope::find_symbol(std::string_view name) const {
+std::optional<TypeScope::Element<AppliedType>> TypeScope::find_symbol(std::string_view name) const {
 	if(const auto& it = m_symbol_scope.find(name); it != m_symbol_scope.end())
 		return it->second;
 	if(m_parent != nullptr)
 		return m_parent->find_symbol(name);
-	return nullptr;
+	return {};
 }
 
-bool TypeScope::insert_symbol(std::string_view name, RefPtr<AppliedType> type) {
+bool TypeScope::insert_symbol(std::string_view name, TypeScope::Element<AppliedType> element) {
 	if(m_symbol_scope.contains(name))
 		return false;
-	m_symbol_scope.try_emplace(name, type);
+	m_symbol_scope.try_emplace(name, element);
 	return true;
 }
 
@@ -122,7 +144,7 @@ bool TypeScope::insert_type(std::string_view name, RefPtr<DeclaredType> type) {
 	return true;
 }
 
-const std::vector<RefPtr<FunctionType>> TypeScope::find_functions(std::string_view name) const {
+const std::vector<TypeScope::Element<FunctionType>> TypeScope::find_functions(std::string_view name) const {
 	// TODO: find functions from all visible scopes
 	if(const auto& it = m_function_scope.find(name); it != m_function_scope.end())
 		return it->second;
@@ -131,12 +153,13 @@ const std::vector<RefPtr<FunctionType>> TypeScope::find_functions(std::string_vi
 	return {};
 }
 
-bool TypeScope::insert_function(std::string_view name, RefPtr<FunctionType> type) {
-	std::vector<RefPtr<FunctionType>>& functions = m_function_scope[name];
-	for(const RefPtr<FunctionType>& function : functions) {
-		if(*function == *type)
+bool TypeScope::insert_function(std::string_view name, TypeScope::Element<FunctionType> element) {
+	std::vector<TypeScope::Element<FunctionType>>& functions = m_function_scope[name];
+	for(const auto& [id, function] : functions) {
+		if(*function == *element.type)
 			return false;
 	}
-	functions.push_back(type);
+	functions.push_back(element);
 	return true;
+}
 }

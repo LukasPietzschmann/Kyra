@@ -1,10 +1,14 @@
 #pragma once
 
 #include <map>
+#include <optional>
 #include <string_view>
 #include <vector>
 
 #include "Aliases.hpp"
+#include "Error.hpp"
+
+namespace Kyra {
 
 class FunctionType;
 class DeclaredType {
@@ -69,20 +73,64 @@ private:
 	const unsigned m_width;
 };
 
-class TypeScope {
-public:
-	explicit TypeScope(RefPtr<TypeScope> parent = nullptr);
+using declid_t = unsigned long;
 
-	RefPtr<AppliedType> find_symbol(std::string_view name) const;
-	bool insert_symbol(std::string_view name, RefPtr<AppliedType> type);
-	RefPtr<DeclaredType> find_type(std::string_view name) const;
-	bool insert_type(std::string_view name, RefPtr<DeclaredType> type);
-	const std::vector<RefPtr<FunctionType>> find_functions(std::string_view name) const;
-	bool insert_function(std::string_view name, RefPtr<FunctionType> type);
+class DeclarationDumpster {
+public:
+	static DeclarationDumpster& the() {
+		static DeclarationDumpster instance;
+		return instance;
+	}
+
+	DeclarationDumpster() = default;
+	DeclarationDumpster(const DeclarationDumpster&) = delete;
+	DeclarationDumpster(DeclarationDumpster&&) noexcept = default;
+
+	DeclarationDumpster& operator=(const DeclarationDumpster&) = delete;
+	DeclarationDumpster& operator=(DeclarationDumpster&&) noexcept = default;
+
+	template <typename Callback>
+	void abort_on_exception(const Callback& callback) {
+		try {
+			callback();
+			commit_transaction();
+		} catch(const ErrorException& e) {
+			abort_transaction();
+			throw e;
+		}
+	}
+
+	declid_t insert(RefPtr<AppliedType> type);
+	RefPtr<AppliedType> retrieve(declid_t id) const;
 
 private:
-	std::map<std::string_view, RefPtr<AppliedType>> m_symbol_scope;
+	std::map<declid_t, RefPtr<AppliedType>> m_dumpster;
+	std::map<declid_t, RefPtr<AppliedType>> m_transaction;
+
+	void commit_transaction();
+	void abort_transaction();
+};
+
+class TypeScope {
+public:
+	template <typename T>
+	struct Element {
+		declid_t declid;
+		RefPtr<T> type;
+	};
+	explicit TypeScope(RefPtr<TypeScope> parent = nullptr);
+
+	std::optional<Element<AppliedType>> find_symbol(std::string_view name) const;
+	bool insert_symbol(std::string_view name, Element<AppliedType> element);
+	RefPtr<DeclaredType> find_type(std::string_view name) const;
+	bool insert_type(std::string_view name, RefPtr<DeclaredType> type);
+	const std::vector<Element<FunctionType>> find_functions(std::string_view name) const;
+	bool insert_function(std::string_view name, Element<FunctionType> element);
+
+private:
+	std::map<std::string_view, Element<AppliedType>> m_symbol_scope;
 	std::map<std::string_view, RefPtr<DeclaredType>> m_type_scope;
-	std::map<std::string_view, std::vector<RefPtr<FunctionType>>> m_function_scope;
+	std::map<std::string_view, std::vector<Element<FunctionType>>> m_function_scope;
 	RefPtr<TypeScope> m_parent;
 };
+}

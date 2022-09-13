@@ -3,16 +3,29 @@
 #include <map>
 #include <optional>
 #include <string_view>
+#include <vector>
 
 #include "AST.hpp"
 #include "Aliases.hpp"
 #include "Error.hpp"
+#include "TAST.hpp"
 #include "Type.hpp"
 
 namespace Kyra {
 
 class TypeChecker : public ASTVisitor {
-	VISIT_RETURN_TYPE(RefPtr<AppliedType>)
+private:
+	struct VisitResult {
+		VisitResult(RefPtr<AppliedType> type, RefPtr<Typed::Expression> expression) :
+			type(type), expression(expression) {}
+		VisitResult() : VisitResult(nullptr, nullptr) {}
+
+		RefPtr<AppliedType> type;
+		RefPtr<Typed::Expression> expression;
+	};
+
+	VISIT_RETURN_TYPE(VisitResult)
+
 public:
 	struct Context {
 		RefPtr<FunctionType> enclosing_function{nullptr};
@@ -30,7 +43,7 @@ public:
 	TypeChecker& operator=(const TypeChecker&) = delete;
 	TypeChecker& operator=(TypeChecker&&) noexcept = default;
 
-	ErrorOr<void> check_statements(const std::vector<RefPtr<Statement>>& statements);
+	ErrorOr<std::vector<RefPtr<Typed::Statement>>> check_statements(const std::vector<RefPtr<Statement>>& statements);
 
 	void visit(const ExpressionStatement& expresion_statement) override;
 	void visit(const Declaration& declaration) override;
@@ -47,6 +60,7 @@ public:
 	void visit(const VarQuery& var_query) override;
 
 private:
+	std::vector<RefPtr<Typed::Statement>> m_typed_statements;
 	RefPtr<TypeScope> m_current_scope{mk_ref<TypeScope>()};
 	Context m_context;
 
