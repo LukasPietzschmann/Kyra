@@ -49,7 +49,7 @@ Function::Parameter::Parameter(const Token& name, RefPtr<TypeIndicator> type, De
 	identifier(name), type(type), kind(declaration_kind) {}
 
 Function::Function(const SourceRange& source_range, const Token& identifier, RefPtr<Block> body,
-	RefPtr<TypeIndicator> return_type, const std::vector<Parameter> parameters) :
+	RefPtr<TypeIndicator> return_type, const std::vector<Parameter>& parameters) :
 	Statement(source_range),
 	m_identifier(identifier), m_implementation(body), m_return_type(return_type), m_parameters(parameters) {}
 

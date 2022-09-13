@@ -94,7 +94,7 @@ public:
 	};
 
 	Function(const SourceRange& source_range, const Token& identifier, RefPtr<Block> body,
-		RefPtr<TypeIndicator> return_type, const std::vector<Parameter> parameters);
+		RefPtr<TypeIndicator> return_type, const std::vector<Parameter>& parameters);
 
 	const Token& get_identifier() const;
 	const Block& get_implementation() const;
