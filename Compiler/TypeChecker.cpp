@@ -44,7 +44,6 @@ void TypeChecker::visit(const Declaration& declaration) {
 }
 
 void TypeChecker::visit(const Function& function) {
-	// FIXME: check if function contains return
 	RefPtr<TypeScope> function_scope = mk_ref<TypeScope>(m_current_scope);
 	std::vector<RefPtr<AppliedType>> parameters;
 	for(const Function::Parameter& parameter : function.get_parameters()) {
@@ -66,6 +65,8 @@ void TypeChecker::visit(const Function& function) {
 	m_context.enclosing_function = function_type;
 	execute_on_scope(function_scope, [&]() { function.get_implementation().accept(*this); });
 	m_context.enclosing_function = nullptr;
+	if(!m_context.had_return)
+		throw ErrorException("Missing return statement", function.get_implementation().get_source_range());
 	DeclarationDumpster::the().abort_on_exception([&]() {
 		declid_t fun_decl_id =
 			DeclarationDumpster::the().insert(AppliedType::promote_declared_type(function_type, false));
@@ -74,6 +75,7 @@ void TypeChecker::visit(const Function& function) {
 		RefPtr<Typed::Block> impl = std::static_pointer_cast<Typed::Block>(m_typed_statements.back());
 		m_typed_statements.push_back(mk_ref<Typed::Function>(fun_decl_id, impl));
 	});
+	m_context.had_return = false;
 }
 
 void TypeChecker::visit(const Return& return_statement) {
@@ -87,6 +89,7 @@ void TypeChecker::visit(const Return& return_statement) {
 		}
 		m_typed_statements.push_back(mk_ref<Typed::Return>(return_expr));
 	}
+	m_context.had_return = true;
 }
 
 void TypeChecker::visit(const Block& block) {
@@ -95,7 +98,6 @@ void TypeChecker::visit(const Block& block) {
 		for(const RefPtr<Statement>& statement : block.get_body())
 			statement->accept(*this);
 	});
-	// TODO: what happens with an empty block? Index out of bounds?!
 	std::vector<RefPtr<Typed::Statement>> statements(
 		m_typed_statements.begin() + start_index, m_typed_statements.end());
 	m_typed_statements.push_back(mk_ref<Typed::Block>(statements));

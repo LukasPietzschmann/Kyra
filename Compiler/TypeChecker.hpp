@@ -29,6 +29,7 @@ private:
 public:
 	struct Context {
 		RefPtr<FunctionType> enclosing_function{nullptr};
+		bool had_return{false};
 	};
 
 	static TypeChecker& the() {
