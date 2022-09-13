@@ -1,5 +1,6 @@
 #pragma once
 
+#include <type_traits>
 #include <vector>
 
 #include "Aliases.hpp"
@@ -227,14 +228,28 @@ private:
 };
 
 class ASTVisitor {
-#define VISIT_RETURN_TYPE(type) \
-private:                        \
-	type _return_value;         \
-	bool _has_return_value{false};
+#define VISIT_RETURN_TYPE(type)                              \
+private:                                                     \
+	type _return_value;                                      \
+	bool _has_return_value{false};                           \
+	template <typename... Args>                              \
+	auto _construct_return_type(Args... args) {              \
+		if constexpr(std::is_pointer_v<type>)                \
+			return new std::remove_pointer_t<type>(args...); \
+		else                                                 \
+			return std::remove_pointer_t<type>(args...);     \
+	}
+
+#define return_from_visit_emplace(...)                       \
+	do {                                                     \
+		_return_value = _construct_return_type(__VA_ARGS__); \
+		_has_return_value = true;                            \
+		return;                                              \
+	} while(0)
 
 #define return_from_visit(value)  \
 	do {                          \
-		_return_value = (value);  \
+		_return_value = value;    \
 		_has_return_value = true; \
 		return;                   \
 	} while(0)
