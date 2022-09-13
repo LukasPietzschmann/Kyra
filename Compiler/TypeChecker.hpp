@@ -13,7 +13,7 @@
 
 namespace Kyra {
 
-class TypeChecker : public ASTVisitor {
+class TypeChecker : public Untyped::ASTVisitor {
 private:
 	struct VisitResult {
 		VisitResult(RefPtr<AppliedType> type, RefPtr<Typed::Expression> expression) :
@@ -44,21 +44,22 @@ public:
 	TypeChecker& operator=(const TypeChecker&) = delete;
 	TypeChecker& operator=(TypeChecker&&) noexcept = default;
 
-	ErrorOr<std::vector<RefPtr<Typed::Statement>>> check_statements(const std::vector<RefPtr<Statement>>& statements);
+	ErrorOr<std::vector<RefPtr<Typed::Statement>>> check_statements(
+		const std::vector<RefPtr<Untyped::Statement>>& statements);
 
-	void visit(const ExpressionStatement& expresion_statement) override;
-	void visit(const Declaration& declaration) override;
-	void visit(const Function& function) override;
-	void visit(const Return& return_statement) override;
-	void visit(const Block& block) override;
-	void visit(const IntLiteral& literal) override;
+	void visit(const Untyped::ExpressionStatement& expresion_statement) override;
+	void visit(const Untyped::Declaration& declaration) override;
+	void visit(const Untyped::Function& function) override;
+	void visit(const Untyped::Return& return_statement) override;
+	void visit(const Untyped::Block& block) override;
+	void visit(const Untyped::IntLiteral& literal) override;
 
-	void visit(const Assignment& assignment) override;
-	void visit(const BinaryExpression& binary_expression) override;
-	void visit(const TypeIndicator& type) override;
-	void visit(const Call& call) override;
-	void visit(const Group& group) override;
-	void visit(const VarQuery& var_query) override;
+	void visit(const Untyped::Assignment& assignment) override;
+	void visit(const Untyped::BinaryExpression& binary_expression) override;
+	void visit(const Untyped::TypeIndicator& type) override;
+	void visit(const Untyped::Call& call) override;
+	void visit(const Untyped::Group& group) override;
+	void visit(const Untyped::VarQuery& var_query) override;
 
 private:
 	std::vector<RefPtr<Typed::Statement>> m_typed_statements;

@@ -1,6 +1,8 @@
 #include "CodeGen.hpp"
 
 namespace Kyra {
+using namespace llvm;
+using namespace Typed;
 
 void CodeGen::gen_code(const std::vector<RefPtr<Statement>>& statements) {
 	for(const RefPtr<Statement>& statement : statements)
@@ -23,11 +25,7 @@ void CodeGen::visit(const Assignment& assignment) {}
 
 void CodeGen::visit(const BinaryExpression& binary_expression) {}
 
-void CodeGen::visit(const TypeIndicator& type) {}
-
 void CodeGen::visit(const Call& call) {}
-
-void CodeGen::visit(const Group& group) {}
 
 void CodeGen::visit(const VarQuery& var_query) {}
 }

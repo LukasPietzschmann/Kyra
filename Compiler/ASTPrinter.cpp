@@ -1,6 +1,7 @@
 #include "ASTPrinter.hpp"
 
 namespace Kyra {
+using namespace Untyped;
 
 void ASTPrinter::print(const Statement& statement) {
 	m_indent = 0;

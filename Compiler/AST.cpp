@@ -1,6 +1,7 @@
 #include "AST.hpp"
 
 namespace Kyra {
+namespace Untyped {
 
 ASTNode::ASTNode(const SourceRange& source_range) : m_source_range(source_range){};
 
@@ -144,4 +145,5 @@ VarQuery::VarQuery(const SourceRange& source_range, const Token& identifier) :
 const Token& VarQuery::get_identifier() const { return m_identifier; }
 
 void VarQuery::accept(ASTVisitor& visitor) const { visitor.visit(*this); }
+}
 }

@@ -5,6 +5,7 @@
 #include "SourceRange.hpp"
 
 namespace Kyra {
+using namespace Untyped;
 
 ErrorOr<std::vector<RefPtr<Statement>>> Parser::parse_tokens(const std::vector<Token>& tokens) {
 	m_statements.clear();

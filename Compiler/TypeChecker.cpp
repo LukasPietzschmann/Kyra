@@ -4,6 +4,7 @@
 #include <sstream>
 
 namespace Kyra {
+using namespace Untyped;
 
 ErrorOr<std::vector<RefPtr<Typed::Statement>>> TypeChecker::check_statements(
 	const std::vector<RefPtr<Statement>>& statements) {

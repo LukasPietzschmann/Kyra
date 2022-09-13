@@ -36,21 +36,21 @@ int main(int argc, char** argv) {
 		return 1;
 	}
 
-	const ErrorOr<std::vector<RefPtr<Statement>>>& error_or_statements =
+	const ErrorOr<std::vector<RefPtr<Untyped::Statement>>>& error_or_statements =
 		Parser::the().parse_tokens(error_or_tokens.get_result());
 	if(error_or_statements.is_error()) {
 		error_or_statements.get_exception().print(std::cout);
 		return 1;
 	}
 
-	const ErrorOr<std::vector<RefPtr<Typed::Statement>>>& maybe_error =
+	const ErrorOr<std::vector<RefPtr<Typed::Statement>>>& error_or_typed_statements =
 		TypeChecker::the().check_statements(error_or_statements.get_result());
-	if(maybe_error.is_error()) {
-		maybe_error.get_exception().print(std::cout);
+	if(error_or_typed_statements.is_error()) {
+		error_or_typed_statements.get_exception().print(std::cout);
 		return 1;
 	}
 
-	CodeGen::the().gen_code(error_or_statements.get_result());
+	CodeGen::the().gen_code(error_or_typed_statements.get_result());
 
 	return 0;
 }

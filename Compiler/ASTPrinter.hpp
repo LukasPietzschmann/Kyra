@@ -8,7 +8,7 @@
 
 namespace Kyra {
 
-class ASTPrinter : public ASTVisitor {
+class ASTPrinter : public Untyped::ASTVisitor {
 public:
 	static ASTPrinter& the() {
 		static ASTPrinter instance;
@@ -22,21 +22,21 @@ public:
 	ASTPrinter& operator=(const ASTPrinter&) = delete;
 	ASTPrinter& operator=(ASTPrinter&&) noexcept = default;
 
-	void print(const Statement& statement);
+	void print(const Untyped::Statement& statement);
 
-	void visit(const ExpressionStatement& expresion_statement) override;
-	void visit(const Declaration& declaration) override;
-	void visit(const Function& function) override;
-	void visit(const Return& return_statement) override;
-	void visit(const Block& block) override;
-	void visit(const IntLiteral& literal) override;
+	void visit(const Untyped::ExpressionStatement& expresion_statement) override;
+	void visit(const Untyped::Declaration& declaration) override;
+	void visit(const Untyped::Function& function) override;
+	void visit(const Untyped::Return& return_statement) override;
+	void visit(const Untyped::Block& block) override;
+	void visit(const Untyped::IntLiteral& literal) override;
 
-	void visit(const Assignment& assignment) override;
-	void visit(const BinaryExpression& binary_expression) override;
-	void visit(const TypeIndicator& type) override;
-	void visit(const Call& call) override;
-	void visit(const Group& group) override;
-	void visit(const VarQuery& var_query) override;
+	void visit(const Untyped::Assignment& assignment) override;
+	void visit(const Untyped::BinaryExpression& binary_expression) override;
+	void visit(const Untyped::TypeIndicator& type) override;
+	void visit(const Untyped::Call& call) override;
+	void visit(const Untyped::Group& group) override;
+	void visit(const Untyped::VarQuery& var_query) override;
 
 private:
 	unsigned m_indent;

@@ -8,6 +8,7 @@
 #include "Token.hpp"
 
 namespace Kyra {
+namespace Untyped {
 
 class TypeIndicator;
 class ASTVisitor;
@@ -243,4 +244,5 @@ public:
 	virtual void visit(const Group& group) = 0;
 	virtual void visit(const VarQuery& var_query) = 0;
 };
+}
 }

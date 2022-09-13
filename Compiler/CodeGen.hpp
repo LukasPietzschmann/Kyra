@@ -1,15 +1,17 @@
 #pragma once
 
+#include <llvm/IR/IRBuilder.h>
+#include <llvm/IR/LLVMContext.h>
+#include <llvm/IR/Module.h>
 #include <llvm/IR/Value.h>
 
-#include "AST.hpp"
 #include "Aliases.hpp"
+#include "TAST.hpp"
 
 namespace Kyra {
-using namespace llvm;
 
-class CodeGen : public ASTVisitor {
-	VISIT_RETURN_TYPE(Value*)
+class CodeGen : public Typed::TASTVisitor {
+	VISIT_RETURN_TYPE(llvm::Value*)
 
 public:
 	static CodeGen& the() {
@@ -24,22 +26,23 @@ public:
 	CodeGen& operator=(const CodeGen&) = delete;
 	CodeGen& operator=(CodeGen&&) noexcept = default;
 
-	void gen_code(const std::vector<RefPtr<Statement>>& statements);
+	void gen_code(const std::vector<RefPtr<Typed::Statement>>& statements);
 
-	void visit(const ExpressionStatement& expresion_statement) override;
-	void visit(const Declaration& declaration) override;
-	void visit(const Function& function) override;
-	void visit(const Return& return_statement) override;
-	void visit(const Block& block) override;
-	void visit(const IntLiteral& literal) override;
+	void visit(const Typed::ExpressionStatement& expresion_statement) override;
+	void visit(const Typed::Declaration& declaration) override;
+	void visit(const Typed::Function& function) override;
+	void visit(const Typed::Return& return_statement) override;
+	void visit(const Typed::Block& block) override;
+	void visit(const Typed::IntLiteral& literal) override;
 
-	void visit(const Assignment& assignment) override;
-	void visit(const BinaryExpression& binary_expression) override;
-	void visit(const TypeIndicator& type) override;
-	void visit(const Call& call) override;
-	void visit(const Group& group) override;
-	void visit(const VarQuery& var_query) override;
+	void visit(const Typed::Assignment& assignment) override;
+	void visit(const Typed::BinaryExpression& binary_expression) override;
+	void visit(const Typed::Call& call) override;
+	void visit(const Typed::VarQuery& var_query) override;
 
 private:
+	OwnPtr<llvm::LLVMContext> llvm_context;
+	OwnPtr<llvm::Module> llvm_module;
+	OwnPtr<llvm::IRBuilder<>> ir_builder;
 };
 }

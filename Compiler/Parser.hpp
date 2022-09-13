@@ -23,28 +23,28 @@ public:
 	Parser& operator=(const Parser&) = delete;
 	Parser& operator=(Parser&&) noexcept = default;
 
-	ErrorOr<std::vector<RefPtr<Statement>>> parse_tokens(const std::vector<Token>& tokens);
+	ErrorOr<std::vector<RefPtr<Untyped::Statement>>> parse_tokens(const std::vector<Token>& tokens);
 
 private:
-	std::vector<RefPtr<Statement>> m_statements;
+	std::vector<RefPtr<Untyped::Statement>> m_statements;
 	const std::vector<Token>* m_tokens;
 	std::vector<Token>::const_iterator m_current_token;
 
-	RefPtr<Statement> statement();
-	RefPtr<Statement> expression_statement();
-	RefPtr<Statement> return_statement();
-	RefPtr<Statement> block();
-	RefPtr<Statement> declaration();
-	RefPtr<Statement> variable_declaration();
-	RefPtr<Statement> function_declaration();
+	RefPtr<Untyped::Statement> statement();
+	RefPtr<Untyped::Statement> expression_statement();
+	RefPtr<Untyped::Statement> return_statement();
+	RefPtr<Untyped::Statement> block();
+	RefPtr<Untyped::Statement> declaration();
+	RefPtr<Untyped::Statement> variable_declaration();
+	RefPtr<Untyped::Statement> function_declaration();
 
-	RefPtr<Expression> expression();
-	RefPtr<Expression> assignment();
-	RefPtr<Expression> term();
-	RefPtr<Expression> factor();
-	RefPtr<Expression> call();
-	RefPtr<Expression> primary();
-	RefPtr<Expression> type();
+	RefPtr<Untyped::Expression> expression();
+	RefPtr<Untyped::Expression> assignment();
+	RefPtr<Untyped::Expression> term();
+	RefPtr<Untyped::Expression> factor();
+	RefPtr<Untyped::Expression> call();
+	RefPtr<Untyped::Expression> primary();
+	RefPtr<Untyped::Expression> type();
 
 	template <typename... Args, typename = All<TokenType, Args...>>
 	bool match(Args... args) const {
