@@ -80,16 +80,16 @@ void TypeChecker::visit(const Function& function) {
 }
 
 void TypeChecker::visit(const Return& return_statement) {
-	if(RefPtr<FunctionType> function = m_context.enclosing_function; function == nullptr)
+	RefPtr<FunctionType> function = m_context.enclosing_function;
+	if(function == nullptr)
 		throw ErrorException("Return can only be used inside a function", return_statement.get_source_range());
-	else {
-		auto [actual_return_type, return_expr] = visit_with_return(return_statement.get_expression());
-		if(!actual_return_type->can_be_assigned_to(
-			   *AppliedType::promote_declared_type(function->get_returned_type(), true))) {
-			throw ErrorException("Wrong return type", return_statement.get_expression().get_source_range());
-		}
-		m_typed_statements.push_back(mk_ref<Typed::Return>(return_expr));
+
+	auto [actual_return_type, return_expr] = visit_with_return(return_statement.get_expression());
+	if(!actual_return_type->can_be_assigned_to(
+		   *AppliedType::promote_declared_type(function->get_returned_type(), true))) {
+		throw ErrorException("Wrong return type", return_statement.get_expression().get_source_range());
 	}
+	m_typed_statements.push_back(mk_ref<Typed::Return>(return_expr));
 	m_context.had_return = true;
 }
 
@@ -190,7 +190,7 @@ void TypeChecker::visit(const VarQuery& var_query) {
 template <typename Callback>
 void TypeChecker::execute_on_scope(RefPtr<TypeScope> scope, Callback callback) {
 	RefPtr<TypeScope> backup = m_current_scope;
-	m_current_scope = scope;
+	m_current_scope = std::move(scope);
 	callback();
 	m_current_scope = backup;
 }

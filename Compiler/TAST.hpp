@@ -163,6 +163,8 @@ private:
 
 class TASTVisitor {
 public:
+	virtual ~TASTVisitor() = default;
+
 	virtual void visit(const ExpressionStatement& expresion_statement) = 0;
 	virtual void visit(const Declaration& declaration) = 0;
 	virtual void visit(const Function& function) = 0;

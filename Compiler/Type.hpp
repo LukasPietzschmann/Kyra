@@ -17,10 +17,10 @@ public:
 	virtual ~DeclaredType() = default;
 
 	bool can_be_assigned_to(const DeclaredType& other) const;
-	const std::vector<RefPtr<FunctionType>> find_methods(std::string_view name) const;
+	std::vector<RefPtr<FunctionType>> find_methods(std::string_view name) const;
 	void insert_method_if_non_exists(std::string_view name, RefPtr<FunctionType> type);
 
-	const std::string_view get_name() const;
+	std::string_view get_name() const;
 
 protected:
 	const std::string_view m_name;
@@ -124,8 +124,8 @@ public:
 	bool insert_symbol(std::string_view name, Element<AppliedType> element);
 	RefPtr<DeclaredType> find_type(std::string_view name) const;
 	bool insert_type(std::string_view name, RefPtr<DeclaredType> type);
-	const std::vector<Element<FunctionType>> find_functions(std::string_view name) const;
-	bool insert_function(std::string_view name, Element<FunctionType> element);
+	std::vector<Element<FunctionType>> find_functions(std::string_view name) const;
+	bool insert_function(std::string_view name, const Element<FunctionType>& element);
 
 private:
 	std::map<std::string_view, Element<AppliedType>> m_symbol_scope;

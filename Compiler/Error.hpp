@@ -12,6 +12,8 @@ namespace Kyra {
 class ErrorException : public std::exception {
 public:
 	ErrorException(std::string_view message, const SourceRange& source_range);
+	// Copy constructor is needed in order to rethrow the exception
+	ErrorException(const ErrorException&) noexcept = default;
 
 	const char* what() const noexcept override;
 	const SourceRange& get_source_range() const;

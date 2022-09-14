@@ -1,15 +1,17 @@
 #include "Type.hpp"
 
+#include <utility>
+
 namespace Kyra {
 
 DeclaredType::DeclaredType(std::string_view name) : m_name(name) {}
 
 bool DeclaredType::can_be_assigned_to(const DeclaredType& other) const { return m_name == other.m_name; }
 
-const std::string_view DeclaredType::get_name() const { return m_name; }
+std::string_view DeclaredType::get_name() const { return m_name; }
 
-AppliedType::AppliedType(RefPtr<DeclaredType> declared_type, bool is_mutable) :
-	m_decl_type(declared_type), m_is_multable(is_mutable) {}
+AppliedType::AppliedType(RefPtr<DeclaredType> decl_type, bool is_mutable) :
+	m_decl_type(std::move(decl_type)), m_is_multable(is_mutable) {}
 
 bool AppliedType::can_be_assigned_to(const AppliedType& other) const {
 	if(!m_decl_type->can_be_assigned_to(*other.m_decl_type))
@@ -19,7 +21,7 @@ bool AppliedType::can_be_assigned_to(const AppliedType& other) const {
 	return !(!m_is_multable && other.m_is_multable);
 }
 
-const std::vector<RefPtr<FunctionType>> DeclaredType::find_methods(std::string_view name) const {
+std::vector<RefPtr<FunctionType>> DeclaredType::find_methods(std::string_view name) const {
 	if(const auto& it = m_methods.find(name); it != m_methods.end())
 		return it->second;
 	return {};
@@ -31,7 +33,7 @@ void DeclaredType::insert_method_if_non_exists(std::string_view name, RefPtr<Fun
 		if(*method == *type)
 			return;
 	}
-	methods.push_back(type);
+	methods.push_back(std::move(type));
 }
 
 const DeclaredType& AppliedType::get_declared_type() const { return *m_decl_type; }
@@ -43,7 +45,7 @@ bool AppliedType::is_mutable() const { return m_is_multable; }
 FunctionType::FunctionType(
 	std::string_view name, RefPtr<DeclaredType> return_type, const std::vector<RefPtr<AppliedType>>& parameters) :
 	DeclaredType(name),
-	m_return_type(return_type), m_parameters(parameters) {}
+	m_return_type(std::move(return_type)), m_parameters(parameters) {}
 
 RefPtr<DeclaredType> FunctionType::get_returned_type() const { return m_return_type; }
 
@@ -95,9 +97,7 @@ void DeclarationDumpster::commit_transaction() {
 
 void DeclarationDumpster::abort_transaction() { m_transaction.clear(); }
 
-TypeScope::TypeScope(RefPtr<TypeScope> parent) : m_parent(parent) {
-	int sdfsdfsdfsdfsf = 2;
-	(void)sdfsdfsdfsdfsf;
+TypeScope::TypeScope(RefPtr<TypeScope> parent) : m_parent(std::move(parent)) {
 	static RefPtr<IntType> i32_type = nullptr;
 	if(i32_type == nullptr) {
 		i32_type = mk_ref<IntType>("i32", 32);
@@ -144,7 +144,7 @@ bool TypeScope::insert_type(std::string_view name, RefPtr<DeclaredType> type) {
 	return true;
 }
 
-const std::vector<TypeScope::Element<FunctionType>> TypeScope::find_functions(std::string_view name) const {
+std::vector<TypeScope::Element<FunctionType>> TypeScope::find_functions(std::string_view name) const {
 	// TODO: find functions from all visible scopes
 	if(const auto& it = m_function_scope.find(name); it != m_function_scope.end())
 		return it->second;
@@ -153,7 +153,7 @@ const std::vector<TypeScope::Element<FunctionType>> TypeScope::find_functions(st
 	return {};
 }
 
-bool TypeScope::insert_function(std::string_view name, TypeScope::Element<FunctionType> element) {
+bool TypeScope::insert_function(std::string_view name, const TypeScope::Element<FunctionType>& element) {
 	std::vector<TypeScope::Element<FunctionType>>& functions = m_function_scope[name];
 	for(const auto& [id, function] : functions) {
 		if(*function == *element.type)

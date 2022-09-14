@@ -3,6 +3,7 @@
 #include <map>
 #include <optional>
 #include <string_view>
+#include <utility>
 #include <vector>
 
 #include "AST.hpp"
@@ -17,7 +18,7 @@ class TypeChecker : public Untyped::ASTVisitor {
 private:
 	struct VisitResult {
 		VisitResult(RefPtr<AppliedType> type, RefPtr<Typed::Expression> expression) :
-			type(type), expression(expression) {}
+			type(std::move(type)), expression(std::move(expression)) {}
 		VisitResult() : VisitResult(nullptr, nullptr) {}
 
 		RefPtr<AppliedType> type;
