@@ -26,16 +26,17 @@ OwnPtr<T> inline mk_own(Args&&... args) {
 template <typename T, typename... Args>
 using All = typename std::enable_if_t<std::conjunction_v<std::is_convertible<Args, T>...>>;
 
-#define VISIT_RETURN_TYPE(type)                              \
-private:                                                     \
-	type _return_value;                                      \
-	bool _has_return_value{false};                           \
-	template <typename... Args>                              \
-	auto _construct_return_type(Args... args) {              \
-		if constexpr(std::is_pointer_v<type>)                \
-			return new std::remove_pointer_t<type>(args...); \
-		else                                                 \
-			return std::remove_pointer_t<type>(args...);     \
+#define VISIT_RETURN_TYPE(type)                                   \
+private:                                                          \
+	using VisitType = type;                                       \
+	VisitType _return_value;                                      \
+	bool _has_return_value{false};                                \
+	template <typename... Args>                                   \
+	auto _construct_return_type(Args... args) {                   \
+		if constexpr(std::is_pointer_v<VisitType>)                \
+			return new std::remove_pointer_t<VisitType>(args...); \
+		else                                                      \
+			return std::remove_pointer_t<VisitType>(args...);     \
 	}
 
 #define return_from_visit_emplace(...)                       \
