@@ -74,6 +74,8 @@ void TypeChecker::visit(const Function& function) {
 		if(!m_current_scope->insert_function(function.get_identifier().get_lexeme(), {fun_decl_id, function_type}))
 			throw ErrorException("Redefinition of function", function.get_identifier().get_source_range());
 		RefPtr<Typed::Block> impl = std::static_pointer_cast<Typed::Block>(m_typed_statements.back());
+		// The block statement does not belong on the top-level, but should only be nested inside the function
+		m_typed_statements.erase(m_typed_statements.end());
 		m_typed_statements.push_back(mk_ref<Typed::Function>(fun_decl_id, impl));
 	});
 	m_context.had_return = false;
@@ -101,6 +103,8 @@ void TypeChecker::visit(const Block& block) {
 	});
 	std::vector<RefPtr<Typed::Statement>> statements(
 		m_typed_statements.begin() + start_index, m_typed_statements.end());
+	// All statements in the block don't belong on the top level, but should only be nested inside the block statement
+	m_typed_statements.erase(m_typed_statements.begin() + start_index, m_typed_statements.end());
 	m_typed_statements.push_back(mk_ref<Typed::Block>(statements));
 }
 
