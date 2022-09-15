@@ -5,8 +5,11 @@
 #include <llvm/IR/Module.h>
 #include <llvm/IR/Value.h>
 
+#include <map>
+
 #include "Aliases.hpp"
 #include "TAST.hpp"
+#include "Type.hpp"
 
 namespace Kyra {
 
@@ -44,5 +47,7 @@ private:
 	OwnPtr<llvm::LLVMContext> llvm_context;
 	OwnPtr<llvm::Module> llvm_module;
 	OwnPtr<llvm::IRBuilder<>> ir_builder;
+
+	std::map<declid_t, llvm::Value*> m_declarations;
 };
 }
