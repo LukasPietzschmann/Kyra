@@ -13,7 +13,9 @@ namespace Kyra {
 class FunctionType;
 class DeclaredType {
 public:
-	explicit DeclaredType(std::string_view name);
+	enum Kind { Integer, Function };
+
+	explicit DeclaredType(std::string_view name, Kind kind);
 	virtual ~DeclaredType() = default;
 
 	bool can_be_assigned_to(const DeclaredType& other) const;
@@ -21,9 +23,11 @@ public:
 	void insert_method_if_non_exists(std::string_view name, RefPtr<FunctionType> type);
 
 	std::string_view get_name() const;
+	Kind get_kind() const;
 
 protected:
 	const std::string_view m_name;
+	const Kind m_kind;
 	std::map<std::string_view, std::vector<RefPtr<FunctionType>>> m_methods;
 };
 

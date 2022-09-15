@@ -4,11 +4,13 @@
 
 namespace Kyra {
 
-DeclaredType::DeclaredType(std::string_view name) : m_name(name) {}
+DeclaredType::DeclaredType(std::string_view name, Kind kind) : m_name(name), m_kind(kind) {}
 
 bool DeclaredType::can_be_assigned_to(const DeclaredType& other) const { return m_name == other.m_name; }
 
 std::string_view DeclaredType::get_name() const { return m_name; }
+
+DeclaredType::Kind DeclaredType::get_kind() const { return m_kind; }
 
 AppliedType::AppliedType(RefPtr<DeclaredType> decl_type, bool is_mutable) :
 	m_decl_type(std::move(decl_type)), m_is_multable(is_mutable) {}
@@ -44,7 +46,7 @@ bool AppliedType::is_mutable() const { return m_is_multable; }
 
 FunctionType::FunctionType(
 	std::string_view name, RefPtr<DeclaredType> return_type, const std::vector<RefPtr<AppliedType>>& parameters) :
-	DeclaredType(name),
+	DeclaredType(name, DeclaredType::Function),
 	m_return_type(std::move(return_type)), m_parameters(parameters) {}
 
 RefPtr<DeclaredType> FunctionType::get_returned_type() const { return m_return_type; }
@@ -75,7 +77,7 @@ bool FunctionType::operator==(const FunctionType& other) const {
 	return true;
 }
 
-IntType::IntType(std::string_view name, unsigned width) : DeclaredType(name), m_width(width) {}
+IntType::IntType(std::string_view name, unsigned width) : DeclaredType(name, DeclaredType::Integer), m_width(width) {}
 
 unsigned IntType::get_width() const { return m_width; }
 
