@@ -77,6 +77,11 @@ using declid_t = unsigned long;
 
 class DeclarationDumpster {
 public:
+	struct Element {
+		const std::string_view name;
+		RefPtr<AppliedType> type;
+	};
+
 	static DeclarationDumpster& the() {
 		static DeclarationDumpster instance;
 		return instance;
@@ -100,12 +105,12 @@ public:
 		}
 	}
 
-	declid_t insert(RefPtr<AppliedType> type);
-	RefPtr<AppliedType> retrieve(declid_t id) const;
+	declid_t insert(const Element& element);
+	const Element& retrieve(declid_t id) const;
 
 private:
-	std::map<declid_t, RefPtr<AppliedType>> m_dumpster;
-	std::map<declid_t, RefPtr<AppliedType>> m_transaction;
+	std::map<declid_t, Element> m_dumpster;
+	std::map<declid_t, Element> m_transaction;
 
 	void commit_transaction();
 	void abort_transaction();

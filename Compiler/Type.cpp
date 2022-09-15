@@ -79,13 +79,13 @@ IntType::IntType(std::string_view name, unsigned width) : DeclaredType(name), m_
 
 unsigned IntType::get_width() const { return m_width; }
 
-declid_t DeclarationDumpster::insert(RefPtr<AppliedType> type) {
+declid_t DeclarationDumpster::insert(const DeclarationDumpster::Element& element) {
 	static declid_t id = 0;
-	m_transaction.try_emplace(++id, type);
+	m_transaction.try_emplace(++id, element);
 	return id;
 }
 
-RefPtr<AppliedType> DeclarationDumpster::retrieve(declid_t id) const {
+const DeclarationDumpster::Element& DeclarationDumpster::retrieve(declid_t id) const {
 	assert(m_transaction.empty());
 	return m_dumpster.at(id);
 }

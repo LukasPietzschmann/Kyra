@@ -36,7 +36,7 @@ void TypeChecker::visit(const Declaration& declaration) {
 		throw ErrorException("Values have to be initialized during declaration", declaration.get_source_range());
 
 	DeclarationDumpster::the().abort_on_exception([&]() {
-		declid_t decl_id = DeclarationDumpster::the().insert(applied_type);
+		declid_t decl_id = DeclarationDumpster::the().insert({name, applied_type});
 		bool successful = m_current_scope->insert_symbol(name, {decl_id, applied_type});
 		if(!successful)
 			throw ErrorException("Symbol already declared", declaration.get_identifier().get_source_range());
@@ -47,12 +47,15 @@ void TypeChecker::visit(const Declaration& declaration) {
 void TypeChecker::visit(const Function& function) {
 	RefPtr<TypeScope> function_scope = mk_ref<TypeScope>(m_current_scope);
 	std::vector<RefPtr<AppliedType>> parameters;
+	std::vector<declid_t> typed_parameters;
 	for(const Function::Parameter& parameter : function.get_parameters()) {
 		RefPtr<DeclaredType> param_type = visit_with_return(*parameter.type).type->get_declared_type_shared();
 		bool is_mutable = parameter.kind == Declaration::Kind::VAR;
 		RefPtr<AppliedType> applied_param_type = AppliedType::promote_declared_type(param_type, is_mutable);
 		DeclarationDumpster::the().abort_on_exception([&]() {
-			declid_t param_decl_id = DeclarationDumpster::the().insert(applied_param_type);
+			declid_t param_decl_id =
+				DeclarationDumpster::the().insert({parameter.identifier.get_lexeme(), applied_param_type});
+			typed_parameters.push_back(param_decl_id);
 			bool successful =
 				function_scope->insert_symbol(parameter.identifier.get_lexeme(), {param_decl_id, applied_param_type});
 			if(!successful)
@@ -69,8 +72,8 @@ void TypeChecker::visit(const Function& function) {
 	if(!m_context.had_return)
 		throw ErrorException("Missing return statement", function.get_implementation().get_source_range());
 	DeclarationDumpster::the().abort_on_exception([&]() {
-		declid_t fun_decl_id =
-			DeclarationDumpster::the().insert(AppliedType::promote_declared_type(function_type, false));
+		declid_t fun_decl_id = DeclarationDumpster::the().insert(
+			{function.get_identifier().get_lexeme(), AppliedType::promote_declared_type(function_type, false)});
 		if(!m_current_scope->insert_function(function.get_identifier().get_lexeme(), {fun_decl_id, function_type}))
 			throw ErrorException("Redefinition of function", function.get_identifier().get_source_range());
 		RefPtr<Typed::Block> impl = std::static_pointer_cast<Typed::Block>(m_typed_statements.back());
