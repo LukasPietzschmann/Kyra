@@ -76,7 +76,7 @@ void TypeChecker::visit(const Function& function) {
 		RefPtr<Typed::Block> impl = std::static_pointer_cast<Typed::Block>(m_typed_statements.back());
 		// The block statement does not belong on the top-level, but should only be nested inside the function
 		m_typed_statements.erase(m_typed_statements.end());
-		m_typed_statements.push_back(mk_ref<Typed::Function>(fun_decl_id, impl));
+		m_typed_statements.push_back(mk_ref<Typed::Function>(fun_decl_id, impl, typed_parameters));
 	});
 	m_context.had_return = false;
 }

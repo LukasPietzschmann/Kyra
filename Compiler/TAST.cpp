@@ -29,12 +29,16 @@ const std::vector<RefPtr<Statement>>& Block::get_body() const { return m_body; }
 
 void Block::accept(TASTVisitor& visitor) const { visitor.visit(*this); }
 
-Function::Function(declid_t function_declaration, RefPtr<Block> implementation) :
-	m_function_declaration(function_declaration), m_implementation(std::move(implementation)) {}
+Function::Function(
+	declid_t function_declaration, RefPtr<Block> implementation, const std::vector<declid_t>& parameters) :
+	m_function_declaration(function_declaration),
+	m_implementation(std::move(implementation)), m_parameters(parameters) {}
 
 declid_t Function::get_function_declaration_id() const { return m_function_declaration; }
 
 const Block& Function::get_implementation() const { return *m_implementation; }
+
+const std::vector<declid_t>& Function::get_parameters() const { return m_parameters; }
 
 void Function::accept(TASTVisitor& visitor) const { visitor.visit(*this); }
 

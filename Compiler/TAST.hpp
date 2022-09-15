@@ -69,16 +69,18 @@ private:
 
 class Function : public Statement {
 public:
-	Function(declid_t function_declaration, RefPtr<Block> implementation);
+	Function(declid_t function_declaration, RefPtr<Block> implementation, const std::vector<declid_t>& parameters);
 
 	declid_t get_function_declaration_id() const;
 	const Block& get_implementation() const;
+	const std::vector<declid_t>& get_parameters() const;
 
 	void accept(TASTVisitor& visitor) const override;
 
 private:
 	const declid_t m_function_declaration;
 	RefPtr<Block> m_implementation;
+	const std::vector<declid_t> m_parameters;
 };
 
 class Return : public Statement {
