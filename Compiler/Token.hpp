@@ -30,6 +30,7 @@ enum class TokenType {
 	VAR,
 	VAL,
 	FUN,
+	PRINT,
 	RETURN,
 
 	// Miscellaneous
@@ -49,9 +50,9 @@ public:
 		std::string_view m_value;
 	};
 
-	static const std::string get_name_for(const TokenType& type) {
+	static std::string get_name_for(const TokenType& type) {
 		static const std::vector<std::string> names{"(", ")", "{", "}", ",", ";", ":", "-", "+", "*", "\\", "=",
-			"Identifier", "Number", "var", "val", "fun", "return", "EOF"};
+			"Identifier", "Number", "var", "val", "fun", "print", "return", "EOF"};
 		return "\"" + names.at(static_cast<unsigned>(type)) + "\"";
 	}
 
