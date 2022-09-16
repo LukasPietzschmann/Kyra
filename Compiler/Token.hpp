@@ -13,6 +13,7 @@ enum class TokenType {
 	RIGHT_PAREN,
 	LEFT_CURLY,
 	RIGHT_CURLY,
+	DOT,
 	COMMA,
 	SEMICOLON,
 	COLON,
@@ -29,6 +30,7 @@ enum class TokenType {
 	// Keywords
 	VAR,
 	VAL,
+	STRUCT,
 	FUN,
 	PRINT,
 	RETURN,
@@ -51,8 +53,8 @@ public:
 	};
 
 	static std::string get_name_for(const TokenType& type) {
-		static const std::vector<std::string> names{"(", ")", "{", "}", ",", ";", ":", "-", "+", "*", "\\", "=",
-			"Identifier", "Number", "var", "val", "fun", "print", "return", "EOF"};
+		static const std::vector<std::string> names{"(", ")", "{", "}", ".", ",", ";", ":", "-", "+", "*", "\\", "=",
+			"Identifier", "Number", "var", "val", "struct", "fun", "print", "return", "EOF"};
 		return "\"" + names.at(static_cast<unsigned>(type)) + "\"";
 	}
 

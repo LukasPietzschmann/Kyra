@@ -34,6 +34,7 @@ void Lexer::scan_token() {
 		case ')': add_token(TokenType::RIGHT_PAREN); break;
 		case '{': add_token(TokenType::LEFT_CURLY); break;
 		case '}': add_token(TokenType::RIGHT_CURLY); break;
+		case '.': add_token(TokenType::DOT); break;
 		case ',': add_token(TokenType::COMMA); break;
 		case ';': add_token(TokenType::SEMICOLON); break;
 		case ':': add_token(TokenType::COLON); break;
@@ -137,7 +138,8 @@ bool Lexer::is_overridable_operator(char character) const {
 
 std::optional<TokenType> Lexer::is_keyword(std::string_view string) const {
 	static const std::map<std::string_view, TokenType> keywords{{"var", TokenType::VAR}, {"val", TokenType::VAL},
-		{"fun", TokenType::FUN}, {"print", TokenType::PRINT}, {"return", TokenType::RETURN}};
+		{"struct", TokenType::STRUCT}, {"fun", TokenType::FUN}, {"print", TokenType::PRINT},
+		{"return", TokenType::RETURN}};
 
 	if(const auto& it = keywords.find(string); it != keywords.end())
 		return it->second;
