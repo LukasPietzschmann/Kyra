@@ -203,7 +203,14 @@ void CodeGen::visit(const IntLiteral& literal) {
 void CodeGen::visit(const Assignment& assignment) {
 	Value* new_value = visit_with_return(assignment.get_rhs());
 	auto [variable, indirections] = m_declarations.at(assignment.get_lhs());
-	assert(indirections == 1);
+	auto [name, type] = DeclarationDumpster::the().retrieve(assignment.get_lhs());
+	assert(indirections == 0 || indirections == 1);
+	if(indirections == 0) {
+		Value* new_variable = ir_builder->CreateAlloca(
+			Utils::get_llvm_type_for(llvm_module->getContext(), type->get_declared_type()), nullptr, name + ".ptr");
+		m_declarations.at(assignment.get_lhs()) = {new_variable, 1};
+		variable = new_variable;
+	}
 	ir_builder->CreateStore(new_value, variable);
 	return_from_visit(new_value);
 }
