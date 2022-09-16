@@ -28,8 +28,10 @@ void TypeChecker::visit(const Declaration& declaration) {
 	RefPtr<DeclaredType> declared_type = visit_with_return(declaration.get_type()).type->get_declared_type_shared();
 	bool is_mutable = declaration.get_declaration_kind() == Declaration::Kind::VAR;
 	RefPtr<AppliedType> applied_type = AppliedType::promote_declared_type(declared_type, is_mutable);
+	RefPtr<Typed::Expression> init_expr = nullptr;
 	if(const Expression* init = declaration.get_initializer(); init != nullptr) {
-		RefPtr<AppliedType> init_type = visit_with_return(*init).type;
+		auto [init_type, expr] = visit_with_return(*init);
+		init_expr = expr;
 		if(!init_type->can_be_assigned_to(*applied_type))
 			throw ErrorException("Initializer type does not match declaration type", init->get_source_range());
 	} else if(!is_mutable)
@@ -41,6 +43,11 @@ void TypeChecker::visit(const Declaration& declaration) {
 		if(!successful)
 			throw ErrorException("Symbol already declared", declaration.get_identifier().get_source_range());
 		m_typed_statements.push_back(mk_ref<Typed::Declaration>(decl_id));
+		// TODO: generate assignment with default init if no initializer is specified
+		if(declaration.get_initializer() != nullptr) {
+			m_typed_statements.push_back(
+				mk_ref<Typed::ExpressionStatement>(mk_ref<Typed::Assignment>(applied_type, decl_id, init_expr)));
+		}
 	});
 }
 

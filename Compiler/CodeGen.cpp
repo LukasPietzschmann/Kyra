@@ -54,6 +54,15 @@ Type* get_llvm_type_for(LLVMContext& context, const DeclaredType& type) {
 	}
 }
 
+Constant* get_zero_init_for(const Module& module, const DeclaredType& type) {
+	switch(type.get_kind()) {
+		case DeclaredType::Integer:
+			return get_integer_constant(module, 0, static_cast<const IntType&>(type).get_width());
+		case DeclaredType::Function:
+		default: assert_not_reached();
+	}
+}
+
 template <typename Lambda>
 void generate_on_basic_block(
 	IRBuilder<>& ir_builder, BasicBlock* basic_block, Lambda lambda, bool reset_insert_point = false) {
@@ -129,10 +138,12 @@ void CodeGen::visit(const Declaration& declaration) {
 	Type* llvm_type = Utils::get_llvm_type_for(llvm_module->getContext(), type->get_declared_type());
 
 	Value* var = nullptr;
-	if(ir_builder->GetInsertBlock()->getParent() == PredefFunctions::main(*llvm_module))
-		var = new GlobalVariable(*llvm_module, llvm_type, false, GlobalValue::ExternalLinkage, nullptr, name + ".ptr");
-	else
+	if(ir_builder->GetInsertBlock()->getParent() == PredefFunctions::main(*llvm_module)) {
+		var = new GlobalVariable(*llvm_module, llvm_type, false, GlobalValue::PrivateLinkage,
+			Utils::get_zero_init_for(*llvm_module, type->get_declared_type()), name + ".ptr");
+	} else
 		var = ir_builder->CreateAlloca(llvm_type, nullptr, name + ".ptr");
+
 	assert(!m_declarations.contains(declaration.get_declaration_id()));
 	m_declarations[declaration.get_declaration_id()] = {var, 1};
 }
