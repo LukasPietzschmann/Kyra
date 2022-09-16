@@ -149,6 +149,8 @@ void TypeChecker::visit(const BinaryExpression& binary_expression) {
 	if(candidate == nullptr)
 		throw ErrorException("No candidate matched", binary_expression.get_operator().get_source_range());
 	RefPtr<AppliedType> type = AppliedType::promote_declared_type(candidate->get_returned_type(), true);
+	// Note: Only generate bin. exprs. for native binary expressions. For everything else, generate calls to operator
+	// function
 	return_from_visit_emplace(type, mk_ref<Typed::BinaryExpression>(type, lhs_expr, rhs_expr, oper));
 }
 

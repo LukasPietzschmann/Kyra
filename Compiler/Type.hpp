@@ -52,6 +52,7 @@ private:
 
 class FunctionType : public DeclaredType {
 public:
+	// TODO: remove name
 	FunctionType(
 		std::string_view name, RefPtr<DeclaredType> return_type, const std::vector<RefPtr<AppliedType>>& parameters);
 

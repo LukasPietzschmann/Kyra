@@ -15,5 +15,5 @@ fun add(val a: i32): i32{
 	return a + 1;
 }
 
-add(1, 2);
+add(a, b);
 add(1);
