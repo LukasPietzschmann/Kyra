@@ -4,9 +4,10 @@ Kyra {
 	Program = Declaration*
 
 	// Declarations
-	Declaration = VarDeclaration | FunDeclaration | Statement
+	Declaration = VarDeclaration | FunDeclaration | Statement | StructDeclaration
 	VarDeclaration = varKeyword identifier TypeSpecifier ("=" Expression)? ";"
 	FunDeclaration = "fun" identifier ParamList TypeSpecifier Block
+	StructDeclaration = "struct" identifier "{" VarDeclaration* "}"
 
 	// Expressions
 	Expression = Assignment
@@ -14,7 +15,7 @@ Kyra {
 		| Term
 	Term = Factor (( "-" | "+") Factor)*
 	Factor = Call (("/" | "*") Call)*
-	Call = Primary ExpressionList*
+	Call = Primary (ExpressionList | DotIdentifier)*
 	Primary = number | identifier | Group
 
 	// Statements
@@ -32,10 +33,11 @@ Kyra {
 	TypeSpecifier = ":" identifier
 	Param = varKeyword identifier TypeSpecifier
 	ParamList = "(" (Param ("," Param)* )? ")"
+	DotIdentifier = "."identifier
 
 	// Lexical Grammar
 	number = digit+
 	identifier = ~keyword letter (letter | digit)*
 	varKeyword = "val" | "var"
-	keyword = varKeyword | "fun" | "return"
+	keyword = varKeyword | "fun" | "return" | "print" | "struct"
 }
