@@ -18,8 +18,8 @@ using namespace llvm;
 namespace Kyra {
 namespace Utils {
 
-PointerType* get_ptr_type(Type* underlying_type, int indirections = 1) {
-	assert(indirections > 0);
+PointerType* get_ptr_type(Type* underlying_type, unsigned indirections = 1) {
+	assert(indirections >= 1);
 	if(indirections == 1)
 		return PointerType::get(underlying_type, 0);
 	return PointerType::get(get_ptr_type(underlying_type, indirections - 1), 0);
