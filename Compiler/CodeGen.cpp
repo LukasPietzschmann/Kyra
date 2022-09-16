@@ -104,7 +104,7 @@ void CodeGen::visit(const Declaration& declaration) {
 	else
 		var = ir_builder->CreateAlloca(llvm_type, nullptr, name + ".ptr");
 	assert(!m_declarations.contains(declaration.get_declaration_id()));
-	m_declarations[declaration.get_declaration_id()] = var;
+	m_declarations[declaration.get_declaration_id()] = {var, 1};
 }
 
 void CodeGen::visit(const Function& function) {
@@ -114,19 +114,19 @@ void CodeGen::visit(const Function& function) {
 	std::vector<Type*> params;
 	for(const RefPtr<AppliedType>& param_type : function_type.get_parameter()) {
 		Type* llvm_param_type = Utils::get_llvm_type_for(llvm_module->getContext(), param_type->get_declared_type());
-		params.push_back(Utils::get_ptr_type(llvm_param_type));
+		params.push_back(llvm_param_type);
 	}
 	llvm::FunctionType* llvm_function_type = llvm::FunctionType::get(return_type, params, false);
 	llvm::Function* llvm_function =
 		llvm::Function::Create(llvm_function_type, llvm::Function::PrivateLinkage, name, *llvm_module);
 	assert(!m_declarations.contains(function.get_function_declaration_id()));
-	m_declarations[function.get_function_declaration_id()] = llvm_function;
+	m_declarations[function.get_function_declaration_id()] = {llvm_function, 1};
 
 	for(unsigned i = 0; i < function.get_parameters().size(); ++i) {
 		Argument* arg = llvm_function->getArg(i);
 		declid_t id = function.get_parameters().at(i);
 		assert(!m_declarations.contains(id));
-		m_declarations[id] = arg;
+		m_declarations[id] = {arg, 0};
 		std::string_view name = DeclarationDumpster::the().retrieve(id).name;
 		arg->setName(name);
 	}
@@ -155,7 +155,8 @@ void CodeGen::visit(const IntLiteral& literal) {
 
 void CodeGen::visit(const Assignment& assignment) {
 	Value* new_value = visit_with_return(assignment.get_rhs());
-	Value* variable = m_declarations.at(assignment.get_lhs());
+	auto [variable, indirections] = m_declarations.at(assignment.get_lhs());
+	assert(indirections == 1);
 	ir_builder->CreateStore(new_value, variable);
 	return_from_visit(new_value);
 }
@@ -175,7 +176,9 @@ void CodeGen::visit(const BinaryExpression& binary_expression) {
 }
 
 void CodeGen::visit(const Call& call) {
-	llvm::Function* llvm_function = cast<llvm::Function>(m_declarations.at(call.get_function_declaration_id()));
+	auto [function, indirections] = m_declarations.at(call.get_function_declaration_id());
+	assert(indirections == 1);
+	llvm::Function* llvm_function = cast<llvm::Function>(function);
 	std::vector<Value*> arguments;
 	for(const RefPtr<Expression>& arg : call.get_arguments())
 		arguments.push_back(visit_with_return(*arg));
@@ -184,10 +187,17 @@ void CodeGen::visit(const Call& call) {
 }
 
 void CodeGen::visit(const VarQuery& var_query) {
-	Value* variable = m_declarations.at(var_query.get_declaration_id());
-	Type* expected_type = Utils::get_llvm_type_for(llvm_module->getContext(), var_query.get_type().get_declared_type());
-	std::string_view name = DeclarationDumpster::the().retrieve(var_query.get_declaration_id()).name;
-	Value* loaded_variable = ir_builder->CreateLoad(expected_type, variable, name);
+	auto [variable, indirections] = m_declarations.at(var_query.get_declaration_id());
+	const DeclaredType& type = var_query.get_type().get_declared_type();
+	Value* loaded_variable = variable;
+	// Load indirections away
+	for(unsigned i = indirections; i > 0; --i) {
+		Type* expected_type = Utils::get_llvm_type_for(llvm_module->getContext(), type);
+		if(i > 1)
+			expected_type = Utils::get_ptr_type(expected_type, i - 1);
+		std::string_view name = DeclarationDumpster::the().retrieve(var_query.get_declaration_id()).name;
+		loaded_variable = ir_builder->CreateLoad(expected_type, variable, name);
+	}
 	return_from_visit(loaded_variable);
 }
 

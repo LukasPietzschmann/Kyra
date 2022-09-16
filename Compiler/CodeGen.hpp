@@ -48,6 +48,6 @@ private:
 	OwnPtr<llvm::Module> llvm_module;
 	OwnPtr<llvm::IRBuilder<>> ir_builder;
 
-	std::map<declid_t, llvm::Value*> m_declarations;
+	std::map<declid_t, std::pair<llvm::Value*, unsigned>> m_declarations;
 };
 }
