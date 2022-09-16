@@ -74,6 +74,15 @@ const std::vector<Function::Parameter>& Function::get_parameters() const { retur
 
 void Function::accept(ASTVisitor& visitor) const { visitor.visit(*this); }
 
+Print::Print(const SourceRange& source_range, RefPtr<Expression> expression) :
+	Statement(source_range), m_expression(std::move(expression)) {}
+
+const Expression& Print::get_expression() const { return *m_expression; }
+
+RefPtr<Expression> Print::get_expression_shared() const { return m_expression; }
+
+void Print::accept(ASTVisitor& visitor) const { visitor.visit(*this); }
+
 Return::Return(const SourceRange& source_range, RefPtr<Expression> expression) :
 	Statement(source_range), m_expression(std::move(expression)) {}
 

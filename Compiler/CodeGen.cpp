@@ -18,6 +18,22 @@ using namespace llvm;
 namespace Kyra {
 namespace Utils {
 
+Constant* construct_string(Module& module, std::string_view string, std::string_view twine = "") {
+	static std::map<std::string_view, Constant*> string_cache;
+	if(const auto& it = string_cache.find(string); it != string_cache.end())
+		return it->second;
+
+	Constant* string_constant = ConstantDataArray::getString(module.getContext(), string);
+	Constant* global_string_variable = new GlobalVariable(
+		module, string_constant->getType(), true, GlobalValue::PrivateLinkage, string_constant, twine);
+	Constant* zero_constant = Constant::getNullValue(IntegerType::get(module.getContext(), C_INT_BIT_WIDTH));
+	Constant* string_ptr = ConstantExpr::getGetElementPtr(
+		string_constant->getType(), global_string_variable, (Constant* [2]){zero_constant, zero_constant}, true);
+
+	string_cache.try_emplace(string, string_ptr);
+	return string_ptr;
+}
+
 PointerType* get_ptr_type(Type* underlying_type, unsigned indirections = 1) {
 	assert(indirections >= 1);
 	if(indirections == 1)
@@ -51,6 +67,7 @@ void generate_on_basic_block(
 
 namespace PredefFunctionNames {
 static const char* const main = "main";
+static const char* const printf = "printf";
 }
 
 namespace PredefFunctions {
@@ -64,6 +81,19 @@ Function* main(Module& module) {
 		Function::Create(main_function_type, Function::LinkOnceAnyLinkage, PredefFunctionNames::main, module);
 
 	return main_function;
+}
+
+Function* printf(Module& module) {
+	if(Function* print_function = module.getFunction(PredefFunctionNames::printf))
+		return print_function;
+
+	llvm::FunctionType* print_function_type =
+		llvm::FunctionType::get(Utils::get_integer_type(module.getContext(), C_INT_BIT_WIDTH),
+			Utils::get_ptr_type(Utils::get_integer_type(module.getContext(), C_CHAR_BIT_WIDTH)), true);
+	Function* print_function =
+		Function::Create(print_function_type, Function::ExternalLinkage, PredefFunctionNames::printf, module);
+
+	return print_function;
 }
 }
 
@@ -135,6 +165,12 @@ void CodeGen::visit(const Function& function) {
 	llvm_function->getBasicBlockList().push_back(entry);
 	Utils::generate_on_basic_block(
 		*ir_builder, entry, [&]() { function.get_implementation().accept(*this); }, true);
+}
+
+void CodeGen::visit(const Print& print_statement) {
+	Constant* format_string = Utils::construct_string(*llvm_module, "%d\n", "printf.format");
+	Value* printee = visit_with_return(print_statement.get_expression());
+	ir_builder->CreateCall(PredefFunctions::printf(*llvm_module), {format_string, printee});
 }
 
 void CodeGen::visit(const Return& return_statement) {

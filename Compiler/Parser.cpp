@@ -25,6 +25,8 @@ ErrorOr<std::vector<RefPtr<Statement>>> Parser::parse_tokens(const std::vector<T
 RefPtr<Statement> Parser::statement() {
 	if(match(TokenType::LEFT_CURLY))
 		return block();
+	if(match(TokenType::PRINT))
+		return print_statement();
 	if(match(TokenType::RETURN))
 		return return_statement();
 	return expression_statement();
@@ -35,6 +37,13 @@ RefPtr<Statement> Parser::expression_statement() {
 	const Token& semi_colon = consume(TokenType::SEMICOLON);
 	return mk_ref<ExpressionStatement>(
 		SourceRange::unite(expr->get_source_range(), semi_colon.get_source_range()), expr);
+}
+
+RefPtr<Statement> Parser::print_statement() {
+	const Token& print_stmt = consume(TokenType::PRINT);
+	RefPtr<Expression> expr = expression();
+	const Token& semicolon = consume(TokenType::SEMICOLON);
+	return mk_ref<Print>(SourceRange::unite(print_stmt.get_source_range(), semicolon.get_source_range()), expr);
 }
 
 RefPtr<Statement> Parser::return_statement() {

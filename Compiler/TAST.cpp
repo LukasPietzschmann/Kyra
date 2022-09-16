@@ -42,6 +42,12 @@ const std::vector<declid_t>& Function::get_parameters() const { return m_paramet
 
 void Function::accept(TASTVisitor& visitor) const { visitor.visit(*this); }
 
+Print::Print(RefPtr<Expression> expression) : m_expression(std::move(expression)) {}
+
+const Expression& Print::get_expression() const { return *m_expression; }
+
+void Print::accept(TASTVisitor& visitor) const { visitor.visit(*this); }
+
 Return::Return(RefPtr<Expression> expression) : m_expression(std::move(expression)) {}
 
 const Expression& Return::get_expression() const { return *m_expression; }

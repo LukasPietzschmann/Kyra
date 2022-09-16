@@ -32,6 +32,13 @@ void ASTPrinter::visit(const Function& function) {
 	--m_indent;
 }
 
+void ASTPrinter::visit(const Print& print_statement) {
+	print_with_indent("Print");
+	++m_indent;
+	print_statement.get_expression().accept(*this);
+	--m_indent;
+}
+
 void ASTPrinter::visit(const Return& return_statement) {
 	print_with_indent("Return");
 	++m_indent;

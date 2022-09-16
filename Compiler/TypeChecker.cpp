@@ -84,6 +84,11 @@ void TypeChecker::visit(const Function& function) {
 	m_context.had_return = false;
 }
 
+void TypeChecker::visit(const Print& print_statement) {
+	RefPtr<Typed::Expression> return_expr = visit_with_return(print_statement.get_expression()).expression;
+	m_typed_statements.push_back(mk_ref<Typed::Print>(return_expr));
+}
+
 void TypeChecker::visit(const Return& return_statement) {
 	RefPtr<FunctionType> function = m_context.enclosing_function;
 	if(function == nullptr)

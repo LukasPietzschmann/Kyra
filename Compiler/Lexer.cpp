@@ -126,8 +126,8 @@ bool Lexer::is_alpha(char character) const {
 }
 
 std::optional<TokenType> Lexer::is_keyword(std::string_view string) const {
-	static const std::map<std::string_view, TokenType> keywords{
-		{"var", TokenType::VAR}, {"val", TokenType::VAL}, {"fun", TokenType::FUN}, {"return", TokenType::RETURN}};
+	static const std::map<std::string_view, TokenType> keywords{{"var", TokenType::VAR}, {"val", TokenType::VAL},
+		{"fun", TokenType::FUN}, {"print", TokenType::PRINT}, {"return", TokenType::RETURN}};
 
 	if(const auto& it = keywords.find(string); it != keywords.end())
 		return it->second;
