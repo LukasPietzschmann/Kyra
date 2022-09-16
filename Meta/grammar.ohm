@@ -18,9 +18,10 @@ Kyra {
 	Primary = number | identifier | Group
 
 	// Statements
-	Statement = Block | ExpressionStatement | ReturnStatement
+	Statement = Block | ExpressionStatement | ReturnStatement | PrintStatement
 	ExpressionStatement = Expression ";"
 	ReturnStatement = "return" Expression ";"
+	PrintStatement = "print" Expression ";"
 
 	// Utilities
 	Group = "(" Expression ")"
