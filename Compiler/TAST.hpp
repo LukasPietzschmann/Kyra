@@ -83,6 +83,18 @@ private:
 	const std::vector<declid_t> m_parameters;
 };
 
+class Print : public Statement {
+public:
+	Print(RefPtr<Expression> expression);
+
+	const Expression& get_expression() const;
+
+	void accept(TASTVisitor& visitor) const override;
+
+private:
+	RefPtr<Expression> m_expression;
+};
+
 class Return : public Statement {
 public:
 	Return(RefPtr<Expression> expression);
@@ -170,6 +182,7 @@ public:
 	virtual void visit(const ExpressionStatement& expresion_statement) = 0;
 	virtual void visit(const Declaration& declaration) = 0;
 	virtual void visit(const Function& function) = 0;
+	virtual void visit(const Print& print_statement) = 0;
 	virtual void visit(const Return& return_statement) = 0;
 	virtual void visit(const Block& block) = 0;
 	virtual void visit(const IntLiteral& literal) = 0;

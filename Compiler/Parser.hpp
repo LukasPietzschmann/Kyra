@@ -32,6 +32,7 @@ private:
 
 	RefPtr<Untyped::Statement> statement();
 	RefPtr<Untyped::Statement> expression_statement();
+	RefPtr<Untyped::Statement> print_statement();
 	RefPtr<Untyped::Statement> return_statement();
 	RefPtr<Untyped::Statement> block();
 	RefPtr<Untyped::Statement> declaration();

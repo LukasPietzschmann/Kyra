@@ -114,6 +114,19 @@ private:
 	const std::vector<Parameter> m_parameters;
 };
 
+class Print : public Statement {
+public:
+	Print(const SourceRange& source_range, RefPtr<Expression> expression);
+
+	const Expression& get_expression() const;
+	RefPtr<Expression> get_expression_shared() const;
+
+	void accept(ASTVisitor& visitor) const override;
+
+private:
+	RefPtr<Expression> m_expression;
+};
+
 class Return : public Statement {
 public:
 	Return(const SourceRange& source_range, RefPtr<Expression> expression);
@@ -235,6 +248,7 @@ public:
 	virtual void visit(const ExpressionStatement& expresion_statement) = 0;
 	virtual void visit(const Declaration& declaration) = 0;
 	virtual void visit(const Function& function) = 0;
+	virtual void visit(const Print& print_statement) = 0;
 	virtual void visit(const Return& return_statement) = 0;
 	virtual void visit(const Block& block) = 0;
 	virtual void visit(const IntLiteral& literal) = 0;
