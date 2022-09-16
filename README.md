@@ -5,7 +5,7 @@
 </p>
 
 ```
-print "Hello World";
+print 42;
 ```
 
 ## What is Kyra?
