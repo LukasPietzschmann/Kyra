@@ -13,7 +13,7 @@ val a: i32 = 1;
 var b: i32 = 2;
 var c: Test;
 
-fun operator+(val a: i32, val b: Test){
+fun operator+(val a: i32, val b: Test): i32 {
 	return a + b.a + b.b;
 }
 
