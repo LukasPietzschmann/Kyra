@@ -50,6 +50,7 @@ private:
 
 	bool is_digit(char character) const;
 	bool is_alpha(char character) const;
+	bool is_overridable_operator(char character) const;
 	std::optional<TokenType> is_keyword(std::string_view string) const;
 	bool is_at_end() const;
 	void add_token(TokenType type, std::string_view literal = "");

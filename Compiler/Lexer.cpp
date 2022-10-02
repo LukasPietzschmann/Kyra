@@ -74,7 +74,7 @@ void Lexer::number() {
 }
 
 void Lexer::name_or_keyword() {
-	while(is_alpha(peek()) || is_digit(peek()))
+	while(is_alpha(peek()) || is_digit(peek()) || is_overridable_operator(peek()))
 		advance();
 	std::string_view lexeme = m_source.substr(m_start.index, m_current.index - m_start.index);
 	if(const auto& type_or_nil = is_keyword(lexeme); type_or_nil.has_value())
@@ -123,6 +123,16 @@ bool Lexer::is_digit(char character) const { return character >= '0' && characte
 
 bool Lexer::is_alpha(char character) const {
 	return (character >= 'a' && character <= 'z') || (character >= 'A' && character <= 'Z');
+}
+
+bool Lexer::is_overridable_operator(char character) const {
+	switch(character) {
+		case '+':
+		case '-':
+		case '*':
+		case '/': return true;
+		default: return false;
+	}
 }
 
 std::optional<TokenType> Lexer::is_keyword(std::string_view string) const {
