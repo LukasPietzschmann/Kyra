@@ -49,6 +49,18 @@ ConstantInt* get_integer_constant(const Module& module, int constant, unsigned w
 Type* get_llvm_type_for(LLVMContext& context, const DeclaredType& type) {
 	switch(type.get_kind()) {
 		case DeclaredType::Integer: return get_integer_type(context, static_cast<const IntType&>(type).get_width());
+		case DeclaredType::Struct: {
+			// TODO: types should not only be cached by their names!
+			static std::map<std::string_view, Type*> type_cache;
+			if(const auto& it = type_cache.find(type.get_name()); it != type_cache.end())
+				return it->second;
+			std::vector<Type*> members;
+			for(const auto& [_, type] : type.get_symbols())
+				members.push_back(get_llvm_type_for(context, type.get_declared_type()));
+			Type* llvm_type = llvm::StructType::create(context, members, type.get_name());
+			type_cache.try_emplace(type.get_name(), llvm_type);
+			return llvm_type;
+		}
 		case DeclaredType::Function:
 		default: assert_not_reached();
 	}
@@ -58,6 +70,7 @@ Constant* get_zero_init_for(const Module& module, const DeclaredType& type) {
 	switch(type.get_kind()) {
 		case DeclaredType::Integer:
 			return get_integer_constant(module, 0, static_cast<const IntType&>(type).get_width());
+		case DeclaredType::Struct: return ConstantAggregateZero::get(get_llvm_type_for(module.getContext(), type));
 		case DeclaredType::Function:
 		default: assert_not_reached();
 	}

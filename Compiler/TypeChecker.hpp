@@ -72,5 +72,7 @@ private:
 	void execute_on_scope(RefPtr<TypeScope> scope, Callback callback);
 	template <typename Callback>
 	RefPtr<TypeScope> execute_on_new_scope(Callback callback);
+	template <typename RT, typename Callback>
+	std::vector<RefPtr<RT>> capture_typed_statements(Callback callback);
 };
 }

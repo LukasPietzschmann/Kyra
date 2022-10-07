@@ -25,6 +25,14 @@ void ASTPrinter::visit(const Declaration& declaration) {
 	}
 }
 
+void ASTPrinter::visit(const Structure& structure) {
+	print_with_indent("Declaration of struct ", structure.get_identifier().get_lexeme(), ":");
+	++m_indent;
+	for(const RefPtr<Declaration>& decl : structure.get_declarations())
+		decl->accept(*this);
+	--m_indent;
+}
+
 void ASTPrinter::visit(const Function& function) {
 	print_with_indent("Function ", function.get_identifier().get_lexeme(), ":");
 	++m_indent;

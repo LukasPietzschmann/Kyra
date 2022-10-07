@@ -74,7 +74,9 @@ void TypeChecker::visit(const Function& function) {
 	RefPtr<FunctionType> function_type =
 		mk_ref<FunctionType>(function.get_identifier().get_lexeme(), return_type, parameters);
 	m_context.enclosing_function = function_type;
-	execute_on_scope(function_scope, [&]() { function.get_implementation().accept(*this); });
+	const std::vector<RefPtr<Typed::Block>>& statements = capture_typed_statements<Typed::Block>(
+		[&]() { execute_on_scope(function_scope, [&]() { function.get_implementation().accept(*this); }); });
+	assert(statements.size() == 1);
 	m_context.enclosing_function = nullptr;
 	if(!m_context.had_return)
 		throw ErrorException("Missing return statement", function.get_implementation().get_source_range());
@@ -83,10 +85,7 @@ void TypeChecker::visit(const Function& function) {
 			{function.get_identifier().get_lexeme(), AppliedType::promote_declared_type(function_type, false)});
 		if(!m_current_scope->insert_function(function.get_identifier().get_lexeme(), {fun_decl_id, function_type}))
 			throw ErrorException("Redefinition of function", function.get_identifier().get_source_range());
-		RefPtr<Typed::Block> impl = std::static_pointer_cast<Typed::Block>(m_typed_statements.back());
-		// The block statement does not belong on the top-level, but should only be nested inside the function
-		m_typed_statements.erase(m_typed_statements.end());
-		m_typed_statements.push_back(mk_ref<Typed::Function>(fun_decl_id, impl, typed_parameters));
+		m_typed_statements.push_back(mk_ref<Typed::Function>(fun_decl_id, statements.front(), typed_parameters));
 	});
 	m_context.had_return = false;
 }
@@ -111,15 +110,12 @@ void TypeChecker::visit(const Return& return_statement) {
 }
 
 void TypeChecker::visit(const Block& block) {
-	unsigned start_index = m_typed_statements.size();
-	execute_on_new_scope([&]() {
-		for(const RefPtr<Statement>& statement : block.get_body())
-			statement->accept(*this);
+	const std::vector<RefPtr<Typed::Statement>>& statements = capture_typed_statements<Typed::Statement>([&]() {
+		execute_on_new_scope([&]() {
+			for(const RefPtr<Statement>& statement : block.get_body())
+				statement->accept(*this);
+		});
 	});
-	std::vector<RefPtr<Typed::Statement>> statements(
-		m_typed_statements.begin() + start_index, m_typed_statements.end());
-	// All statements in the block don't belong on the top level, but should only be nested inside the block statement
-	m_typed_statements.erase(m_typed_statements.begin() + start_index, m_typed_statements.end());
 	m_typed_statements.push_back(mk_ref<Typed::Block>(statements));
 }
 
@@ -221,5 +217,16 @@ RefPtr<TypeScope> TypeChecker::execute_on_new_scope(Callback callback) {
 	RefPtr<TypeScope> new_scope = mk_ref<TypeScope>(m_current_scope);
 	execute_on_scope(new_scope, callback);
 	return new_scope;
+}
+
+template <typename RT, typename Callback>
+std::vector<RefPtr<RT>> TypeChecker::capture_typed_statements(Callback callback) {
+	unsigned start_index = m_typed_statements.size();
+	callback();
+	std::vector<RefPtr<RT>> result;
+	for(auto it = m_typed_statements.begin() + start_index; it != m_typed_statements.end(); ++it)
+		result.push_back(std::static_pointer_cast<RT>(*it));
+	m_typed_statements.erase(m_typed_statements.begin() + start_index, m_typed_statements.end());
+	return result;
 }
 }

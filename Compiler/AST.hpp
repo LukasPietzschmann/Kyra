@@ -74,6 +74,21 @@ private:
 	RefPtr<Expression> m_initializer;
 };
 
+class Structure : public Statement {
+public:
+	Structure(
+		const SourceRange& source_range, const Token& identifier, const std::vector<RefPtr<Declaration>>& declarations);
+
+	const Token& get_identifier() const;
+	const std::vector<RefPtr<Declaration>>& get_declarations() const;
+
+	void accept(ASTVisitor& visitor) const override;
+
+private:
+	const Token m_identifier;
+	const std::vector<RefPtr<Declaration>> m_declarations;
+};
+
 class Block : public Statement {
 public:
 	Block(const SourceRange& source_range, const std::vector<RefPtr<Statement>>& body);
@@ -247,6 +262,7 @@ public:
 
 	virtual void visit(const ExpressionStatement& expresion_statement) = 0;
 	virtual void visit(const Declaration& declaration) = 0;
+	virtual void visit(const Structure& structure) = 0;
 	virtual void visit(const Function& function) = 0;
 	virtual void visit(const Print& print_statement) = 0;
 	virtual void visit(const Return& return_statement) = 0;

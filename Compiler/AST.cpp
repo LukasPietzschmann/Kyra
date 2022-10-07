@@ -42,6 +42,17 @@ RefPtr<Expression> Declaration::get_initializer_shared() const { return m_initia
 
 void Declaration::accept(ASTVisitor& visitor) const { visitor.visit(*this); }
 
+Structure::Structure(
+	const SourceRange& source_range, const Token& identifier, const std::vector<RefPtr<Declaration>>& declarations) :
+	Statement(source_range),
+	m_identifier(identifier), m_declarations(declarations) {}
+
+const Token& Structure::get_identifier() const { return m_identifier; }
+
+const std::vector<RefPtr<Declaration>>& Structure::get_declarations() const { return m_declarations; }
+
+void Structure::accept(ASTVisitor& visitor) const { visitor.visit(*this); }
+
 Block::Block(const SourceRange& source_range, const std::vector<RefPtr<Statement>>& body) :
 	Statement(source_range), m_body(body) {}
 
