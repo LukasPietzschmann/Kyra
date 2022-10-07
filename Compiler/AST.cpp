@@ -165,10 +165,14 @@ RefPtr<Expression> Group::get_content_shared() const { return m_content; }
 
 void Group::accept(ASTVisitor& visitor) const { visitor.visit(*this); }
 
-VarQuery::VarQuery(const SourceRange& source_range, const Token& identifier) :
-	Expression(source_range), m_identifier(identifier) {}
+VarQuery::VarQuery(const SourceRange& source_range, const Token& identifier, RefPtr<Expression> owner) :
+	Expression(source_range), m_identifier(identifier), m_owner(owner) {}
 
 const Token& VarQuery::get_identifier() const { return m_identifier; }
+
+const Expression* VarQuery::get_owner() const { return m_owner.get(); }
+
+RefPtr<Expression> VarQuery::get_owner_shared() const { return m_owner; }
 
 void VarQuery::accept(ASTVisitor& visitor) const { visitor.visit(*this); }
 }

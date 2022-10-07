@@ -161,19 +161,31 @@ RefPtr<Expression> Parser::factor() {
 
 RefPtr<Expression> Parser::call() {
 	RefPtr<Expression> lhs = primary();
-	if(!match(TokenType::LEFT_PAREN))
-		return lhs;
-	consume(TokenType::LEFT_PAREN);
-	std::vector<Call::Argument> args;
-	if(!match(TokenType::RIGHT_PAREN)) {
-		do {
-			args.push_back(expression());
-		} while(match_and_advance(TokenType::COMMA));
+	while(true) {
+		if(match(TokenType::DOT)) {
+			consume(TokenType::DOT);
+			const Token& identifier = consume(TokenType::NAME);
+			lhs = mk_ref<VarQuery>(
+				SourceRange::unite(lhs->get_source_range(), identifier.get_source_range()), identifier, lhs);
+			continue;
+		}
+		if(match(TokenType::LEFT_PAREN)) {
+			consume(TokenType::LEFT_PAREN);
+			std::vector<Call::Argument> args;
+			if(!match(TokenType::RIGHT_PAREN)) {
+				do {
+					args.push_back(expression());
+				} while(match_and_advance(TokenType::COMMA));
+			}
+			const Token& right_paren = consume(TokenType::RIGHT_PAREN);
+			RefPtr<VarQuery> var_query = std::static_pointer_cast<VarQuery>(lhs);
+			lhs = mk_ref<Call>(SourceRange::unite(lhs->get_source_range(), right_paren.get_source_range()),
+				var_query->get_identifier(), args);
+			continue;
+		}
+		break;
 	}
-	const Token& right_paren = consume(TokenType::RIGHT_PAREN);
-	RefPtr<VarQuery> var_query = std::static_pointer_cast<VarQuery>(lhs);
-	return mk_ref<Call>(
-		SourceRange::unite(lhs->get_source_range(), right_paren.get_source_range()), var_query->get_identifier(), args);
+	return lhs;
 }
 
 RefPtr<Expression> Parser::primary() {

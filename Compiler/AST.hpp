@@ -246,14 +246,17 @@ private:
 
 class VarQuery : public Expression {
 public:
-	VarQuery(const SourceRange& source_range, const Token& identifier);
+	VarQuery(const SourceRange& source_range, const Token& identifier, RefPtr<Expression> owner = nullptr);
 
 	const Token& get_identifier() const;
+	const Expression* get_owner() const;
+	RefPtr<Expression> get_owner_shared() const;
 
 	void accept(ASTVisitor& visitor) const override;
 
 private:
 	const Token m_identifier;
+	RefPtr<Expression> m_owner; // Call, VarQuery or nullptr
 };
 
 class ASTVisitor {

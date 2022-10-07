@@ -220,6 +220,14 @@ void TypeChecker::visit(const Group& group) { return_from_visit(visit_with_retur
 
 void TypeChecker::visit(const VarQuery& var_query) {
 	const std::string_view name = var_query.get_identifier().get_lexeme();
+	if(const Expression* owner = var_query.get_owner(); owner != nullptr) {
+		auto [type, expr] = visit_with_return(*owner);
+		RefPtr<AppliedType> var = type->get_declared_type().find_symbol(name);
+		if(var == nullptr)
+			throw ErrorException("Undefined member", var_query.get_identifier().get_source_range());
+		// TODO: get declaration id
+		return_from_visit_emplace(var, mk_ref<Typed::VarQuery>(var, 1));
+	}
 	auto element_or_none = m_current_scope->find_symbol(name);
 	if(!element_or_none.has_value())
 		throw ErrorException("Undefined symbol", var_query.get_source_range());
