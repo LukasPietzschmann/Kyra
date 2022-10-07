@@ -33,6 +33,7 @@ public:
 
 	void visit(const Typed::ExpressionStatement& expresion_statement) override;
 	void visit(const Typed::Declaration& declaration) override;
+	void visit(const Typed::Structure& structure) override;
 	void visit(const Typed::Function& function) override;
 	void visit(const Typed::Print& print_statement) override;
 	void visit(const Typed::Return& return_statement) override;

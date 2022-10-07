@@ -1,5 +1,6 @@
 #pragma once
 
+#include <string_view>
 #include <vector>
 
 #include "Aliases.hpp"
@@ -53,6 +54,20 @@ public:
 
 private:
 	const declid_t m_declaration_id;
+};
+
+class Structure : public Statement {
+public:
+	Structure(std::string_view identifier, const std::vector<RefPtr<Declaration>>& declarations);
+
+	std::string_view get_identifier() const;
+	const std::vector<RefPtr<Declaration>>& get_declarations() const;
+
+	void accept(TASTVisitor& visitor) const override;
+
+private:
+	const std::string_view m_identifier;
+	const std::vector<RefPtr<Declaration>> m_declarations;
 };
 
 class Block : public Statement {
@@ -181,6 +196,7 @@ public:
 
 	virtual void visit(const ExpressionStatement& expresion_statement) = 0;
 	virtual void visit(const Declaration& declaration) = 0;
+	virtual void visit(const Structure& structure) = 0;
 	virtual void visit(const Function& function) = 0;
 	virtual void visit(const Print& print_statement) = 0;
 	virtual void visit(const Return& return_statement) = 0;

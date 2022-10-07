@@ -51,6 +51,28 @@ void TypeChecker::visit(const Declaration& declaration) {
 	});
 }
 
+void TypeChecker::visit(const Structure& structure) {
+	const Token& identifier = structure.get_identifier();
+	if(m_current_scope->find_type(identifier.get_lexeme()) != nullptr)
+		throw ErrorException("Redefinition of struct", identifier.get_source_range());
+	std::vector<RefPtr<Typed::Declaration>> declarations;
+	std::vector<std::pair<std::string_view, RefPtr<AppliedType>>> declaration_types;
+	execute_on_new_scope([&]() {
+		for(const RefPtr<Declaration>& decl : structure.get_declarations()) {
+			const std::vector<RefPtr<Typed::Declaration>>& statements =
+				capture_typed_statements<Typed::Declaration>([&]() { decl->accept(*this); });
+			// FIXME: .back() only works with uninitialized declarations, as an initialisation will generate an extra
+			// ExpressionStatement (Assignment) after the declaration itself.
+			declarations.push_back(statements.back());
+			auto [name, type] = DeclarationDumpster::the().retrieve(statements.back()->get_declaration_id());
+			declaration_types.emplace_back(name, type);
+		}
+	});
+	RefPtr<DeclaredType> new_type = mk_ref<StructType>(identifier.get_lexeme(), declaration_types);
+	m_current_scope->insert_type(identifier.get_lexeme(), new_type);
+	m_typed_statements.push_back(mk_ref<Typed::Structure>(identifier.get_lexeme(), declarations));
+}
+
 void TypeChecker::visit(const Function& function) {
 	RefPtr<TypeScope> function_scope = mk_ref<TypeScope>(m_current_scope);
 	std::vector<RefPtr<AppliedType>> parameters;
@@ -190,6 +212,7 @@ void TypeChecker::visit(const Call& call) {
 	if(candidate.type == nullptr)
 		throw ErrorException("No candidate matched", call.get_function_name().get_source_range());
 	RefPtr<AppliedType> type = AppliedType::promote_declared_type(candidate.type->get_returned_type(), true);
+	// FIXME: return functions return type
 	return_from_visit_emplace(type, mk_ref<Typed::Call>(type, candidate.declid, arg_exprs));
 }
 

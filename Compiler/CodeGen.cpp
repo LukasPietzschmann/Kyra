@@ -16,6 +16,10 @@
 using namespace llvm;
 
 namespace Kyra {
+
+// FIXME: somehow module.getIdentifiedStructTypes() does not work. But this is only a temporary solution
+std::map<std::string_view, llvm::StructType*> struct_types;
+
 namespace Utils {
 
 Constant* construct_string(Module& module, std::string_view string, std::string_view twine = "") {
@@ -46,21 +50,11 @@ ConstantInt* get_integer_constant(const Module& module, int constant, unsigned w
 	return ConstantInt::get(module.getContext(), APInt(width, constant, is_signed));
 }
 
-Type* get_llvm_type_for(LLVMContext& context, const DeclaredType& type) {
+Type* get_llvm_type_for(const Module& module, const DeclaredType& type) {
 	switch(type.get_kind()) {
-		case DeclaredType::Integer: return get_integer_type(context, static_cast<const IntType&>(type).get_width());
-		case DeclaredType::Struct: {
-			// TODO: types should not only be cached by their names!
-			static std::map<std::string_view, Type*> type_cache;
-			if(const auto& it = type_cache.find(type.get_name()); it != type_cache.end())
-				return it->second;
-			std::vector<Type*> members;
-			for(const auto& [_, type] : type.get_symbols())
-				members.push_back(get_llvm_type_for(context, type.get_declared_type()));
-			Type* llvm_type = llvm::StructType::create(context, members, type.get_name());
-			type_cache.try_emplace(type.get_name(), llvm_type);
-			return llvm_type;
-		}
+		case DeclaredType::Integer:
+			return get_integer_type(module.getContext(), static_cast<const IntType&>(type).get_width());
+		case DeclaredType::Struct: return struct_types.at(type.get_name());
 		case DeclaredType::Function:
 		default: assert_not_reached();
 	}
@@ -70,7 +64,7 @@ Constant* get_zero_init_for(const Module& module, const DeclaredType& type) {
 	switch(type.get_kind()) {
 		case DeclaredType::Integer:
 			return get_integer_constant(module, 0, static_cast<const IntType&>(type).get_width());
-		case DeclaredType::Struct: return ConstantAggregateZero::get(get_llvm_type_for(module.getContext(), type));
+		case DeclaredType::Struct: return ConstantAggregateZero::get(get_llvm_type_for(module, type));
 		case DeclaredType::Function:
 		default: assert_not_reached();
 	}
@@ -148,7 +142,7 @@ void CodeGen::visit(const ExpressionStatement& expresion_statement) {
 
 void CodeGen::visit(const Declaration& declaration) {
 	auto [name, type] = DeclarationDumpster::the().retrieve(declaration.get_declaration_id());
-	Type* llvm_type = Utils::get_llvm_type_for(llvm_module->getContext(), type->get_declared_type());
+	Type* llvm_type = Utils::get_llvm_type_for(*llvm_module, type->get_declared_type());
 
 	Value* var = nullptr;
 	if(ir_builder->GetInsertBlock()->getParent() == PredefFunctions::main(*llvm_module)) {
@@ -161,13 +155,24 @@ void CodeGen::visit(const Declaration& declaration) {
 	m_declarations[declaration.get_declaration_id()] = {var, 1};
 }
 
+void CodeGen::visit(const Structure& structre) {
+	llvm::StructType* llvm_struct = llvm::StructType::create(llvm_module->getContext(), structre.get_identifier());
+	std::vector<Type*> members;
+	for(const RefPtr<Declaration>& decl : structre.get_declarations()) {
+		auto [_, type] = DeclarationDumpster::the().retrieve(decl->get_declaration_id());
+		members.push_back(Utils::get_llvm_type_for(*llvm_module, type->get_declared_type()));
+	}
+	llvm_struct->setBody(members);
+	struct_types.try_emplace(structre.get_identifier(), llvm_struct);
+}
+
 void CodeGen::visit(const Function& function) {
 	auto [name, type] = DeclarationDumpster::the().retrieve(function.get_function_declaration_id());
 	const FunctionType& function_type = static_cast<const FunctionType&>(type->get_declared_type());
-	Type* return_type = Utils::get_llvm_type_for(llvm_module->getContext(), *function_type.get_returned_type());
+	Type* return_type = Utils::get_llvm_type_for(*llvm_module, *function_type.get_returned_type());
 	std::vector<Type*> params;
 	for(const RefPtr<AppliedType>& param_type : function_type.get_parameter()) {
-		Type* llvm_param_type = Utils::get_llvm_type_for(llvm_module->getContext(), param_type->get_declared_type());
+		Type* llvm_param_type = Utils::get_llvm_type_for(*llvm_module, param_type->get_declared_type());
 		params.push_back(llvm_param_type);
 	}
 	llvm::FunctionType* llvm_function_type = llvm::FunctionType::get(return_type, params, false);
@@ -220,7 +225,7 @@ void CodeGen::visit(const Assignment& assignment) {
 	assert(indirections == 0 || indirections == 1);
 	if(indirections == 0) {
 		Value* new_variable = ir_builder->CreateAlloca(
-			Utils::get_llvm_type_for(llvm_module->getContext(), type->get_declared_type()), nullptr, name + ".ptr");
+			Utils::get_llvm_type_for(*llvm_module, type->get_declared_type()), nullptr, name + ".ptr");
 		m_declarations.at(assignment.get_lhs()) = {new_variable, 1};
 		variable = new_variable;
 	}
@@ -259,7 +264,7 @@ void CodeGen::visit(const VarQuery& var_query) {
 	Value* loaded_variable = variable;
 	// Load indirections away
 	for(unsigned i = indirections; i > 0; --i) {
-		Type* expected_type = Utils::get_llvm_type_for(llvm_module->getContext(), type);
+		Type* expected_type = Utils::get_llvm_type_for(*llvm_module, type);
 		if(i > 1)
 			expected_type = Utils::get_ptr_type(expected_type, i - 1);
 		std::string_view name = DeclarationDumpster::the().retrieve(var_query.get_declaration_id()).name;

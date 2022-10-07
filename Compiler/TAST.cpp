@@ -23,6 +23,15 @@ declid_t Declaration::get_declaration_id() const { return m_declaration_id; }
 
 void Declaration::accept(TASTVisitor& visitor) const { visitor.visit(*this); }
 
+Structure::Structure(std::string_view identifier, const std::vector<RefPtr<Declaration>>& declarations) :
+	m_identifier(identifier), m_declarations(declarations) {}
+
+std::string_view Structure::get_identifier() const { return m_identifier; }
+
+const std::vector<RefPtr<Declaration>>& Structure::get_declarations() const { return m_declarations; }
+
+void Structure::accept(TASTVisitor& visitor) const { visitor.visit(*this); }
+
 Block::Block(const std::vector<RefPtr<Statement>>& body) : m_body(body) {}
 
 const std::vector<RefPtr<Statement>>& Block::get_body() const { return m_body; }

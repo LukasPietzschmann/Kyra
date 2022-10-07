@@ -3,6 +3,7 @@
 #include <map>
 #include <optional>
 #include <string_view>
+#include <utility>
 #include <vector>
 
 #include "Aliases.hpp"
@@ -11,9 +12,11 @@
 namespace Kyra {
 
 class FunctionType;
+class AppliedType;
+// TODO: inherit private from Scope and make necessary functions available with using
 class DeclaredType {
 public:
-	enum Kind { Integer, Function };
+	enum Kind { Integer, Function, Struct };
 
 	explicit DeclaredType(std::string_view name, Kind kind);
 	virtual ~DeclaredType() = default;
@@ -21,6 +24,9 @@ public:
 	bool can_be_assigned_to(const DeclaredType& other) const;
 	std::vector<RefPtr<FunctionType>> find_methods(std::string_view name) const;
 	void insert_method_if_non_exists(std::string_view name, RefPtr<FunctionType> type);
+	RefPtr<AppliedType> find_symbol(std::string_view name) const;
+	void insert_symbol_if_non_exists(std::string_view name, RefPtr<AppliedType> type);
+	std::vector<std::pair<std::string_view, const AppliedType&>> get_symbols() const;
 
 	std::string_view get_name() const;
 	Kind get_kind() const;
@@ -29,6 +35,7 @@ protected:
 	const std::string_view m_name;
 	const Kind m_kind;
 	std::map<std::string_view, std::vector<RefPtr<FunctionType>>> m_methods;
+	std::map<std::string_view, RefPtr<AppliedType>> m_symbols;
 };
 
 class AppliedType final {
@@ -70,12 +77,18 @@ private:
 
 class IntType : public DeclaredType {
 public:
-	explicit IntType(std::string_view name, unsigned width);
+	IntType(std::string_view name, unsigned width);
 
 	unsigned get_width() const;
 
 private:
 	const unsigned m_width;
+};
+
+class StructType : public DeclaredType {
+public:
+	StructType(
+		std::string_view name, const std::vector<std::pair<std::string_view, RefPtr<AppliedType>>>& declarations);
 };
 
 using declid_t = unsigned long;

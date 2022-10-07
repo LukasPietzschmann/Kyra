@@ -38,6 +38,25 @@ void DeclaredType::insert_method_if_non_exists(std::string_view name, RefPtr<Fun
 	methods.push_back(std::move(type));
 }
 
+RefPtr<AppliedType> DeclaredType::find_symbol(std::string_view name) const {
+	if(const auto& it = m_symbols.find(name); it != m_symbols.end())
+		return it->second;
+	return nullptr;
+}
+
+void DeclaredType::insert_symbol_if_non_exists(std::string_view name, RefPtr<AppliedType> type) {
+	if(m_symbols.contains(name))
+		return;
+	m_symbols.try_emplace(name, type);
+}
+
+std::vector<std::pair<std::string_view, const AppliedType&>> DeclaredType::get_symbols() const {
+	std::vector<std::pair<std::string_view, const AppliedType&>> result;
+	for(const auto& [name, type] : m_symbols)
+		result.emplace_back(name, *type);
+	return result;
+}
+
 const DeclaredType& AppliedType::get_declared_type() const { return *m_decl_type; }
 
 RefPtr<DeclaredType> AppliedType::get_declared_type_shared() const { return m_decl_type; }
@@ -80,6 +99,13 @@ bool FunctionType::operator==(const FunctionType& other) const {
 IntType::IntType(std::string_view name, unsigned width) : DeclaredType(name, DeclaredType::Integer), m_width(width) {}
 
 unsigned IntType::get_width() const { return m_width; }
+
+StructType::StructType(
+	std::string_view name, const std::vector<std::pair<std::string_view, RefPtr<AppliedType>>>& declarations) :
+	DeclaredType(name, DeclaredType::Struct) {
+	for(const auto& [name, type] : declarations)
+		insert_symbol_if_non_exists(name, type);
+}
 
 declid_t DeclarationDumpster::insert(const DeclarationDumpster::Element& element) {
 	static declid_t id = 0;

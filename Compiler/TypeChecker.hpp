@@ -50,6 +50,7 @@ public:
 
 	void visit(const Untyped::ExpressionStatement& expresion_statement) override;
 	void visit(const Untyped::Declaration& declaration) override;
+	void visit(const Untyped::Structure& structure) override;
 	void visit(const Untyped::Function& function) override;
 	void visit(const Untyped::Print& print_statement) override;
 	void visit(const Untyped::Return& return_statement) override;

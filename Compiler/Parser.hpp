@@ -38,6 +38,7 @@ private:
 	RefPtr<Untyped::Statement> declaration();
 	RefPtr<Untyped::Statement> variable_declaration();
 	RefPtr<Untyped::Statement> function_declaration();
+	RefPtr<Untyped::Statement> struct_declaration();
 
 	RefPtr<Untyped::Expression> expression();
 	RefPtr<Untyped::Expression> assignment();

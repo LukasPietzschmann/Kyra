@@ -67,6 +67,8 @@ RefPtr<Statement> Parser::declaration() {
 		return variable_declaration();
 	if(match(TokenType::FUN))
 		return function_declaration();
+	if(match(TokenType::STRUCT))
+		return struct_declaration();
 	return statement();
 }
 
@@ -103,6 +105,20 @@ RefPtr<Statement> Parser::function_declaration() {
 	RefPtr<Block> implementation = std::static_pointer_cast<Block>(block());
 	return mk_ref<Function>(SourceRange::unite(fun.get_source_range(), implementation->get_source_range()), identifier,
 		implementation, return_type, params);
+}
+
+RefPtr<Statement> Parser::struct_declaration() {
+	const Token& struct_kw = consume(TokenType::STRUCT);
+	const Token& identifier = consume(TokenType::NAME);
+	consume(TokenType::LEFT_CURLY);
+	std::vector<RefPtr<Declaration>> declarations;
+	while(!match(TokenType::RIGHT_CURLY)) {
+		RefPtr<Statement> decl = variable_declaration();
+		declarations.push_back(std::static_pointer_cast<Declaration>(decl));
+	}
+	const Token& right_curly = consume(TokenType::RIGHT_CURLY);
+	return mk_ref<Structure>(
+		SourceRange::unite(struct_kw.get_source_range(), right_curly.get_source_range()), identifier, declarations);
 }
 
 RefPtr<Expression> Parser::expression() { return assignment(); }
