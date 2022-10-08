@@ -8,6 +8,7 @@
 #include <llvm/IR/Verifier.h>
 
 #include <cassert>
+#include <string>
 #include <string_view>
 
 #include "Plattform.hpp"
@@ -22,19 +23,19 @@ std::map<std::string_view, llvm::StructType*> struct_types;
 
 namespace Utils {
 
-Constant* construct_string(Module& module, std::string_view string, std::string_view twine = "") {
-	static std::map<std::string_view, Constant*> string_cache;
-	if(const auto& it = string_cache.find(string); it != string_cache.end())
+Constant* construct_string(Module& module, Twine string, std::string_view twine = "") {
+	static std::map<std::string, Constant*> string_cache;
+	if(const auto& it = string_cache.find(string.str()); it != string_cache.end())
 		return it->second;
 
-	Constant* string_constant = ConstantDataArray::getString(module.getContext(), string);
+	Constant* string_constant = ConstantDataArray::getString(module.getContext(), string.str());
 	Constant* global_string_variable = new GlobalVariable(
 		module, string_constant->getType(), true, GlobalValue::PrivateLinkage, string_constant, twine);
 	Constant* zero_constant = Constant::getNullValue(IntegerType::get(module.getContext(), C_INT_BIT_WIDTH));
 	Constant* string_ptr = ConstantExpr::getGetElementPtr(
 		string_constant->getType(), global_string_variable, (Constant* [2]){zero_constant, zero_constant}, true);
 
-	string_cache.try_emplace(string, string_ptr);
+	string_cache.try_emplace(string.str(), string_ptr);
 	return string_ptr;
 }
 
@@ -197,9 +198,16 @@ void CodeGen::visit(const Function& function) {
 }
 
 void CodeGen::visit(const Print& print_statement) {
-	Constant* format_string = Utils::construct_string(*llvm_module, "%d\n", "printf.format");
-	Value* printee = visit_with_return(print_statement.get_expression());
-	ir_builder->CreateCall(PredefFunctions::printf(*llvm_module), {format_string, printee});
+	const DeclaredType& printee_type = print_statement.get_expression().get_type().get_declared_type();
+	if(printee_type.get_kind() == DeclaredType::Struct) {
+		Constant* format_string = Utils::construct_string(
+			*llvm_module, "Instance of type '" + printee_type.get_name() + "'\n", "printf.format.struct");
+		ir_builder->CreateCall(PredefFunctions::printf(*llvm_module), format_string);
+	} else {
+		Constant* format_string = Utils::construct_string(*llvm_module, "%d\n", "printf.format");
+		Value* printee = visit_with_return(print_statement.get_expression());
+		ir_builder->CreateCall(PredefFunctions::printf(*llvm_module), {format_string, printee});
+	}
 }
 
 void CodeGen::visit(const Return& return_statement) {
