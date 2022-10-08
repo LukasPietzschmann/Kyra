@@ -148,16 +148,16 @@ void TypeChecker::visit(const IntLiteral& literal) {
 }
 
 void TypeChecker::visit(const Assignment& assignment) {
-	auto element_or_none = m_current_scope->find_symbol(assignment.get_lhs().get_lexeme());
-	if(!element_or_none.has_value())
-		throw ErrorException("Undefined symbol", assignment.get_lhs().get_source_range());
-	auto [decl_id, type] = element_or_none.value();
-	if(!type->is_mutable())
+	auto [lhs_type, lhs_expr] = visit_with_return(assignment.get_lhs());
+	RefPtr<Typed::VarQuery> lhs_var_query = std::static_pointer_cast<Typed::VarQuery>(lhs_expr);
+
+	if(!lhs_type->is_mutable())
 		throw ErrorException("Cannot assign to a value", assignment.get_source_range());
 	auto [rhs_type, rhs_expr] = visit_with_return(assignment.get_rhs());
-	if(!rhs_type->can_be_assigned_to(*type))
+	if(!rhs_type->can_be_assigned_to(*lhs_type))
 		throw ErrorException("Wrong type", assignment.get_rhs().get_source_range());
-	return_from_visit_emplace(type, mk_ref<Typed::Assignment>(type, decl_id, rhs_expr));
+	return_from_visit_emplace(
+		lhs_type, mk_ref<Typed::Assignment>(lhs_type, lhs_var_query->get_declaration_id(), rhs_expr));
 }
 
 void TypeChecker::visit(const BinaryExpression& binary_expression) {

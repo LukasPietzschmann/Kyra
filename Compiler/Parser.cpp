@@ -127,7 +127,7 @@ RefPtr<Expression> Parser::assignment() {
 	RefPtr<Expression> lhs = term();
 	if(!match_and_advance(TokenType::EQUAL))
 		return lhs;
-	const Token& identifier = std::static_pointer_cast<VarQuery>(lhs)->get_identifier();
+	RefPtr<VarQuery> identifier = std::static_pointer_cast<VarQuery>(lhs);
 	RefPtr<Expression> new_value = expression();
 	return mk_ref<Assignment>(
 		SourceRange::unite(lhs->get_source_range(), new_value->get_source_range()), identifier, new_value);

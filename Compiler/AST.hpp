@@ -167,18 +167,20 @@ private:
 	const int m_value;
 };
 
+class VarQuery;
 class Assignment : public Expression {
 public:
-	Assignment(const SourceRange& source_range, const Token& lhs, RefPtr<Expression> rhs);
+	Assignment(const SourceRange& source_range, RefPtr<VarQuery> lhs, RefPtr<Expression> rhs);
 
-	const Token& get_lhs() const;
+	const VarQuery& get_lhs() const;
+	RefPtr<VarQuery> get_lhs_shared() const;
 	const Expression& get_rhs() const;
 	RefPtr<Expression> get_rhs_shared() const;
 
 	void accept(ASTVisitor& visitor) const override;
 
 private:
-	const Token m_lhs;
+	RefPtr<VarQuery> m_lhs;
 	RefPtr<Expression> m_rhs;
 };
 

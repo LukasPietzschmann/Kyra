@@ -110,10 +110,12 @@ int IntLiteral::get_literal_value() const { return m_value; }
 
 void IntLiteral::accept(ASTVisitor& visitor) const { visitor.visit(*this); }
 
-Assignment::Assignment(const SourceRange& source_range, const Token& lhs, RefPtr<Expression> rhs) :
+Assignment::Assignment(const SourceRange& source_range, RefPtr<VarQuery> lhs, RefPtr<Expression> rhs) :
 	Expression(source_range), m_lhs(lhs), m_rhs(std::move(rhs)) {}
 
-const Token& Assignment::get_lhs() const { return m_lhs; }
+const VarQuery& Assignment::get_lhs() const { return *m_lhs; }
+
+RefPtr<VarQuery> Assignment::get_lhs_shared() const { return m_lhs; }
 
 const Expression& Assignment::get_rhs() const { return *m_rhs; }
 

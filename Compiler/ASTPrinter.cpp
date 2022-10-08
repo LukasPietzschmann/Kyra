@@ -65,7 +65,11 @@ void ASTPrinter::visit(const Block& block) {
 void ASTPrinter::visit(const IntLiteral&) { print_with_indent("Literal"); }
 
 void ASTPrinter::visit(const Assignment& assignment) {
-	print_with_indent("Assignment to ", assignment.get_lhs().get_lexeme(), ":");
+	print_with_indent("Assignment to:");
+	++m_indent;
+	assignment.get_lhs().accept(*this);
+	--m_indent;
+	print_with_indent("of");
 	++m_indent;
 	assignment.get_rhs().accept(*this);
 	--m_indent;
