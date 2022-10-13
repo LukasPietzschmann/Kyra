@@ -143,17 +143,30 @@ void CodeGen::visit(const ExpressionStatement& expresion_statement) {
 
 void CodeGen::visit(const Declaration& declaration) {
 	auto [name, type] = DeclarationDumpster::the().retrieve(declaration.get_declaration_id());
-	Type* llvm_type = Utils::get_llvm_type_for(*llvm_module, type->get_declared_type());
+	Type* llvm_decl_type = Utils::get_llvm_type_for(*llvm_module, type->get_declared_type());
 
 	Value* var = nullptr;
 	if(ir_builder->GetInsertBlock()->getParent() == PredefFunctions::main(*llvm_module)) {
-		var = new GlobalVariable(*llvm_module, llvm_type, false, GlobalValue::PrivateLinkage,
+		var = new GlobalVariable(*llvm_module, llvm_decl_type, false, GlobalValue::PrivateLinkage,
 			Utils::get_zero_init_for(*llvm_module, type->get_declared_type()), name + ".ptr");
 	} else
-		var = ir_builder->CreateAlloca(llvm_type, nullptr, name + ".ptr");
+		var = ir_builder->CreateAlloca(llvm_decl_type, nullptr, name + ".ptr");
 
 	assert(!m_declarations.contains(declaration.get_declaration_id()));
 	m_declarations[declaration.get_declaration_id()] = {var, 1};
+
+	if(type->get_declared_type().get_kind() == DeclaredType::Struct) {
+		for(unsigned i = 0; i < type->get_declared_type().get_symbols().size(); ++i) {
+			declid_t declid = type->get_declared_type().get_symbols().at(i).second.declid;
+			RefPtr<AppliedType> type = DeclarationDumpster::the().retrieve(declid).type;
+			Value* ptr = ir_builder->CreateGEP(llvm_decl_type, var,
+				{Utils::get_integer_constant(*llvm_module, 0, 32), Utils::get_integer_constant(*llvm_module, i, 32)});
+			// FIXME: use specified initializer if available.
+			Value* initial_value = Utils::get_zero_init_for(*llvm_module, type->get_declared_type());
+			ir_builder->CreateStore(initial_value, ptr);
+			m_declarations[declid] = {ptr, 1};
+		}
+	}
 
 	if(const Expression* init_expr = declaration.get_initializer(); init_expr != nullptr) {
 		Value* init_value = visit_with_return(*init_expr);
