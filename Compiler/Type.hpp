@@ -11,6 +11,14 @@
 
 namespace Kyra {
 
+using declid_t = unsigned long;
+
+template <typename T>
+struct Element {
+	declid_t declid;
+	RefPtr<T> type;
+};
+
 class FunctionType;
 class AppliedType;
 // TODO: inherit private from Scope and make necessary functions available with using
@@ -22,11 +30,11 @@ public:
 	virtual ~DeclaredType() = default;
 
 	bool can_be_assigned_to(const DeclaredType& other) const;
-	std::vector<RefPtr<FunctionType>> find_methods(std::string_view name) const;
-	void insert_method_if_non_exists(std::string_view name, RefPtr<FunctionType> type);
-	RefPtr<AppliedType> find_symbol(std::string_view name) const;
-	void insert_symbol_if_non_exists(std::string_view name, RefPtr<AppliedType> type);
-	std::vector<std::pair<std::string_view, const AppliedType&>> get_symbols() const;
+	bool insert_symbol_if_non_exists(std::string_view name, const Element<AppliedType>& element);
+	std::optional<Element<AppliedType>> find_symbol(std::string_view name) const;
+	std::vector<std::pair<std::string_view, Element<AppliedType>>> get_symbols() const;
+	std::vector<Element<FunctionType>> find_methods(std::string_view name) const;
+	bool insert_method_if_non_exists(std::string_view name, const Element<FunctionType>& element);
 
 	std::string_view get_name() const;
 	Kind get_kind() const;
@@ -34,8 +42,8 @@ public:
 protected:
 	const std::string_view m_name;
 	const Kind m_kind;
-	std::map<std::string_view, std::vector<RefPtr<FunctionType>>> m_methods;
-	std::map<std::string_view, RefPtr<AppliedType>> m_symbols;
+	std::map<std::string_view, Element<AppliedType>> m_symbols;
+	std::map<std::string_view, std::vector<Element<FunctionType>>> m_methods;
 };
 
 class AppliedType final {
@@ -88,10 +96,8 @@ private:
 class StructType : public DeclaredType {
 public:
 	StructType(
-		std::string_view name, const std::vector<std::pair<std::string_view, RefPtr<AppliedType>>>& declarations);
+		std::string_view name, const std::vector<std::pair<std::string_view, Element<AppliedType>>>& declarations);
 };
-
-using declid_t = unsigned long;
 
 class DeclarationDumpster {
 public:
@@ -136,11 +142,6 @@ private:
 
 class TypeScope {
 public:
-	template <typename T>
-	struct Element {
-		declid_t declid;
-		RefPtr<T> type;
-	};
 	explicit TypeScope(RefPtr<TypeScope> parent = nullptr);
 
 	std::optional<Element<AppliedType>> find_symbol(std::string_view name) const;

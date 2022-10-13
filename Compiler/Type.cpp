@@ -23,37 +23,39 @@ bool AppliedType::can_be_assigned_to(const AppliedType& other) const {
 	return !(!m_is_multable && other.m_is_multable);
 }
 
-std::vector<RefPtr<FunctionType>> DeclaredType::find_methods(std::string_view name) const {
+std::vector<Element<FunctionType>> DeclaredType::find_methods(std::string_view name) const {
 	if(const auto& it = m_methods.find(name); it != m_methods.end())
 		return it->second;
 	return {};
 }
 
-void DeclaredType::insert_method_if_non_exists(std::string_view name, RefPtr<FunctionType> type) {
-	std::vector<RefPtr<FunctionType>>& methods = m_methods[name];
-	for(const RefPtr<FunctionType>& method : methods) {
-		if(*method == *type)
-			return;
+bool DeclaredType::insert_method_if_non_exists(std::string_view name, const Element<FunctionType>& element) {
+	std::vector<Element<FunctionType>>& methods = m_methods[name];
+	for(const Element<FunctionType>& method : methods) {
+		if(method.type == element.type)
+			return false;
 	}
-	methods.push_back(std::move(type));
+	methods.push_back(element);
+	return false;
 }
 
-RefPtr<AppliedType> DeclaredType::find_symbol(std::string_view name) const {
+bool DeclaredType::insert_symbol_if_non_exists(std::string_view name, const Element<AppliedType>& type) {
+	if(m_symbols.contains(name))
+		return false;
+	m_symbols.try_emplace(name, type);
+	return true;
+}
+
+std::optional<Element<AppliedType>> DeclaredType::find_symbol(std::string_view name) const {
 	if(const auto& it = m_symbols.find(name); it != m_symbols.end())
 		return it->second;
-	return nullptr;
+	return {};
 }
 
-void DeclaredType::insert_symbol_if_non_exists(std::string_view name, RefPtr<AppliedType> type) {
-	if(m_symbols.contains(name))
-		return;
-	m_symbols.try_emplace(name, type);
-}
-
-std::vector<std::pair<std::string_view, const AppliedType&>> DeclaredType::get_symbols() const {
-	std::vector<std::pair<std::string_view, const AppliedType&>> result;
-	for(const auto& [name, type] : m_symbols)
-		result.emplace_back(name, *type);
+std::vector<std::pair<std::string_view, Element<AppliedType>>> DeclaredType::get_symbols() const {
+	std::vector<std::pair<std::string_view, Element<AppliedType>>> result;
+	for(const auto& [name, element] : m_symbols)
+		result.emplace_back(name, element);
 	return result;
 }
 
@@ -101,10 +103,10 @@ IntType::IntType(std::string_view name, unsigned width) : DeclaredType(name, Dec
 unsigned IntType::get_width() const { return m_width; }
 
 StructType::StructType(
-	std::string_view name, const std::vector<std::pair<std::string_view, RefPtr<AppliedType>>>& declarations) :
+	std::string_view name, const std::vector<std::pair<std::string_view, Element<AppliedType>>>& declarations) :
 	DeclaredType(name, DeclaredType::Struct) {
-	for(const auto& [name, type] : declarations)
-		insert_symbol_if_non_exists(name, type);
+	for(const auto& [name, element] : declarations)
+		insert_symbol_if_non_exists(name, element);
 }
 
 declid_t DeclarationDumpster::insert(const DeclarationDumpster::Element& element) {
@@ -134,15 +136,26 @@ TypeScope::TypeScope(RefPtr<TypeScope> parent) : m_parent(std::move(parent)) {
 		RefPtr<FunctionType> oper_minus = mk_ref<FunctionType>("operator-", i32_type, rhs);
 		RefPtr<FunctionType> oper_mul = mk_ref<FunctionType>("operator*", i32_type, rhs);
 		RefPtr<FunctionType> oper_div = mk_ref<FunctionType>("operator/", i32_type, rhs);
-		i32_type->insert_method_if_non_exists(oper_plus->get_name(), oper_plus);
-		i32_type->insert_method_if_non_exists(oper_minus->get_name(), oper_minus);
-		i32_type->insert_method_if_non_exists(oper_mul->get_name(), oper_mul);
-		i32_type->insert_method_if_non_exists(oper_div->get_name(), oper_div);
+		declid_t id;
+		DeclarationDumpster::the().abort_on_exception([&]() {
+			id = DeclarationDumpster::the().insert(
+				{oper_plus->get_name(), AppliedType::promote_declared_type(oper_plus, false)});
+			i32_type->insert_method_if_non_exists(oper_plus->get_name(), {id, oper_plus});
+			id = DeclarationDumpster::the().insert(
+				{oper_minus->get_name(), AppliedType::promote_declared_type(oper_minus, false)});
+			i32_type->insert_method_if_non_exists(oper_minus->get_name(), {id, oper_minus});
+			id = DeclarationDumpster::the().insert(
+				{oper_mul->get_name(), AppliedType::promote_declared_type(oper_mul, false)});
+			i32_type->insert_method_if_non_exists(oper_mul->get_name(), {id, oper_mul});
+			id = DeclarationDumpster::the().insert(
+				{oper_div->get_name(), AppliedType::promote_declared_type(oper_div, false)});
+			i32_type->insert_method_if_non_exists(oper_div->get_name(), {id, oper_div});
+		});
 	}
 	m_type_scope.try_emplace(i32_type->get_name(), i32_type);
 }
 
-std::optional<TypeScope::Element<AppliedType>> TypeScope::find_symbol(std::string_view name) const {
+std::optional<Element<AppliedType>> TypeScope::find_symbol(std::string_view name) const {
 	if(const auto& it = m_symbol_scope.find(name); it != m_symbol_scope.end())
 		return it->second;
 	if(m_parent != nullptr)
@@ -150,7 +163,7 @@ std::optional<TypeScope::Element<AppliedType>> TypeScope::find_symbol(std::strin
 	return {};
 }
 
-bool TypeScope::insert_symbol(std::string_view name, TypeScope::Element<AppliedType> element) {
+bool TypeScope::insert_symbol(std::string_view name, Element<AppliedType> element) {
 	if(m_symbol_scope.contains(name))
 		return false;
 	m_symbol_scope.try_emplace(name, element);
@@ -172,7 +185,7 @@ bool TypeScope::insert_type(std::string_view name, RefPtr<DeclaredType> type) {
 	return true;
 }
 
-std::vector<TypeScope::Element<FunctionType>> TypeScope::find_functions(std::string_view name) const {
+std::vector<Element<FunctionType>> TypeScope::find_functions(std::string_view name) const {
 	// TODO: find functions from all visible scopes
 	if(const auto& it = m_function_scope.find(name); it != m_function_scope.end())
 		return it->second;
@@ -181,8 +194,8 @@ std::vector<TypeScope::Element<FunctionType>> TypeScope::find_functions(std::str
 	return {};
 }
 
-bool TypeScope::insert_function(std::string_view name, const TypeScope::Element<FunctionType>& element) {
-	std::vector<TypeScope::Element<FunctionType>>& functions = m_function_scope[name];
+bool TypeScope::insert_function(std::string_view name, const Element<FunctionType>& element) {
+	std::vector<Element<FunctionType>>& functions = m_function_scope[name];
 	for(const auto& [id, function] : functions) {
 		if(*function == *element.type)
 			return false;

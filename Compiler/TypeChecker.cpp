@@ -56,7 +56,7 @@ void TypeChecker::visit(const Structure& structure) {
 	if(m_current_scope->find_type(identifier.get_lexeme()) != nullptr)
 		throw ErrorException("Redefinition of struct", identifier.get_source_range());
 	std::vector<RefPtr<Typed::Declaration>> declarations;
-	std::vector<std::pair<std::string_view, RefPtr<AppliedType>>> declaration_types;
+	std::vector<std::pair<std::string_view, Element<AppliedType>>> declaration_types;
 	execute_on_new_scope([&]() {
 		for(const RefPtr<Declaration>& decl : structure.get_declarations()) {
 			const std::vector<RefPtr<Typed::Declaration>>& statements =
@@ -65,7 +65,7 @@ void TypeChecker::visit(const Structure& structure) {
 			// ExpressionStatement (Assignment) after the declaration itself.
 			declarations.push_back(statements.back());
 			auto [name, type] = DeclarationDumpster::the().retrieve(statements.back()->get_declaration_id());
-			declaration_types.emplace_back(name, type);
+			declaration_types.emplace_back(name, Element<AppliedType>{statements.back()->get_declaration_id(), type});
 		}
 	});
 	RefPtr<DeclaredType> new_type = mk_ref<StructType>(identifier.get_lexeme(), declaration_types);
@@ -166,12 +166,12 @@ void TypeChecker::visit(const BinaryExpression& binary_expression) {
 	function_name << "operator" << oper.get_lexeme();
 	auto [lhs_type, lhs_expr] = visit_with_return(binary_expression.get_lhs());
 	auto [rhs_type, rhs_expr] = visit_with_return(binary_expression.get_rhs());
-	const std::vector<RefPtr<FunctionType>> methods = lhs_type->get_declared_type().find_methods(function_name.str());
+	const std::vector<Element<FunctionType>> methods = lhs_type->get_declared_type().find_methods(function_name.str());
 	if(methods.empty())
 		throw ErrorException("Undefined operator", binary_expression.get_operator().get_source_range());
 
 	RefPtr<FunctionType> candidate = nullptr;
-	for(const RefPtr<FunctionType>& method : methods) {
+	for(const auto& [_, method] : methods) {
 		if(!method->can_be_called_with({rhs_type}))
 			continue;
 		candidate = method;
@@ -203,7 +203,7 @@ void TypeChecker::visit(const Call& call) {
 		arg_types.push_back(type);
 		arg_exprs.push_back(expr);
 	}
-	TypeScope::Element<FunctionType> candidate = {0, nullptr};
+	Element<FunctionType> candidate = {0, nullptr};
 	for(const auto& function : functions) {
 		if(!function.type->can_be_called_with(arg_types))
 			continue;
@@ -222,11 +222,10 @@ void TypeChecker::visit(const VarQuery& var_query) {
 	const std::string_view name = var_query.get_identifier().get_lexeme();
 	if(const Expression* owner = var_query.get_owner(); owner != nullptr) {
 		auto [type, expr] = visit_with_return(*owner);
-		RefPtr<AppliedType> var = type->get_declared_type().find_symbol(name);
-		if(var == nullptr)
+		std::optional<Element<AppliedType>> var = type->get_declared_type().find_symbol(name);
+		if(!var.has_value())
 			throw ErrorException("Undefined member", var_query.get_identifier().get_source_range());
-		// TODO: get declaration id
-		return_from_visit_emplace(var, mk_ref<Typed::VarQuery>(var, 1));
+		return_from_visit_emplace(var->type, mk_ref<Typed::VarQuery>(var->type, var->declid));
 	}
 	auto element_or_none = m_current_scope->find_symbol(name);
 	if(!element_or_none.has_value())
