@@ -17,9 +17,14 @@ const Expression& ExpressionStatement::get_expression() const { return *m_expres
 
 void ExpressionStatement::accept(TASTVisitor& visitor) const { visitor.visit(*this); }
 
-Declaration::Declaration(declid_t declaration_id) : m_declaration_id(declaration_id) {}
+Declaration::Declaration(declid_t declaration_id, RefPtr<Expression> initializer) :
+	m_declaration_id(declaration_id), m_initializer(initializer) {}
 
 declid_t Declaration::get_declaration_id() const { return m_declaration_id; }
+
+const Expression* Declaration::get_initializer() const { return m_initializer.get(); }
+
+RefPtr<Expression> Declaration::get_initializer_shared() const { return m_initializer; }
 
 void Declaration::accept(TASTVisitor& visitor) const { visitor.visit(*this); }
 

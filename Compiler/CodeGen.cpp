@@ -154,6 +154,11 @@ void CodeGen::visit(const Declaration& declaration) {
 
 	assert(!m_declarations.contains(declaration.get_declaration_id()));
 	m_declarations[declaration.get_declaration_id()] = {var, 1};
+
+	if(const Expression* init_expr = declaration.get_initializer(); init_expr != nullptr) {
+		Value* init_value = visit_with_return(*init_expr);
+		ir_builder->CreateStore(init_value, var);
+	}
 }
 
 void CodeGen::visit(const Structure& structre) {

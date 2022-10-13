@@ -46,14 +46,17 @@ private:
 
 class Declaration : public Statement {
 public:
-	Declaration(declid_t declaration_id);
+	Declaration(declid_t declaration_id, RefPtr<Expression> initializer);
 
 	declid_t get_declaration_id() const;
+	const Expression* get_initializer() const;
+	RefPtr<Expression> get_initializer_shared() const;
 
 	void accept(TASTVisitor& visitor) const override;
 
 private:
 	const declid_t m_declaration_id;
+	RefPtr<Expression> m_initializer;
 };
 
 class Structure : public Statement {

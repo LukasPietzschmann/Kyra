@@ -28,10 +28,10 @@ void TypeChecker::visit(const Declaration& declaration) {
 	RefPtr<DeclaredType> declared_type = visit_with_return(declaration.get_type()).type->get_declared_type_shared();
 	bool is_mutable = declaration.get_declaration_kind() == Declaration::Kind::VAR;
 	RefPtr<AppliedType> applied_type = AppliedType::promote_declared_type(declared_type, is_mutable);
-	RefPtr<Typed::Expression> init_expr = nullptr;
+	RefPtr<Typed::Expression> typed_init = nullptr;
 	if(const Expression* init = declaration.get_initializer(); init != nullptr) {
 		auto [init_type, expr] = visit_with_return(*init);
-		init_expr = expr;
+		typed_init = expr;
 		if(!init_type->can_be_assigned_to(*applied_type))
 			throw ErrorException("Initializer type does not match declaration type", init->get_source_range());
 	} else if(!is_mutable)
@@ -42,12 +42,7 @@ void TypeChecker::visit(const Declaration& declaration) {
 		bool successful = m_current_scope->insert_symbol(name, {decl_id, applied_type});
 		if(!successful)
 			throw ErrorException("Symbol already declared", declaration.get_identifier().get_source_range());
-		m_typed_statements.push_back(mk_ref<Typed::Declaration>(decl_id));
-		// TODO: generate assignment with default init if no initializer is specified
-		if(declaration.get_initializer() != nullptr) {
-			m_typed_statements.push_back(
-				mk_ref<Typed::ExpressionStatement>(mk_ref<Typed::Assignment>(applied_type, decl_id, init_expr)));
-		}
+		m_typed_statements.push_back(mk_ref<Typed::Declaration>(decl_id, typed_init));
 	});
 }
 
@@ -61,8 +56,6 @@ void TypeChecker::visit(const Structure& structure) {
 		for(const RefPtr<Declaration>& decl : structure.get_declarations()) {
 			const std::vector<RefPtr<Typed::Declaration>>& statements =
 				capture_typed_statements<Typed::Declaration>([&]() { decl->accept(*this); });
-			// FIXME: .back() only works with uninitialized declarations, as an initialisation will generate an extra
-			// ExpressionStatement (Assignment) after the declaration itself.
 			declarations.push_back(statements.back());
 			auto [name, type] = DeclarationDumpster::the().retrieve(statements.back()->get_declaration_id());
 			declaration_types.emplace_back(name, Element<AppliedType>{statements.back()->get_declaration_id(), type});
