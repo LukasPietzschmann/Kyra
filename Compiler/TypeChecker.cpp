@@ -159,21 +159,35 @@ void TypeChecker::visit(const BinaryExpression& binary_expression) {
 	function_name << "operator" << oper.get_lexeme();
 	auto [lhs_type, lhs_expr] = visit_with_return(binary_expression.get_lhs());
 	auto [rhs_type, rhs_expr] = visit_with_return(binary_expression.get_rhs());
-	const std::vector<Element<FunctionType>> methods = lhs_type->get_declared_type().find_methods(function_name.str());
+	// TODO: remove ability for methods
+	std::vector<Element<FunctionType>> methods = lhs_type->get_declared_type().find_methods(function_name.str());
 	if(methods.empty())
 		throw ErrorException("Undefined operator", binary_expression.get_operator().get_source_range());
 
+	bool native = true;
 	RefPtr<FunctionType> candidate = nullptr;
 	for(const auto& [_, method] : methods) {
 		if(!method->can_be_called_with({rhs_type}))
 			continue;
 		candidate = method;
 	}
+	if(candidate == nullptr) {
+		methods = m_current_scope->find_functions(function_name.str());
+		for(const auto& [_, method] : methods) {
+			if(!method->can_be_called_with({lhs_type, rhs_type}))
+				continue;
+			candidate = method;
+			native = false;
+		}
+	}
 	if(candidate == nullptr)
 		throw ErrorException("No candidate matched", binary_expression.get_operator().get_source_range());
 	RefPtr<AppliedType> type = AppliedType::promote_declared_type(candidate->get_returned_type(), true);
-	// Note: Only generate bin. exprs. for native binary expressions. For everything else, generate calls to operator
-	// function
+	if(!native) {
+		// TODO: get declid
+		return_from_visit_emplace(
+			type, mk_ref<Typed::Call>(type, 12, std::vector<RefPtr<Typed::Expression>>{lhs_expr, rhs_expr}));
+	}
 	return_from_visit_emplace(type, mk_ref<Typed::BinaryExpression>(type, lhs_expr, rhs_expr, oper));
 }
 
