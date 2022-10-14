@@ -165,28 +165,27 @@ void TypeChecker::visit(const BinaryExpression& binary_expression) {
 		throw ErrorException("Undefined operator", binary_expression.get_operator().get_source_range());
 
 	bool native = true;
-	RefPtr<FunctionType> candidate = nullptr;
-	for(const auto& [_, method] : methods) {
-		if(!method->can_be_called_with({rhs_type}))
+	const Element<FunctionType>* candidate = nullptr;
+	for(const Element<FunctionType>& method : methods) {
+		if(!method.type->can_be_called_with({rhs_type}))
 			continue;
-		candidate = method;
+		candidate = &method;
 	}
 	if(candidate == nullptr) {
 		methods = m_current_scope->find_functions(function_name.str());
-		for(const auto& [_, method] : methods) {
-			if(!method->can_be_called_with({lhs_type, rhs_type}))
+		for(const Element<FunctionType>& method : methods) {
+			if(!method.type->can_be_called_with({lhs_type, rhs_type}))
 				continue;
-			candidate = method;
+			candidate = &method;
 			native = false;
 		}
 	}
 	if(candidate == nullptr)
 		throw ErrorException("No candidate matched", binary_expression.get_operator().get_source_range());
-	RefPtr<AppliedType> type = AppliedType::promote_declared_type(candidate->get_returned_type(), true);
+	RefPtr<AppliedType> type = AppliedType::promote_declared_type(candidate->type->get_returned_type(), true);
 	if(!native) {
-		// TODO: get declid
-		return_from_visit_emplace(
-			type, mk_ref<Typed::Call>(type, 12, std::vector<RefPtr<Typed::Expression>>{lhs_expr, rhs_expr}));
+		return_from_visit_emplace(type,
+			mk_ref<Typed::Call>(type, candidate->declid, std::vector<RefPtr<Typed::Expression>>{lhs_expr, rhs_expr}));
 	}
 	return_from_visit_emplace(type, mk_ref<Typed::BinaryExpression>(type, lhs_expr, rhs_expr, oper));
 }
