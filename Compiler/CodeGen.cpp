@@ -190,8 +190,14 @@ void CodeGen::visit(const Function& function) {
 	const FunctionType& function_type = static_cast<const FunctionType&>(type->get_declared_type());
 	Type* return_type = Utils::get_llvm_type_for(*llvm_module, *function_type.get_returned_type());
 	std::vector<Type*> params;
+	std::vector<unsigned> param_indirections;
 	for(const RefPtr<AppliedType>& param_type : function_type.get_parameter()) {
 		Type* llvm_param_type = Utils::get_llvm_type_for(*llvm_module, param_type->get_declared_type());
+		if(param_type->get_declared_type().get_kind() == DeclaredType::Struct) {
+			llvm_param_type = Utils::get_ptr_type(llvm_param_type);
+			param_indirections.push_back(1);
+		} else
+			param_indirections.push_back(0);
 		params.push_back(llvm_param_type);
 	}
 	llvm::FunctionType* llvm_function_type = llvm::FunctionType::get(return_type, params, false);
@@ -204,7 +210,7 @@ void CodeGen::visit(const Function& function) {
 		Argument* arg = llvm_function->getArg(i);
 		declid_t id = function.get_parameters().at(i);
 		assert(!m_declarations.contains(id));
-		m_declarations[id] = {arg, 0};
+		m_declarations[id] = {arg, param_indirections.at(i)};
 		std::string_view name = DeclarationDumpster::the().retrieve(id).name;
 		arg->setName(name);
 	}
