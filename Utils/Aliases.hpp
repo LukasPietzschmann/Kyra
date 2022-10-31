@@ -2,8 +2,10 @@
 
 #include <cassert>
 #include <memory>
+#include <stdexcept>
 #include <type_traits>
 #include <utility>
+#include <vector>
 
 #define assert_not_reached() assert(0 && "should not reach")
 
@@ -25,6 +27,20 @@ OwnPtr<T> inline mk_own(Args&&... args) {
 
 template <typename T, typename... Args>
 using All = typename std::enable_if_t<std::conjunction_v<std::is_convertible<Args, T>...>>;
+
+template <typename T1, typename T2>
+std::vector<std::pair<T1, T2>> zip(const std::vector<T1>& v1, const std::vector<T2>& v2, bool strict = false) {
+	unsigned v1_size = v1.size();
+	unsigned v2_size = v2.size();
+	if(strict && v1_size != v2_size)
+		throw std::invalid_argument("If the strict flag is set, both vectors have to be of the same size!");
+
+	std::vector<std::pair<T1, T2>> result;
+	for(unsigned i = 0; i < std::min(v1_size, v2_size); ++i)
+		result.emplace(v1[i], v2[i]);
+
+	return result;
+}
 
 #define VISIT_RETURN_TYPE(type)                                   \
 private:                                                          \
