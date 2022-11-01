@@ -37,7 +37,7 @@ std::vector<std::pair<T1, T2>> zip(const std::vector<T1>& v1, const std::vector<
 
 	std::vector<std::pair<T1, T2>> result;
 	for(unsigned i = 0; i < std::min(v1_size, v2_size); ++i)
-		result.emplace(v1[i], v2[i]);
+		result.emplace_back(v1[i], v2[i]);
 
 	return result;
 }
